@@ -1,4 +1,3 @@
-// AI-assisted: see docs/AI_LOG.md #N
 import { useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -38,7 +37,7 @@ export default function TextField({ label, error, isPassword = false, style, ...
 
       {error ? (
         <Text style={styles.error} accessibilityLiveRegion="polite">
-          {error}
+           {t.errors[error] ?? error} // AI-assisted: see docs/AI_LOG.md #13
         </Text>
       ) : null}
     </View>
