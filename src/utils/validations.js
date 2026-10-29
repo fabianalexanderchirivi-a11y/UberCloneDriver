@@ -5,12 +5,39 @@ import {
   colorValues,
 } from './options';
 
+
+
 export const validateEmail = (value) => {
-  const email = (value ?? '').trim();
+  const email = (value ?? '').trim().toLowerCase();
+
   if (email === '') return 'emailEmpty';
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return 'emailInvalid';
+
+  const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+
+  if (!emailRegex.test(email) || email.includes('..')) {
+    return 'emailInvalid';
+  }
+
+  const domain = email.split('@')[1];
+
+  const allowedDomains = [
+    'gmail.com',
+    'hotmail.com',
+    'outlook.com',
+    'yahoo.com',
+    'icloud.com',
+    'live.com',
+    'hotmail.es',
+    'outlook.es',
+  ];
+
+  if (!allowedDomains.includes(domain)) {
+    return 'emailInvalid';
+  }
+
   return '';
 };
+
 
 export const validatePassword = (value) => {
   const password = value ?? '';

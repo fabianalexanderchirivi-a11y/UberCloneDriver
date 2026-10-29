@@ -1,3 +1,4 @@
+
 export const colors = {
   fondo: '#FFFFFF',
   superficie: '#F4F5F7',
@@ -8,14 +9,41 @@ export const colors = {
   borde: '#D0D5DD',
   error: '#C62828',
   deshabilitado: '#9AA0A6',
+
+  // Compatibilidad con componentes existentes
+  background: '#FFFFFF',
+  surface: '#F4F5F7',
+  primary: '#111111',
+  onPrimary: '#FFFFFF',
+  text: '#111111',
+  textSecondary: '#5F6368',
+  border: '#D0D5DD',
+  disabled: '#9AA0A6',
 };
 
-export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 };
-export const radius = { sm: 8, md: 12, lg: 16 };
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
+};
+
+export const radius = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+};
+
 export const typography = {
   titulo: { fontSize: 28, fontWeight: '700' },
   subtitulo: { fontSize: 16 },
   etiqueta: { fontSize: 14, fontWeight: '600' },
   cuerpo: { fontSize: 16 },
   error: { fontSize: 13 },
+
+  title: { fontSize: 28, fontWeight: '700' },
+  body: { fontSize: 16 },
+  label: { fontSize: 14, fontWeight: '600' },
 };

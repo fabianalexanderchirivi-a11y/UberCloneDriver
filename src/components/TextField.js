@@ -34,10 +34,10 @@ export default function TextField({ label, error, isPassword = false, style, ...
           </Pressable>
         )}
       </View>
-
+      {/* AI-assisted: see docs/AI_LOG.md #13 */}
       {error ? (
         <Text style={styles.error} accessibilityLiveRegion="polite">
-           {t.errors[error] ?? error} // AI-assisted: see docs/AI_LOG.md #13
+           {t.errors[error] ?? error}  
         </Text>
       ) : null}
     </View>
