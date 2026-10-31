@@ -1,14 +1,8 @@
 import { useContext, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  Image,
-  StyleSheet,
-  Platform,
-  KeyboardAvoidingView,
+  View, Text, ScrollView, Pressable, Image, StyleSheet, Platform, KeyboardAvoidingView,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -16,6 +10,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { RegistrationContext } from '../../context/RegistrationContext';
 import TextField from '../../components/TextField';
 import Button from '../../components/Button';
+import Dropdown from '../../components/Dropdown';
+
 import { colors, spacing, radius, typography } from '../../theme';
 import { t } from '../../i18n';
 
@@ -29,57 +25,7 @@ const languageOptions = [
   { label: 'Español', value: 'es' },
   { label: 'Inglés', value: 'en' },
 ];
-
-// Selector reutilizable para género e idioma.
-function Dropdown({ label, value, options, onChange, onTouch, error }) {
-  const [expanded, setExpanded] = useState(false);
-  const selected = options.find((option) => option.value === value);
-
-  return (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => {
-          onTouch();
-          setExpanded((previous) => !previous);
-        }}
-        style={[styles.select, error && styles.invalid]}
-      >
-        <Text style={styles.inputText}>
-          {selected ? selected.label : 'Seleccionar'}
-        </Text>
-        <Text style={styles.arrow}>{expanded ? '▴' : '▾'}</Text>
-      </Pressable>
-
-      {expanded && (
-        <View style={styles.options}>
-          {options.map((option) => (
-            <Pressable
-              key={option.value}
-              style={styles.option}
-              onPress={() => {
-                onChange(option.value);
-                onTouch();
-                setExpanded(false);
-              }}
-            >
-              <Text style={styles.inputText}>{option.label}</Text>
-            </Pressable>
-          ))}
-        </View>
-      )}
-
-      {!!error && (
-        <Text style={styles.error}>{t.errors[error] ?? error}</Text>
-      )}
-    </View>
-  );
-}
-
-// AI-assisted: see docs/AI_LOG.md
-export default function PersonalDataScreen() {
+export default function PersonalDataScreen({ navigation }) {
   const registration = useContext(RegistrationContext);
 
   if (!registration) {
@@ -157,7 +103,8 @@ export default function PersonalDataScreen() {
     touchAllPersonal();
 
     if (isPersonalValid) {
-      setMessage('Datos personales completos y válidos.');
+      setMessage('');
+      navigation.navigate('VehicleData');
     } else {
       setMessage('');
     }
@@ -178,6 +125,7 @@ export default function PersonalDataScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <Text style={styles.title}>Datos personales</Text>
+
           <Text style={styles.subtitle}>
             Completa tu información para registrarte como conductor.
           </Text>
@@ -341,7 +289,10 @@ export default function PersonalDataScreen() {
             error={personalErrors.language}
           />
 
-          <Button title="Validar datos personales" onPress={handleValidate} />
+          <Button
+            title="Continuar"
+            onPress={handleValidate}
+          />
 
           {!!message && (
             <Text style={styles.success} accessibilityLiveRegion="polite">
@@ -401,22 +352,6 @@ const styles = StyleSheet.create({
   inputText: {
     ...typography.body,
     color: colors.text,
-  },
-  arrow: {
-    fontSize: 20,
-    color: colors.textSecondary,
-  },
-  options: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    marginTop: spacing.xs,
-  },
-  option: {
-    padding: spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border,
   },
   error: {
     ...typography.error,

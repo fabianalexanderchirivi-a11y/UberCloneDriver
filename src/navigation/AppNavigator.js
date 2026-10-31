@@ -4,6 +4,7 @@ import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import PersonalDataScreen from '../screens/registro/PersonalDataScreen';
+import VehicleDataScreen from '../screens/registro/VehicleDataScreen';
 
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
@@ -56,7 +57,13 @@ export default function AppNavigator() {
           <Stack.Screen
             name="Register"
             component={PersonalDataScreen}
-            options={{ title: 'Registro del conductor' }}
+            options={{ title: 'Datos personales' }}
+          />
+
+          <Stack.Screen
+            name="VehicleData"
+            component={VehicleDataScreen}
+            options={{ title: 'Datos del vehículo' }}
           />
         </>
       )}
