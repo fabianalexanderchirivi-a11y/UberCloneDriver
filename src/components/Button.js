@@ -17,7 +17,15 @@ export default function Button({ title, onPress, variant = 'primary', disabled =
         pressed && !disabled && styles.pressed,
       ]}
     >
-      <Text style={[styles.text, isSecondary && styles.textSecondary]}>{title}</Text>
+      <Text
+        style={[
+          styles.text,
+          isSecondary && styles.textSecondary,
+          disabled && styles.textDisabled,
+        ]}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 }
@@ -38,4 +46,7 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.85 },
   text: { ...typography.body, fontWeight: '700', color: colors.onPrimary },
   textSecondary: { color: colors.primary },
+  textDisabled: {
+    color: colors.textSecondary,
+  },
 });

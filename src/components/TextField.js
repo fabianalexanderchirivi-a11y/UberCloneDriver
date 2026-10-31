@@ -17,6 +17,7 @@ export default function TextField({ label, error, isPassword = false, style, ...
           placeholderTextColor={colors.textSecondary}
           secureTextEntry={isPassword && isHidden}
           autoCorrect={false}
+          keyboardAppearance="dark"
           {...rest}
         />
         {isPassword && (
@@ -37,7 +38,7 @@ export default function TextField({ label, error, isPassword = false, style, ...
       {/* AI-assisted: see docs/AI_LOG.md #13 */}
       {error ? (
         <Text style={styles.error} accessibilityLiveRegion="polite">
-           {t.errors[error] ?? error}
+          {t.errors[error] ?? error}
         </Text>
       ) : null}
     </View>

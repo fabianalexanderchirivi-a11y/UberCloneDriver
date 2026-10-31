@@ -287,6 +287,8 @@ export default function PersonalDataScreen() {
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   maximumDate={new Date()}
+                  themeVariant="dark"
+                  textColor={colors.text}
                   onChange={handleDateChange}
                 />
 
@@ -468,7 +470,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
   success: {
-    color: '#16703B',
+    color: colors.success,
     marginTop: spacing.md,
     textAlign: 'center',
     fontWeight: '600',
