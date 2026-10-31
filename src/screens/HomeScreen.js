@@ -1,15 +1,96 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import {View,Text, Switch, Pressable, StyleSheet} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import useAuth from '../hooks/useAuth';
+import { colors, spacing, radius, typography } from '../theme';
+import { t } from '../i18n';
+
+const ACCOUNT_STATUS = 'pending';
 
 export default function HomeScreen() {
+  const { signOut } = useAuth();
+  const [isAvailable, setIsAvailable] = useState(false);
+
+  const isPending = ACCOUNT_STATUS === 'pending';
+  const accountStatus = isPending
+    ? t.home.pending
+    : t.home.approved;
+
+  const handleAvailabilityChange = (value) => {
+    if (isPending) return;
+    setIsAvailable(value);
+  };
+
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.content}>
-        <Text style={styles.logo}>UBER</Text>
-        <Text style={styles.title}>¡Bienvenido, conductor!</Text>
+        <Text style={styles.title}>{t.home.welcome}</Text>
+
         <Text style={styles.description}>
-          Aquí encontrarás tu espacio de trabajo.
+          {t.home.description}
         </Text>
+
+        <View style={styles.card}>
+          <Text style={styles.label}>
+            {t.home.accountStatus}
+          </Text>
+
+          <Text style={[
+            styles.status,
+            isPending ? styles.pending : styles.approved,
+          ]}>
+            {accountStatus}
+          </Text>
+
+          <Text style={styles.note}>
+            {t.home.temporaryNote}
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.label}>
+            {t.home.availability}
+          </Text>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.availabilityText}>
+              {isAvailable ? t.home.available : t.home.unavailable}
+            </Text>
+
+            <Switch
+              value={isAvailable}
+              onValueChange={handleAvailabilityChange}
+              disabled={isPending}
+              trackColor={{
+                false: colors.border,
+                true: colors.primary,
+              }}
+              thumbColor={colors.surface}
+              accessibilityRole="switch"
+              accessibilityLabel={t.home.availability}
+              accessibilityState={{ disabled: isPending }}
+            />
+          </View>
+
+          {isPending && (
+            <Text style={styles.warning}>
+              {t.home.pendingMessage}
+            </Text>
+          )}
+        </View>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.logoutButton,
+            pressed && styles.logoutPressed,
+          ]}
+          onPress={signOut}
+          accessibilityRole="button"
+        >
+          <Text style={styles.logoutText}>
+            {t.home.logOut}
+          </Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -18,27 +99,73 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
-    padding: 28,
-    justifyContent: 'center',
-  },
-  logo: {
-    color: '#FFFFFF',
-    fontSize: 30,
-    fontWeight: '900',
-    marginBottom: 35,
+    padding: spacing.xl,
+    gap: spacing.lg,
   },
   title: {
-    color: '#FFFFFF',
-    fontSize: 28,
-    fontWeight: '800',
+    ...typography.title,
+    color: colors.text,
   },
   description: {
-    color: '#BBBBBB',
-    fontSize: 16,
-    marginTop: 12,
+    ...typography.body,
+    color: colors.textSecondary,
+  },
+  card: {
+    backgroundColor: colors.surface,
+    padding: spacing.lg,
+    borderRadius: radius.md,
+    gap: spacing.sm,
+  },
+  label: {
+    ...typography.label,
+    color: colors.textSecondary,
+  },
+  status: {
+    ...typography.body,
+    fontWeight: '700',
+  },
+  pending: {
+    color: '#B7791F',
+  },
+  approved: {
+    color: '#218838',
+  },
+  note: {
+    ...typography.body,
+    color: colors.textSecondary,
+    fontSize: 13,
+  },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  availabilityText: {
+    ...typography.body,
+    color: colors.text,
+  },
+  warning: {
+    ...typography.body,
+    color: colors.textSecondary,
+    fontSize: 13,
+  },
+  logoutButton: {
+    backgroundColor: colors.primary,
+    minHeight: 56,
+    borderRadius: radius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  logoutPressed: {
+    opacity: 0.7,
+  },
+  logoutText: {
+    color: colors.onPrimary,
+    ...typography.label,
   },
 });

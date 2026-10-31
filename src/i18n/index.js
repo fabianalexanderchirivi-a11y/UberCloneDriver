@@ -1,6 +1,9 @@
 const texts = {
   es: {
-    common: { showPassword: 'Mostrar contraseña', hidePassword: 'Ocultar contraseña' },
+    common: {
+      showPassword: 'Mostrar contraseña',
+      hidePassword: 'Ocultar contraseña',
+    },
     welcome: {
       title: 'UberClone Conductor',
       subtitle: 'Recibe viajes y consulta tus ganancias',
@@ -18,8 +21,24 @@ const texts = {
       noAccount: '¿No tienes cuenta?',
       signUpLink: 'Regístrate',
     },
-    register: { title: 'Registro del conductor', comingSoon: 'Aquí irán las 3 pestañas del registro.' },
-    home: { title: 'Inicio', logOut: 'Cerrar sesión' },
+    register: {
+      title: 'Registro del conductor',
+      comingSoon: 'Aquí irán las 3 pestañas del registro.',
+    },
+    home: {
+      title: 'Inicio',
+      welcome: '¡Bienvenido, conductor!',
+      description: 'Ya estás dentro de tu cuenta.',
+      accountStatus: 'Estado de tu cuenta',
+      pending: 'Pendiente de aprobación',
+      approved: 'Aprobado',
+      temporaryNote: 'Estado temporal para las pruebas. Más adelante se consultará desde Firebase.',
+      availability: 'Disponibilidad',
+      available: 'Disponible',
+      unavailable: 'No disponible',
+      pendingMessage: 'No puedes activar la disponibilidad porque tu cuenta todavía está pendiente de aprobación.',
+      logOut: 'Cerrar sesión',
+    },
     errors: {
       emailEmpty: 'Escribe tu correo',
       emailInvalid: 'El correo no es válido',
@@ -41,8 +60,12 @@ const texts = {
       capacityXl: 'La categoría XL exige mínimo 6 pasajeros',
     },
   },
+
   en: {
-    common: { showPassword: 'Show password', hidePassword: 'Hide password' },
+    common: {
+      showPassword: 'Show password',
+      hidePassword: 'Hide password',
+    },
     welcome: {
       title: 'UberClone Driver',
       subtitle: 'Get trips and check your earnings',
@@ -60,8 +83,24 @@ const texts = {
       noAccount: "Don't have an account?",
       signUpLink: 'Sign up',
     },
-    register: { title: 'Driver registration', comingSoon: 'The 3 registration tabs will go here.' },
-    home: { title: 'Home', logOut: 'Log out' },
+    register: {
+      title: 'Driver registration',
+      comingSoon: 'The 3 registration tabs will go here.',
+    },
+    home: {
+      title: 'Home',
+      welcome: 'Welcome, driver!',
+      description: 'You are now inside your account.',
+      accountStatus: 'Account status',
+      pending: 'Pending approval',
+      approved: 'Approved',
+      temporaryNote: 'Temporary status for testing. Later it will be retrieved from Firebase.',
+      availability: 'Availability',
+      available: 'Available',
+      unavailable: 'Unavailable',
+      pendingMessage: 'You cannot enable availability because your account is still pending approval.',
+      logOut: 'Log out',
+    },
     errors: {
       emailEmpty: 'Enter your email',
       emailInvalid: 'The email is not valid',
