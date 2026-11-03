@@ -113,10 +113,7 @@ export default function VehicleDataScreen({ navigation }) {
       return;
     }
 
-    Alert.alert(
-      'Datos del vehículo',
-      'Los datos son válidos. El siguiente paso se conectará más adelante.',
-    );
+    navigation.navigate('Password');
   };
 
   return (

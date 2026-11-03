@@ -1,7 +1,13 @@
+
 import { Pressable, Text, StyleSheet } from 'react-native';
 import { colors, spacing, radius, typography } from '../theme';
 
-export default function Button({ title, onPress, variant = 'primary', disabled = false }) {
+export default function Button({
+  title,
+  onPress,
+  variant = 'primary',
+  disabled = false,
+}) {
   const isSecondary = variant === 'secondary';
 
   return (
@@ -32,20 +38,38 @@ export default function Button({ title, onPress, variant = 'primary', disabled =
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: spacing.lg,
+    minHeight: 54,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderRadius: radius.md,
     alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
-  primary: { backgroundColor: colors.primary },
+  primary: {
+    backgroundColor: colors.primary,
+  },
   secondary: {
-    backgroundColor: colors.background,
-    borderWidth: 1.5,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
     borderColor: colors.primary,
   },
-  disabled: { backgroundColor: colors.disabled, borderColor: colors.disabled },
-  pressed: { opacity: 0.85 },
-  text: { ...typography.body, fontWeight: '700', color: colors.onPrimary },
-  textSecondary: { color: colors.primary },
+  disabled: {
+    backgroundColor: colors.disabled,
+    borderColor: colors.disabled,
+  },
+  pressed: {
+    opacity: 0.75,
+  },
+  text: {
+    ...typography.body,
+    fontWeight: '700',
+    color: colors.onPrimary,
+    textAlign: 'center',
+  },
+  textSecondary: {
+    color: colors.text,
+  },
   textDisabled: {
     color: colors.textSecondary,
   },

@@ -1,10 +1,12 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import PasswordScreen from '../screens/registro/PasswordScreen';
+import SubmitRegistrationScreen from '../screens/registro/SubmitRegistrationScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import PersonalDataScreen from '../screens/registro/PersonalDataScreen';
 import VehicleDataScreen from '../screens/registro/VehicleDataScreen';
+import RegistrationSuccessScreen from '../screens/registro/RegistrationSuccessScreen';
 
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
@@ -64,6 +66,27 @@ export default function AppNavigator() {
             name="VehicleData"
             component={VehicleDataScreen}
             options={{ title: 'Datos del vehículo' }}
+          />
+          <Stack.Screen
+            name="Password"
+            component={PasswordScreen}
+            options={{ title: 'Crear contraseña' }}
+          />
+
+          <Stack.Screen
+            name="SubmitRegistration"
+            component={SubmitRegistrationScreen}
+            options={{ title: 'Enviar registro' }}
+          />
+
+          <Stack.Screen
+            name="RegistrationSuccess"
+            component={RegistrationSuccessScreen}
+            options={{
+              title: 'Registro completado',
+              headerBackVisible: false,
+              gestureEnabled: false,
+            }}
           />
         </>
       )}

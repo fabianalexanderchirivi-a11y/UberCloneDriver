@@ -11,8 +11,6 @@ export const colors = {
   deshabilitado: '#3A3A3C',
   exito: '#34C759',
   advertencia: '#F5B84B',
-
-  // Compatibilidad con componentes existentes
   background: '#000000',
   surface: '#1C1C1E',
   primary: '#FFFFFF',

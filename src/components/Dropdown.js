@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import {
   View,
@@ -21,37 +22,60 @@ export default function Dropdown({
   const [expanded, setExpanded] = useState(false);
   const selected = options.find((option) => option.value === value);
 
+  const toggleExpanded = () => {
+    onTouch?.();
+    setExpanded((previous) => !previous);
+  };
+
+  const selectOption = (optionValue) => {
+    onChange(optionValue);
+    onTouch?.();
+    setExpanded(false);
+  };
+
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
 
       <Pressable
         accessibilityRole="button"
-        onPress={() => {
-          onTouch?.();
-          setExpanded((previous) => !previous);
-        }}
+        accessibilityState={{ expanded }}
+        onPress={toggleExpanded}
         style={[styles.select, error && styles.invalid]}
       >
         <Text style={styles.inputText}>
           {selected ? selected.label : placeholder}
         </Text>
-        <Text style={styles.arrow}>{expanded ? '▴' : '▾'}</Text>
+        <Text style={styles.arrow}>
+          {expanded ? '▴' : '▾'}
+        </Text>
       </Pressable>
 
       {expanded && (
         <View style={styles.options}>
-          {options.map((option) => (
+          {options.map((option, index) => (
             <Pressable
               key={option.value}
-              style={styles.option}
-              onPress={() => {
-                onChange(option.value);
-                onTouch?.();
-                setExpanded(false);
-              }}
+              accessibilityRole="button"
+              onPress={() => selectOption(option.value)}
+              style={[
+                styles.option,
+                index === options.length - 1 && styles.lastOption,
+                option.value === value && styles.selectedOption,
+              ]}
             >
-              <Text style={styles.inputText}>{option.label}</Text>
+              <Text
+                style={[
+                  styles.optionText,
+                  option.value === value && styles.selectedOptionText,
+                ]}
+              >
+                {option.label}
+              </Text>
+
+              {option.value === value && (
+                <Text style={styles.check}>✓</Text>
+              )}
             </Pressable>
           ))}
         </View>
@@ -69,6 +93,7 @@ export default function Dropdown({
 const styles = StyleSheet.create({
   field: {
     marginBottom: spacing.lg,
+    width: '100%',
   },
   label: {
     ...typography.label,
@@ -76,7 +101,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   select: {
-    minHeight: 50,
+    minHeight: 52,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
@@ -92,22 +117,48 @@ const styles = StyleSheet.create({
   inputText: {
     ...typography.body,
     color: colors.text,
+    flex: 1,
   },
   arrow: {
     fontSize: 20,
     color: colors.textSecondary,
+    marginLeft: spacing.md,
   },
   options: {
+    marginTop: spacing.xs,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    marginTop: spacing.xs,
+    overflow: 'hidden',
   },
   option: {
-    padding: spacing.md,
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border,
+  },
+  lastOption: {
+    borderBottomWidth: 0,
+  },
+  selectedOption: {
+    backgroundColor: '#303034',
+  },
+  optionText: {
+    ...typography.body,
+    color: colors.text,
+  },
+  selectedOptionText: {
+    fontWeight: '700',
+  },
+  check: {
+    color: colors.success,
+    fontSize: 18,
+    fontWeight: '700',
   },
   error: {
     ...typography.error,

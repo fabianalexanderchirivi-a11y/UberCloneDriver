@@ -1,3 +1,4 @@
+
 const texts = {
   es: {
     common: {
@@ -47,13 +48,14 @@ const texts = {
       required: 'Este campo es obligatorio',
       photoRequired: 'Debes agregar una foto',
       fullNameTooLong: 'El nombre no puede tener más de 50 caracteres',
-      fullNameInvalid: 'El nombre solo puede tener letras y espacios',
+      fullNameInvalid: 'Escribe al menos dos palabras, con mínimo dos letras cada una. Solo se permiten letras y espacios.',
       documentInvalid: 'El documento debe tener entre 6 y 10 dígitos',
       phoneInvalid: 'El celular debe tener 10 dígitos',
       underage: 'Debes ser mayor de 18 años',
       optionRequired: 'Selecciona una opción',
       plateInvalid: 'La placa debe tener el formato ABC123',
       textTooLong: 'No puede tener más de 30 caracteres',
+      textInvalid: 'Este campo solo permite letras, números, espacios y guiones',
       yearInvalid: 'El año debe tener 4 dígitos',
       yearFuture: 'El año no puede ser mayor al actual',
       capacityInvalid: 'Escribe un número válido de pasajeros',
@@ -109,13 +111,14 @@ const texts = {
       required: 'This field is required',
       photoRequired: 'You must add a photo',
       fullNameTooLong: 'The name cannot be longer than 50 characters',
-      fullNameInvalid: 'The name can only contain letters and spaces',
+      fullNameInvalid: 'Enter at least two words, with at least two letters each. Only letters and spaces are allowed.',
       documentInvalid: 'The ID number must have between 6 and 10 digits',
       phoneInvalid: 'The phone number must have 10 digits',
       underage: 'You must be over 18 years old',
       optionRequired: 'Select an option',
       plateInvalid: 'The plate must have the format ABC123',
       textTooLong: 'It cannot be longer than 30 characters',
+      textInvalid: 'This field only allows letters, numbers, spaces, and hyphens',
       yearInvalid: 'The year must have 4 digits',
       yearFuture: 'The year cannot be greater than the current one',
       capacityInvalid: 'Enter a valid number of passengers',
