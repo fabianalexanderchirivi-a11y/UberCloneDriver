@@ -2,175 +2,178 @@
 import { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import {
-  createUserWithEmailAndPassword,
-  signOut,
+    createUserWithEmailAndPassword,
+    signOut,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import {
+    doc,
+    setDoc,
+    serverTimestamp,
+} from 'firebase/firestore';
 
 import { auth, db } from '../../config/firebase';
 import { RegistrationContext } from '../../context/RegistrationContext';
+import { uploadImageToCloudinary } from '../../services/cloudinaryService';
 import Button from '../../components/Button';
 import { colors, spacing, typography } from '../../theme';
 
 export default function SubmitRegistrationScreen({ route, navigation }) {
-  const { password } = route.params;
+    const { password } = route.params;
 
-  const {
-    personalData,
-    vehicleData,
-    isPersonalValid,
-    isVehicleValid,
-  } = useContext(RegistrationContext);
+    const {
+        personalData,
+        vehicleData,
+        isPersonalValid,
+        isVehicleValid,
+    } = useContext(RegistrationContext);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
+    const handleSubmit = async () => {
+        if (isSubmitting) return;
 
-    if (!isPersonalValid || !isVehicleValid) {
-      Alert.alert(
-        'Datos incompletos',
-        'Regresa y revisa que todos los datos sean correctos.'
-      );
-      return;
-    }
+        if (!isPersonalValid || !isVehicleValid) {
+            Alert.alert(
+                'Datos incompletos',
+                'Regresa y revisa que todos los datos sean correctos.',
+            );
+            return;
+        }
 
-    setIsSubmitting(true);
+        if (!personalData.photo || !vehicleData.vehiclePhoto) {
+            Alert.alert(
+                'Faltan fotografías',
+                'Necesitas seleccionar tu foto de perfil y la foto del vehículo.',
+            );
+            return;
+        }
 
-    try {
-      const email = personalData.email.trim().toLowerCase();
-      let user = auth.currentUser;
+        setIsSubmitting(true);
 
-      if (user && user.email?.toLowerCase() !== email) {
-        await signOut(auth);
-        user = null;
-      }
+        try {
+            const email = personalData.email.trim().toLowerCase();
 
-      if (!user) {
-        const credential = await createUserWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-        user = credential.user;
-      }
+            let user = auth.currentUser;
 
-      const uid = user.uid;
+            if (user && user.email?.toLowerCase() !== email) {
+                await signOut(auth);
+                user = null;
+            }
 
-      const registration = {
-        uid,
-        personalData: {
-          ...personalData,
-          fullName: personalData.fullName.trim(),
-          documentNumber: personalData.documentNumber.trim(),
-          phone: personalData.phone.trim(),
-          email,
-          birthDate: personalData.birthDate
-            ? personalData.birthDate.toISOString()
-            : null,
-          photo: null,
-        },
-        vehicleData: {
-          ...vehicleData,
-          plate: vehicleData.plate.trim().toUpperCase(),
-          brand: vehicleData.brand.trim(),
-          model: vehicleData.model.trim(),
-          vehiclePhoto: null,
-        },
-        status: 'pending',
-        photosPending: true,
-        createdAt: serverTimestamp(),
-      };
+            if (!user) {
+                const credential = await createUserWithEmailAndPassword(
+                    auth,
+                    email,
+                    password,
+                );
 
-      await setDoc(doc(db, 'driverRegistrations', uid), registration);
+                user = credential.user;
+            }
 
-      navigation.replace('RegistrationSuccess');
-    } catch (error) {
-      console.error(
-        'Error al enviar registro:',
-        error.code || error.message
-      );
+            const uid = user.uid;
 
-      let message = 'No se pudo completar el registro. Inténtalo nuevamente.';
+            const profilePhotoUrl = await uploadImageToCloudinary(
+                personalData.photo,
+                `${uid}/personal`,
+            );
 
-      if (error.code === 'auth/email-already-in-use') {
-        message = 'Este correo ya tiene una cuenta. Utiliza otro correo o inicia sesión.';
-      } else if (error.code === 'auth/weak-password') {
-        message = 'La contraseña no cumple los requisitos de seguridad.';
-      } else if (error.code === 'auth/invalid-email') {
-        message = 'El correo electrónico no es válido.';
-      } else if (error.code === 'auth/network-request-failed') {
-        message = 'No hay conexión. Revisa tu internet e inténtalo nuevamente.';
-      } else if (error.code === 'auth/too-many-requests') {
-        message = 'Se hicieron demasiados intentos. Espera un momento e inténtalo nuevamente.';
-      } else if (
-        error.code === 'permission-denied' ||
-        error.code === 'firestore/permission-denied'
-      ) {
-        message = 'No fue posible guardar el registro. Revisa la configuración de Firebase.';
-      }
+            const vehiclePhotoUrl = await uploadImageToCloudinary(
+                vehicleData.vehiclePhoto,
+                `${uid}/vehicles`,
+            );
 
-      Alert.alert('Error en el registro', message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+            const registration = {
+                uid,
+                personalData: {
+                    ...personalData,
+                    fullName: personalData.fullName.trim(),
+                    documentNumber: personalData.documentNumber.trim(),
+                    phone: personalData.phone.trim(),
+                    email,
+                    birthDate: personalData.birthDate
+                        ? personalData.birthDate.toISOString()
+                        : null,
+                    photo: profilePhotoUrl,
+                },
+                vehicleData: {
+                    ...vehicleData,
+                    plate: vehicleData.plate.trim().toUpperCase(),
+                    brand: vehicleData.brand.trim(),
+                    model: vehicleData.model.trim(),
+                    vehiclePhoto: vehiclePhotoUrl,
+                },
+                status: 'pending',
+                photosPending: false,
+                createdAt: serverTimestamp(),
+            };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.icon}>✓</Text>
+            await setDoc(
+                doc(db, 'driverRegistrations', uid),
+                registration,
+            );
 
-        <Text style={styles.title}>
-          Enviar registro
-        </Text>
+            navigation.replace('RegistrationSuccess');
+        } catch (error) {
+            console.error(
+                'Error al enviar registro:',
+                error.code || error.message,
+            );
 
-        <Text style={styles.description}>
-          Al continuar, crearemos tu cuenta y enviaremos tus datos para
-          revisión. Tu registro quedará pendiente de aprobación.
-        </Text>
+            let message = 'No se pudo completar el registro. Inténtalo nuevamente.';
 
-        <Button
-          title={
-            isSubmitting
-              ? 'Enviando...'
-              : 'Crear cuenta y enviar registro'
-          }
-          onPress={handleSubmit}
-          disabled={isSubmitting}
-        />
-      </View>
-    </View>
-  );
+            if (error.code === 'auth/email-already-in-use') {
+                message = 'Este correo ya tiene una cuenta. Utiliza otro correo o inicia sesión.';
+            } else if (error.code === 'auth/weak-password') {
+                message = 'La contraseña no cumple los requisitos de seguridad.';
+            } else if (error.code === 'auth/invalid-email') {
+                message = 'El correo electrónico no es válido.';
+            } else if (error.code === 'auth/network-request-failed') {
+                message = 'No hay conexión. Revisa tu internet e inténtalo nuevamente.';
+            } else if (error.code === 'auth/too-many-requests') {
+                message = 'Se hicieron demasiados intentos. Espera un momento.';
+            } else if (error.code === 'permission-denied') {
+                message = 'No fue posible guardar el registro. Revisa las reglas de Firestore.';
+            } else if (error.message?.includes('Cloudinary')) {
+                message = error.message;
+            }
+
+            Alert.alert('Error en el registro', message);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Enviar registro</Text>
+
+            <Text style={styles.description}>
+                Al continuar, crearemos tu cuenta y enviaremos tus datos y fotografías
+                para revisión. Tu registro quedará pendiente de aprobación.
+            </Text>
+
+            <Button
+                title={isSubmitting ? 'Enviando...' : 'Crear cuenta y enviar registro'}
+                onPress={handleSubmit}
+                disabled={isSubmitting}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: spacing.lg,
-    backgroundColor: colors.background,
-  },
-  content: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  icon: {
-    fontSize: 48,
-    color: colors.success,
-    marginBottom: spacing.lg,
-  },
-  title: {
-    ...typography.title,
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.md,
-  },
-  description: {
-    ...typography.body,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: spacing.xl,
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        padding: spacing.lg,
+        backgroundColor: colors.background,
+    },
+    title: {
+        ...typography.title,
+        marginBottom: spacing.md,
+    },
+    description: {
+        ...typography.body,
+        marginBottom: spacing.xl,
+    },
 });
