@@ -12,20 +12,29 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 
 import { RegistrationContext } from '../../context/RegistrationContext';
+import { LanguageContext } from '../../context/LanguageContext';
 import Dropdown from '../../components/Dropdown';
 import TextField from '../../components/TextField';
 import Button from '../../components/Button';
 import { colors, spacing, radius, typography } from '../../theme';
-import { t } from '../../i18n';
 
 export default function VehicleDataScreen({ navigation }) {
   const registration = useContext(RegistrationContext);
+  const languageContext = useContext(LanguageContext);
 
   if (!registration) {
     throw new Error(
       'VehicleDataScreen debe estar dentro de RegistrationProvider',
     );
   }
+
+  if (!languageContext) {
+    throw new Error(
+      'VehicleDataScreen debe estar dentro de LanguageProvider',
+    );
+  }
+
+  const { t } = languageContext;
 
   const {
     vehicleData,
@@ -38,20 +47,28 @@ export default function VehicleDataScreen({ navigation }) {
 
   const [photoLoading, setPhotoLoading] = useState(false);
 
+  const translateError = (error) => {
+    if (!error) return '';
+
+    const translated = t(`errors.${error}`);
+
+    return translated === `errors.${error}` ? error : translated;
+  };
+
   const categoryOptions = [
-    { value: 'economy', label: 'Económico' },
-    { value: 'xl', label: 'XL' },
-    { value: 'premium', label: 'Premium' },
+    { value: 'economy', label: t('vehicle.economy') },
+    { value: 'xl', label: t('vehicle.xl') },
+    { value: 'premium', label: t('vehicle.premium') },
   ];
 
   const colorOptions = [
-    { value: 'white', label: 'Blanco' },
-    { value: 'black', label: 'Negro' },
-    { value: 'gray', label: 'Gris' },
-    { value: 'silver', label: 'Plata' },
-    { value: 'red', label: 'Rojo' },
-    { value: 'blue', label: 'Azul' },
-    { value: 'other', label: 'Otro' },
+    { value: 'white', label: t('vehicle.white') },
+    { value: 'black', label: t('vehicle.black') },
+    { value: 'gray', label: t('vehicle.gray') },
+    { value: 'silver', label: t('vehicle.silver') },
+    { value: 'red', label: t('vehicle.red') },
+    { value: 'blue', label: t('vehicle.blue') },
+    { value: 'other', label: t('vehicle.other') },
   ];
 
   const selectVehiclePhoto = async () => {
@@ -61,8 +78,8 @@ export default function VehicleDataScreen({ navigation }) {
 
       if (!permission.granted) {
         Alert.alert(
-          'Permiso necesario',
-          'Necesitamos permiso para seleccionar la foto del vehículo.',
+          t('vehicle.permissionTitle'),
+          t('vehicle.permissionMessage'),
         );
         return;
       }
@@ -81,7 +98,10 @@ export default function VehicleDataScreen({ navigation }) {
         touchVehicle('vehiclePhoto');
       }
     } catch {
-      Alert.alert('Error', 'No se pudo seleccionar la fotografía.');
+      Alert.alert(
+        t('vehicle.errorTitle'),
+        t('vehicle.photoError'),
+      );
     } finally {
       setPhotoLoading(false);
     }
@@ -107,8 +127,8 @@ export default function VehicleDataScreen({ navigation }) {
 
     if (!isVehicleValid) {
       Alert.alert(
-        'Revisa los datos',
-        'Hay campos que necesitan corrección antes de continuar.',
+        t('vehicle.reviewTitle'),
+        t('vehicle.reviewMessage'),
       );
       return;
     }
@@ -122,89 +142,93 @@ export default function VehicleDataScreen({ navigation }) {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.title}>Datos del vehículo</Text>
+      <Text style={styles.title}>
+        {t('vehicle.title')}
+      </Text>
 
       <Text style={styles.description}>
-        Registra la información del vehículo con el que prestarás el servicio.
+        {t('vehicle.description')}
       </Text>
 
       <Dropdown
-        label="Categoría del servicio"
+        label={t('vehicle.category')}
         value={vehicleData.category}
         options={categoryOptions}
-        placeholder="Selecciona una categoría"
+        placeholder={t('vehicle.categoryPlaceholder')}
         onChange={(value) => updateVehicle('category', value)}
         onTouch={() => touchVehicle('category')}
-        error={vehicleErrors.category}
+        error={translateError(vehicleErrors.category)}
       />
 
       <TextField
-        label="Placa"
+        label={t('vehicle.plate')}
         value={vehicleData.plate}
         onChangeText={handlePlateChange}
         onBlur={() => touchVehicle('plate')}
         placeholder="ABC123"
         autoCapitalize="characters"
         maxLength={6}
-        error={vehicleErrors.plate}
+        error={translateError(vehicleErrors.plate)}
       />
 
       <TextField
-        label="Marca"
+        label={t('vehicle.brand')}
         value={vehicleData.brand}
         onChangeText={(value) => updateVehicle('brand', value)}
         onBlur={() => touchVehicle('brand')}
-        placeholder="Ej. Chevrolet"
+        placeholder={t('vehicle.brandPlaceholder')}
         maxLength={30}
-        error={vehicleErrors.brand}
+        error={translateError(vehicleErrors.brand)}
       />
 
       <TextField
-        label="Modelo"
+        label={t('vehicle.model')}
         value={vehicleData.model}
         onChangeText={(value) => updateVehicle('model', value)}
         onBlur={() => touchVehicle('model')}
-        placeholder="Ej. Onix"
+        placeholder={t('vehicle.modelPlaceholder')}
         maxLength={30}
-        error={vehicleErrors.model}
+        error={translateError(vehicleErrors.model)}
       />
 
       <TextField
-        label="Año"
+        label={t('vehicle.year')}
         value={vehicleData.year}
         onChangeText={handleYearChange}
         onBlur={() => touchVehicle('year')}
-        placeholder="Ej. 2022"
+        placeholder={t('vehicle.yearPlaceholder')}
         keyboardType="number-pad"
         maxLength={4}
-        error={vehicleErrors.year}
+        error={translateError(vehicleErrors.year)}
       />
 
       <Dropdown
-        label="Color"
+        label={t('vehicle.color')}
         value={vehicleData.color}
         options={colorOptions}
-        placeholder="Selecciona un color"
+        placeholder={t('vehicle.colorPlaceholder')}
         onChange={(value) => updateVehicle('color', value)}
         onTouch={() => touchVehicle('color')}
-        error={vehicleErrors.color}
+        error={translateError(vehicleErrors.color)}
       />
 
       <TextField
-        label="Capacidad de pasajeros"
+        label={t('vehicle.capacity')}
         value={vehicleData.capacity}
         onChangeText={handleCapacityChange}
         onBlur={() => touchVehicle('capacity')}
-        placeholder="Ej. 4"
+        placeholder={t('vehicle.capacityPlaceholder')}
         keyboardType="number-pad"
-        error={vehicleErrors.capacity}
+        error={translateError(vehicleErrors.capacity)}
       />
 
       <View style={styles.photoSection}>
-        <Text style={styles.label}>Foto del vehículo</Text>
+        <Text style={styles.label}>
+          {t('vehicle.photo')}
+        </Text>
 
         <Text style={styles.photoDescription}>
-          Selecciona una fotografía donde se pueda ver claramente la placa.
+          {t('vehicle.photoDescription')}
         </Text>
 
         {vehicleData.vehiclePhoto ? (
@@ -215,7 +239,7 @@ export default function VehicleDataScreen({ navigation }) {
         ) : (
           <View style={styles.photoPlaceholder}>
             <Text style={styles.photoPlaceholderText}>
-              No has seleccionado una fotografía
+              {t('vehicle.noPhoto')}
             </Text>
           </View>
         )}
@@ -227,23 +251,22 @@ export default function VehicleDataScreen({ navigation }) {
         >
           <Text style={styles.photoButtonText}>
             {photoLoading
-              ? 'Cargando...'
+              ? t('vehicle.loading')
               : vehicleData.vehiclePhoto
-                ? 'Cambiar fotografía'
-                : 'Seleccionar fotografía'}
+                ? t('vehicle.changePhoto')
+                : t('vehicle.selectPhoto')}
           </Text>
         </Pressable>
 
         {!!vehicleErrors.vehiclePhoto && (
           <Text style={styles.error}>
-            {t.errors[vehicleErrors.vehiclePhoto] ??
-              vehicleErrors.vehiclePhoto}
+            {translateError(vehicleErrors.vehiclePhoto)}
           </Text>
         )}
       </View>
 
       <Button
-        title="Continuar"
+        title={t('common.continue')}
         onPress={handleContinue}
         disabled={photoLoading}
       />

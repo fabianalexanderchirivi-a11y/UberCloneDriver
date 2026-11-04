@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
     View,
     Text,
@@ -14,10 +14,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import useAuth from '../hooks/useAuth';
 import { auth, db } from '../config/firebase';
 import { colors, spacing, radius, typography } from '../theme';
-import { t } from '../i18n';
+import { LanguageContext } from '../context/LanguageContext';
 
 export default function HomeScreen() {
     const { signOut } = useAuth();
+    const { t } = useContext(LanguageContext);
+
     const [isAvailable, setIsAvailable] = useState(false);
     const [accountStatus, setAccountStatus] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -58,8 +60,8 @@ export default function HomeScreen() {
 
                 if (isMounted) {
                     Alert.alert(
-                        'Error',
-                        'No pudimos consultar el estado de tu cuenta. Inténtalo nuevamente.'
+                        t('home.errorTitle'),
+                        t('home.errorMessage')
                     );
                 }
             } finally {
@@ -74,18 +76,18 @@ export default function HomeScreen() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [t]);
 
     const isPending = accountStatus === 'pending';
     const isApproved = accountStatus === 'approved';
 
     const statusText = isPending
-        ? t.home.pending
+        ? t('home.pending')
         : isApproved
-            ? t.home.approved
+            ? t('home.approved')
             : accountStatus === 'rejected'
-                ? 'No aprobado'
-                : 'Estado no disponible';
+                ? t('home.rejected')
+                : t('home.unavailableStatus');
 
     const handleAvailabilityChange = (value) => {
         if (!isApproved) return;
@@ -98,7 +100,7 @@ export default function HomeScreen() {
                 <View style={styles.loading}>
                     <ActivityIndicator size="large" color={colors.primary} />
                     <Text style={styles.description}>
-                        Consultando tu cuenta...
+                        {t('home.loading')}
                     </Text>
                 </View>
             </SafeAreaView>
@@ -108,15 +110,17 @@ export default function HomeScreen() {
     return (
         <SafeAreaView style={styles.screen}>
             <View style={styles.content}>
-                <Text style={styles.title}>{t.home.welcome}</Text>
+                <Text style={styles.title}>
+                    {t('home.welcome')}
+                </Text>
 
                 <Text style={styles.description}>
-                    {t.home.description}
+                    {t('home.description')}
                 </Text>
 
                 <View style={styles.card}>
                     <Text style={styles.label}>
-                        {t.home.accountStatus}
+                        {t('home.accountStatus')}
                     </Text>
 
                     <Text style={[
@@ -132,19 +136,21 @@ export default function HomeScreen() {
 
                     {isPending && (
                         <Text style={styles.note}>
-                            {t.home.temporaryNote}
+                            {t('home.temporaryNote')}
                         </Text>
                     )}
                 </View>
 
                 <View style={styles.card}>
                     <Text style={styles.label}>
-                        {t.home.availability}
+                        {t('home.availability')}
                     </Text>
 
                     <View style={styles.switchRow}>
                         <Text style={styles.availabilityText}>
-                            {isAvailable ? t.home.available : t.home.unavailable}
+                            {isAvailable
+                                ? t('home.available')
+                                : t('home.unavailable')}
                         </Text>
 
                         <Switch
@@ -161,7 +167,7 @@ export default function HomeScreen() {
                                     : colors.textSecondary
                             }
                             accessibilityRole="switch"
-                            accessibilityLabel={t.home.availability}
+                            accessibilityLabel={t('home.availability')}
                             accessibilityState={{ disabled: !isApproved }}
                         />
                     </View>
@@ -169,8 +175,8 @@ export default function HomeScreen() {
                     {!isApproved && (
                         <Text style={styles.warning}>
                             {isPending
-                                ? t.home.pendingMessage
-                                : 'La disponibilidad estará habilitada cuando tu cuenta sea aprobada.'}
+                                ? t('home.pendingMessage')
+                                : t('home.notApprovedMessage')}
                         </Text>
                     )}
                 </View>
@@ -184,7 +190,7 @@ export default function HomeScreen() {
                     accessibilityRole="button"
                 >
                     <Text style={styles.logoutText}>
-                        {t.home.logOut}
+                        {t('home.logOut')}
                     </Text>
                 </Pressable>
             </View>

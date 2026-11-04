@@ -1,6 +1,13 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import {
-  View, Text, ScrollView, Pressable, Image, StyleSheet, Platform, KeyboardAvoidingView,
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Image,
+  StyleSheet,
+  Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,28 +15,24 @@ import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { RegistrationContext } from '../../context/RegistrationContext';
+import { LanguageContext } from '../../context/LanguageContext';
+
 import TextField from '../../components/TextField';
 import Button from '../../components/Button';
 import Dropdown from '../../components/Dropdown';
 
 import { colors, spacing, radius, typography } from '../../theme';
-import { t } from '../../i18n';
 
-const genderOptions = [
-  { label: 'Femenino', value: 'female' },
-  { label: 'Masculino', value: 'male' },
-  { label: 'Otro', value: 'other' },
-];
-
-const languageOptions = [
-  { label: 'Español', value: 'es' },
-  { label: 'Inglés', value: 'en' },
-];
 export default function PersonalDataScreen({ navigation }) {
   const registration = useContext(RegistrationContext);
+  const languageContext = useContext(LanguageContext);
 
   if (!registration) {
     throw new Error('PersonalDataScreen requiere RegistrationProvider');
+  }
+
+  if (!languageContext) {
+    throw new Error('PersonalDataScreen requiere LanguageProvider');
   }
 
   const {
@@ -41,13 +44,45 @@ export default function PersonalDataScreen({ navigation }) {
     isPersonalValid,
   } = registration;
 
+  const { language, setLanguage, t } = languageContext;
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [deviceError, setDeviceError] = useState('');
   const [message, setMessage] = useState('');
 
+  // Mantener sincronizado el idioma global con el idioma del registro.
+  useEffect(() => {
+    if (personalData.language !== language) {
+      updatePersonal('language', language);
+    }
+  }, [language]);
+
+  const genderOptions = [
+    { label: t('personal.female'), value: 'female' },
+    { label: t('personal.male'), value: 'male' },
+    { label: t('personal.other'), value: 'other' },
+  ];
+
+  const languageOptions = [
+    { label: t('personal.spanish'), value: 'es' },
+    { label: t('personal.english'), value: 'en' },
+  ];
+
+  const translateError = (error) => {
+    if (!error) return '';
+
+    const translated = t(`errors.${error}`);
+
+    return translated === `errors.${error}` ? error : translated;
+  };
+
   const updateField = (field, value) => {
     updatePersonal(field, value);
     setMessage('');
+
+    if (field === 'language') {
+      setLanguage(value);
+    }
   };
 
   const selectPhoto = async (source) => {
@@ -58,10 +93,11 @@ export default function PersonalDataScreen({ navigation }) {
       let result;
 
       if (source === 'camera') {
-        const permission = await ImagePicker.requestCameraPermissionsAsync();
+        const permission =
+          await ImagePicker.requestCameraPermissionsAsync();
 
         if (!permission.granted) {
-          setDeviceError('Debes permitir el acceso a la cámara.');
+          setDeviceError(t('personal.cameraPermission'));
           return;
         }
 
@@ -84,7 +120,7 @@ export default function PersonalDataScreen({ navigation }) {
         updateField('photo', result.assets[0].uri);
       }
     } catch {
-      setDeviceError('No se pudo obtener la foto. Inténtalo de nuevo.');
+      setDeviceError(t('personal.photoError'));
     }
   };
 
@@ -111,8 +147,10 @@ export default function PersonalDataScreen({ navigation }) {
   };
 
   const formattedDate = personalData.birthDate
-    ? personalData.birthDate.toLocaleDateString('es-CO')
-    : 'Seleccionar fecha';
+    ? personalData.birthDate.toLocaleDateString(
+        language === 'en' ? 'en-US' : 'es-CO',
+      )
+    : t('personal.selectDate');
 
   return (
     <SafeAreaView style={styles.screen} edges={['bottom']}>
@@ -124,13 +162,17 @@ export default function PersonalDataScreen({ navigation }) {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Text style={styles.title}>Datos personales</Text>
-
-          <Text style={styles.subtitle}>
-            Completa tu información para registrarte como conductor.
+          <Text style={styles.title}>
+            {t('personal.title')}
           </Text>
 
-          <Text style={styles.label}>Foto de perfil *</Text>
+          <Text style={styles.subtitle}>
+            {t('personal.subtitle')}
+          </Text>
+
+          <Text style={styles.label}>
+            {t('personal.profilePhoto')} *
+          </Text>
 
           <View style={styles.photoContainer}>
             {personalData.photo ? (
@@ -150,20 +192,24 @@ export default function PersonalDataScreen({ navigation }) {
               style={styles.photoButton}
               onPress={() => selectPhoto('gallery')}
             >
-              <Text style={styles.photoButtonText}>Galería</Text>
+              <Text style={styles.photoButtonText}>
+                {t('personal.gallery')}
+              </Text>
             </Pressable>
 
             <Pressable
               style={styles.photoButton}
               onPress={() => selectPhoto('camera')}
             >
-              <Text style={styles.photoButtonText}>Cámara</Text>
+              <Text style={styles.photoButtonText}>
+                {t('personal.camera')}
+              </Text>
             </Pressable>
           </View>
 
           {!!personalErrors.photo && (
             <Text style={styles.error}>
-              {t.errors[personalErrors.photo] ?? personalErrors.photo}
+              {translateError(personalErrors.photo)}
             </Text>
           )}
 
@@ -174,44 +220,49 @@ export default function PersonalDataScreen({ navigation }) {
           <View style={styles.photoSpacing} />
 
           <TextField
-            label="Nombre completo *"
-            placeholder="Nombre y apellido"
+            label={`${t('personal.fullName')} *`}
+            placeholder={t('personal.fullNamePlaceholder')}
             value={personalData.fullName}
             onChangeText={(text) => updateField('fullName', text)}
             onBlur={() => touchPersonal('fullName')}
-            error={personalErrors.fullName}
+            error={translateError(personalErrors.fullName)}
             maxLength={50}
             autoCapitalize="words"
           />
 
           <TextField
-            label="Documento de identidad *"
-            placeholder="Número de documento"
+            label={`${t('personal.documentNumber')} *`}
+            placeholder={t('personal.documentPlaceholder')}
             value={personalData.documentNumber}
             onChangeText={(text) =>
-              updateField('documentNumber', text.replace(/\D/g, ''))
+              updateField(
+                'documentNumber',
+                text.replace(/\D/g, ''),
+              )
             }
             onBlur={() => touchPersonal('documentNumber')}
-            error={personalErrors.documentNumber}
+            error={translateError(personalErrors.documentNumber)}
             keyboardType="number-pad"
             maxLength={10}
           />
 
           <TextField
-            label="Número de celular *"
+            label={`${t('personal.phone')} *`}
             placeholder="3001234567"
             value={personalData.phone}
             onChangeText={(text) =>
               updateField('phone', text.replace(/\D/g, ''))
             }
             onBlur={() => touchPersonal('phone')}
-            error={personalErrors.phone}
+            error={translateError(personalErrors.phone)}
             keyboardType="phone-pad"
             maxLength={10}
           />
 
           <View style={styles.field}>
-            <Text style={styles.label}>Fecha de nacimiento *</Text>
+            <Text style={styles.label}>
+              {t('personal.birthDate')} *
+            </Text>
 
             <Pressable
               accessibilityRole="button"
@@ -235,6 +286,7 @@ export default function PersonalDataScreen({ navigation }) {
                   mode="date"
                   display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   maximumDate={new Date()}
+                  locale={language === 'en' ? 'en-US' : 'es-CO'}
                   themeVariant="dark"
                   textColor={colors.text}
                   onChange={handleDateChange}
@@ -245,7 +297,9 @@ export default function PersonalDataScreen({ navigation }) {
                     style={styles.dateDone}
                     onPress={() => setShowDatePicker(false)}
                   >
-                    <Text style={styles.photoButtonText}>Listo</Text>
+                    <Text style={styles.photoButtonText}>
+                      {t('personal.done')}
+                    </Text>
                   </Pressable>
                 )}
               </View>
@@ -253,44 +307,43 @@ export default function PersonalDataScreen({ navigation }) {
 
             {!!personalErrors.birthDate && (
               <Text style={styles.error}>
-                {t.errors[personalErrors.birthDate] ??
-                  personalErrors.birthDate}
+                {translateError(personalErrors.birthDate)}
               </Text>
             )}
           </View>
 
           <Dropdown
-            label="Género *"
+            label={`${t('personal.gender')} *`}
             value={personalData.gender}
             options={genderOptions}
             onChange={(value) => updateField('gender', value)}
             onTouch={() => touchPersonal('gender')}
-            error={personalErrors.gender}
+            error={translateError(personalErrors.gender)}
           />
 
           <TextField
-            label="Correo electrónico *"
-            placeholder="conductor@correo.com"
+            label={`${t('personal.email')} *`}
+            placeholder={t('personal.emailPlaceholder')}
             value={personalData.email}
             onChangeText={(text) => updateField('email', text)}
             onBlur={() => touchPersonal('email')}
-            error={personalErrors.email}
+            error={translateError(personalErrors.email)}
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
           />
 
           <Dropdown
-            label="Idioma *"
-            value={personalData.language}
+            label={`${t('personal.language')} *`}
+            value={language}
             options={languageOptions}
             onChange={(value) => updateField('language', value)}
             onTouch={() => touchPersonal('language')}
-            error={personalErrors.language}
+            error={translateError(personalErrors.language)}
           />
 
           <Button
-            title="Continuar"
+            title={t('common.continue')}
             onPress={handleValidate}
           />
 

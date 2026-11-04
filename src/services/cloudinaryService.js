@@ -1,4 +1,3 @@
-
 import * as FileSystem from 'expo-file-system/legacy';
 
 import {
@@ -9,6 +8,10 @@ import {
 export async function uploadImageToCloudinary(imageUri, folder) {
   if (!imageUri || typeof imageUri !== 'string') {
     throw new Error('No se recibió una ruta válida para la fotografía.');
+  }
+
+  if (!folder || typeof folder !== 'string') {
+    throw new Error('No se recibió una carpeta válida para el conductor.');
   }
 
   try {
@@ -41,7 +44,12 @@ export async function uploadImageToCloudinary(imageUri, folder) {
     );
 
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', `uberclone-drivers/${folder}`);
+
+    // Carpeta dinámica de cada conductor en Media Library.
+    formData.append(
+      'asset_folder',
+      `uberclone-drivers/${folder}`,
+    );
 
     const response = await fetch(CLOUDINARY_UPLOAD_URL, {
       method: 'POST',
@@ -52,16 +60,25 @@ export async function uploadImageToCloudinary(imageUri, folder) {
 
     if (!response.ok) {
       console.error('Error de Cloudinary:', result);
+
       throw new Error(
         result.error?.message || `Cloudinary: ${response.status}`,
       );
     }
 
     if (!result.secure_url) {
-      throw new Error('Cloudinary no devolvió la URL de la fotografía.');
+      throw new Error(
+        'Cloudinary no devolvió la URL de la fotografía.',
+      );
     }
 
+    console.log('Fotografía subida:', {
+      assetFolder: result.asset_folder,
+      publicId: result.public_id,
+    });
+
     return result.secure_url;
+
   } catch (error) {
     console.error(`Error subiendo imagen (${folder}):`, error);
     throw error;

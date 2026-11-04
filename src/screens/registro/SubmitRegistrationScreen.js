@@ -9,6 +9,7 @@ import {
     doc,
     setDoc,
     serverTimestamp,
+    getDoc,
 } from 'firebase/firestore';
 
 import { auth, db } from '../../config/firebase';
@@ -72,15 +73,27 @@ export default function SubmitRegistrationScreen({ route, navigation }) {
 
             const uid = user.uid;
 
+            // Subir fotografía de perfil a Cloudinary.
             const profilePhotoUrl = await uploadImageToCloudinary(
                 personalData.photo,
                 `${uid}/personal`,
             );
 
+            // Subir fotografía del vehículo a Cloudinary.
             const vehiclePhotoUrl = await uploadImageToCloudinary(
                 vehicleData.vehiclePhoto,
                 `${uid}/vehicles`,
             );
+
+            // Verificar que Cloudinary haya devuelto las dos URL.
+            if (!profilePhotoUrl || !vehiclePhotoUrl) {
+                throw new Error(
+                    'Cloudinary no devolvió correctamente las URL de las fotografías.',
+                );
+            }
+
+            console.log('URL FOTO PERFIL:', profilePhotoUrl);
+            console.log('URL FOTO VEHÍCULO:', vehiclePhotoUrl);
 
             const registration = {
                 uid,
@@ -107,16 +120,46 @@ export default function SubmitRegistrationScreen({ route, navigation }) {
                 createdAt: serverTimestamp(),
             };
 
-            await setDoc(
-                doc(db, 'driverRegistrations', uid),
-                registration,
+            // Guardar registro completo en Firestore.
+            const registrationRef = doc(
+                db,
+                'driverRegistrations',
+                uid,
             );
 
+            await setDoc(registrationRef, registration);
+
+            // Comprobar que Firestore tenga las dos URL guardadas.
+            const savedRegistration = await getDoc(registrationRef);
+
+            if (!savedRegistration.exists()) {
+                throw new Error(
+                    'El registro no aparece en Firestore después de guardarlo.',
+                );
+            }
+
+            const savedData = savedRegistration.data();
+
+            if (
+                !savedData.personalData?.photo ||
+                !savedData.vehicleData?.vehiclePhoto
+            ) {
+                throw new Error(
+                    'El registro se guardó, pero no se encontraron las fotografías en Firestore.',
+                );
+            }
+
+            console.log('Registro guardado correctamente:', uid);
+            console.log('Foto de perfil guardada:', savedData.personalData.photo);
+            console.log('Foto del vehículo guardada:', savedData.vehicleData.vehiclePhoto);
+
             navigation.replace('RegistrationSuccess');
+
         } catch (error) {
             console.error(
                 'Error al enviar registro:',
                 error.code || error.message,
+                error,
             );
 
             let message = 'No se pudo completar el registro. Inténtalo nuevamente.';
@@ -129,15 +172,19 @@ export default function SubmitRegistrationScreen({ route, navigation }) {
                 message = 'El correo electrónico no es válido.';
             } else if (error.code === 'auth/network-request-failed') {
                 message = 'No hay conexión. Revisa tu internet e inténtalo nuevamente.';
-            } else if (error.code === 'auth/too-many-requests') {
-                message = 'Se hicieron demasiados intentos. Espera un momento.';
-            } else if (error.code === 'permission-denied') {
+            } else if (
+                error.code === 'permission-denied' ||
+                error.code === 'firestore/permission-denied'
+            ) {
                 message = 'No fue posible guardar el registro. Revisa las reglas de Firestore.';
             } else if (error.message?.includes('Cloudinary')) {
+                message = error.message;
+            } else if (error.message?.includes('fotografías')) {
                 message = error.message;
             }
 
             Alert.alert('Error en el registro', message);
+
         } finally {
             setIsSubmitting(false);
         }
