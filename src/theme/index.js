@@ -1,4 +1,3 @@
-
 export const colors = {
   fondo: '#000000',
   superficie: '#1C1C1E',

@@ -1,14 +1,6 @@
 
 import { useContext, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  Pressable,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, StyleSheet, Alert,Pressable,Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 import { RegistrationContext } from '../../context/RegistrationContext';
@@ -137,143 +129,145 @@ export default function VehicleDataScreen({ navigation }) {
   };
 
   return (
-    <ScrollView
+    <KeyboardAvoidingView
       style={styles.container}
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
+      behavior="padding"
     >
-      <Text style={styles.title}>
-        {t('vehicle.title')}
-      </Text>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
 
-      <Text style={styles.description}>
-        {t('vehicle.description')}
-      </Text>
-
-      <Dropdown
-        label={t('vehicle.category')}
-        value={vehicleData.category}
-        options={categoryOptions}
-        placeholder={t('vehicle.categoryPlaceholder')}
-        onChange={(value) => updateVehicle('category', value)}
-        onTouch={() => touchVehicle('category')}
-        error={translateError(vehicleErrors.category)}
-      />
-
-      <TextField
-        label={t('vehicle.plate')}
-        value={vehicleData.plate}
-        onChangeText={handlePlateChange}
-        onBlur={() => touchVehicle('plate')}
-        placeholder="ABC123"
-        autoCapitalize="characters"
-        maxLength={6}
-        error={translateError(vehicleErrors.plate)}
-      />
-
-      <TextField
-        label={t('vehicle.brand')}
-        value={vehicleData.brand}
-        onChangeText={(value) => updateVehicle('brand', value)}
-        onBlur={() => touchVehicle('brand')}
-        placeholder={t('vehicle.brandPlaceholder')}
-        maxLength={30}
-        error={translateError(vehicleErrors.brand)}
-      />
-
-      <TextField
-        label={t('vehicle.model')}
-        value={vehicleData.model}
-        onChangeText={(value) => updateVehicle('model', value)}
-        onBlur={() => touchVehicle('model')}
-        placeholder={t('vehicle.modelPlaceholder')}
-        maxLength={30}
-        error={translateError(vehicleErrors.model)}
-      />
-
-      <TextField
-        label={t('vehicle.year')}
-        value={vehicleData.year}
-        onChangeText={handleYearChange}
-        onBlur={() => touchVehicle('year')}
-        placeholder={t('vehicle.yearPlaceholder')}
-        keyboardType="number-pad"
-        maxLength={4}
-        error={translateError(vehicleErrors.year)}
-      />
-
-      <Dropdown
-        label={t('vehicle.color')}
-        value={vehicleData.color}
-        options={colorOptions}
-        placeholder={t('vehicle.colorPlaceholder')}
-        onChange={(value) => updateVehicle('color', value)}
-        onTouch={() => touchVehicle('color')}
-        error={translateError(vehicleErrors.color)}
-      />
-
-      <TextField
-        label={t('vehicle.capacity')}
-        value={vehicleData.capacity}
-        onChangeText={handleCapacityChange}
-        onBlur={() => touchVehicle('capacity')}
-        placeholder={t('vehicle.capacityPlaceholder')}
-        keyboardType="number-pad"
-        error={translateError(vehicleErrors.capacity)}
-      />
-
-      <View style={styles.photoSection}>
-        <Text style={styles.label}>
-          {t('vehicle.photo')}
+        <Text style={styles.description}>
+          {t('vehicle.description')}
         </Text>
 
-        <Text style={styles.photoDescription}>
-          {t('vehicle.photoDescription')}
-        </Text>
+        <Dropdown
+          label={t('vehicle.category')}
+          value={vehicleData.category}
+          options={categoryOptions}
+          placeholder={t('vehicle.categoryPlaceholder')}
+          onChange={(value) => updateVehicle('category', value)}
+          onTouch={() => touchVehicle('category')}
+          error={translateError(vehicleErrors.category)}
+        />
 
-        {vehicleData.vehiclePhoto ? (
-          <Image
-            source={{ uri: vehicleData.vehiclePhoto }}
-            style={styles.vehiclePhoto}
-          />
-        ) : (
-          <View style={styles.photoPlaceholder}>
-            <Text style={styles.photoPlaceholderText}>
-              {t('vehicle.noPhoto')}
+        <TextField
+          label={t('vehicle.plate')}
+          value={vehicleData.plate}
+          onChangeText={handlePlateChange}
+          onBlur={() => touchVehicle('plate')}
+          placeholder="ABC123"
+          autoCapitalize="characters"
+          maxLength={6}
+          error={translateError(vehicleErrors.plate)}
+        />
+
+        <TextField
+          label={t('vehicle.brand')}
+          value={vehicleData.brand}
+          onChangeText={(value) => updateVehicle('brand', value)}
+          onBlur={() => touchVehicle('brand')}
+          placeholder={t('vehicle.brandPlaceholder')}
+          maxLength={30}
+          error={translateError(vehicleErrors.brand)}
+        />
+
+        <TextField
+          label={t('vehicle.model')}
+          value={vehicleData.model}
+          onChangeText={(value) => updateVehicle('model', value)}
+          onBlur={() => touchVehicle('model')}
+          placeholder={t('vehicle.modelPlaceholder')}
+          maxLength={30}
+          error={translateError(vehicleErrors.model)}
+        />
+
+        <TextField
+          label={t('vehicle.year')}
+          value={vehicleData.year}
+          onChangeText={handleYearChange}
+          onBlur={() => touchVehicle('year')}
+          placeholder={t('vehicle.yearPlaceholder')}
+          keyboardType="number-pad"
+          maxLength={4}
+          error={translateError(vehicleErrors.year)}
+        />
+
+        <Dropdown
+          label={t('vehicle.color')}
+          value={vehicleData.color}
+          options={colorOptions}
+          placeholder={t('vehicle.colorPlaceholder')}
+          onChange={(value) => updateVehicle('color', value)}
+          onTouch={() => touchVehicle('color')}
+          error={translateError(vehicleErrors.color)}
+        />
+
+        <TextField
+          label={t('vehicle.capacity')}
+          value={vehicleData.capacity}
+          onChangeText={handleCapacityChange}
+          onBlur={() => touchVehicle('capacity')}
+          placeholder={t('vehicle.capacityPlaceholder')}
+          keyboardType="number-pad"
+          error={translateError(vehicleErrors.capacity)}
+        />
+
+        <View style={styles.photoSection}>
+          <Text style={styles.label}>
+            {t('vehicle.photo')}
+          </Text>
+
+          <Text style={styles.photoDescription}>
+            {t('vehicle.photoDescription')}
+          </Text>
+
+          {vehicleData.vehiclePhoto ? (
+            <Image
+              source={{ uri: vehicleData.vehiclePhoto }}
+              style={styles.vehiclePhoto}
+            />
+          ) : (
+            <View style={styles.photoPlaceholder}>
+              <Text style={styles.photoPlaceholderText}>
+                {t('vehicle.noPhoto')}
+              </Text>
+            </View>
+          )}
+
+          <Pressable
+            style={styles.photoButton}
+            onPress={selectVehiclePhoto}
+            disabled={photoLoading}
+          >
+            <Text style={styles.photoButtonText}>
+              {photoLoading
+                ? t('vehicle.loading')
+                : vehicleData.vehiclePhoto
+                  ? t('vehicle.changePhoto')
+                  : t('vehicle.selectPhoto')}
             </Text>
-          </View>
-        )}
+          </Pressable>
 
-        <Pressable
-          style={styles.photoButton}
-          onPress={selectVehiclePhoto}
+          {!!vehicleErrors.vehiclePhoto && (
+            <Text style={styles.error}>
+              {translateError(vehicleErrors.vehiclePhoto)}
+            </Text>
+          )}
+        </View>
+
+        <Button
+          title={t('common.continue')}
+          onPress={handleContinue}
           disabled={photoLoading}
-        >
-          <Text style={styles.photoButtonText}>
-            {photoLoading
-              ? t('vehicle.loading')
-              : vehicleData.vehiclePhoto
-                ? t('vehicle.changePhoto')
-                : t('vehicle.selectPhoto')}
-          </Text>
-        </Pressable>
-
-        {!!vehicleErrors.vehiclePhoto && (
-          <Text style={styles.error}>
-            {translateError(vehicleErrors.vehiclePhoto)}
-          </Text>
-        )}
-      </View>
-
-      <Button
-        title={t('common.continue')}
-        onPress={handleContinue}
-        disabled={photoLoading}
-      />
-    </ScrollView>
+        />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -3,7 +3,6 @@ import { signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 export const AuthContext = createContext(null);
-
 export function AuthProvider({ children }) {
   const [isSignedIn, setIsSignedIn] = useState(false);
 

@@ -1,4 +1,4 @@
-
+// AI-assisted: see docs/AI_LOG.md #13, #39, #40, #48, #49, #61, #67
 import {
   genderValues,
   languageValues,

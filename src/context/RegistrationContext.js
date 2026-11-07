@@ -4,7 +4,6 @@ import {
   validateVehicleData,
   hasErrors,
 } from '../utils/validations';
-
 const initialPersonalData = {
   photo: null,
   fullName: '',
@@ -42,7 +41,7 @@ const allFieldsTouched = (data) =>
 
 export const RegistrationContext = createContext(null);
 
-// AI-assisted: see docs/AI_LOG.md
+// AI-assisted: see docs/AI_LOG.md #42 y 43
 export function RegistrationProvider({ children }) {
   const [personalData, setPersonalData] = useState(initialPersonalData);
   const [vehicleData, setVehicleData] = useState(initialVehicleData);
@@ -92,7 +91,6 @@ export function RegistrationProvider({ children }) {
     setPersonalTouched({});
     setVehicleTouched({});
   }, []);
-
   const personalErrors = validatePersonalData(personalData);
   const vehicleErrors = validateVehicleData(vehicleData);
 
@@ -111,7 +109,6 @@ export function RegistrationProvider({ children }) {
     isPersonalValid: !hasErrors(personalErrors),
     isVehicleValid: !hasErrors(vehicleErrors),
   };
-
   return (
     <RegistrationContext.Provider value={value}>
       {children}

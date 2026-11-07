@@ -4,7 +4,6 @@ import {
   CLOUDINARY_UPLOAD_URL,
   CLOUDINARY_UPLOAD_PRESET,
 } from '../config/cloudinary';
-
 export async function uploadImageToCloudinary(imageUri, folder) {
   if (!imageUri || typeof imageUri !== 'string') {
     throw new Error('No se recibió una ruta válida para la fotografía.');
@@ -13,7 +12,6 @@ export async function uploadImageToCloudinary(imageUri, folder) {
   if (!folder || typeof folder !== 'string') {
     throw new Error('No se recibió una carpeta válida para el conductor.');
   }
-
   try {
     const extension = imageUri
       .split('?')[0]
@@ -44,13 +42,10 @@ export async function uploadImageToCloudinary(imageUri, folder) {
     );
 
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
-    // Carpeta dinámica de cada conductor en Media Library.
     formData.append(
       'asset_folder',
       `uberclone-drivers/${folder}`,
     );
-
     const response = await fetch(CLOUDINARY_UPLOAD_URL, {
       method: 'POST',
       body: formData,

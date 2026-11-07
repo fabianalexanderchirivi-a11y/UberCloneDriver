@@ -851,3 +851,1549 @@ asi esta bien o faltra, pq yo recuerdo que la profe elijio como algo de prueba y
 - Archivos y commit: ninguno en esta entrada — commit: 
 - Verificación: Authentication y Firestore activos en la consola (completar)
 - Aprendizaje: Entendí que un proyecto de Firebase vacío todavía no sirve: faltan registrar la app web, activar Authentication y crear Firestore. Y que el modo de prueba deja la base abierta por tiempo limitado.
+
+### Entrada #31
+- Fecha: 2026-10-26 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Elegir el alias de la app web al registrarla en Firebase
+- Prompt:
+
+````text
+que nombre de alias me recomiendas para colocar
+````
+
+- Resumen de la respuesta: Explicó que el alias es solo una etiqueta dentro de la consola y se puede cambiar. Recomendó un nombre claro y consistente con el repo (uberclone-driver-app) y recordó dejar Firebase Hosting desmarcado y no pegar los valores de configuración.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el alias de la app en Firebase es solo una etiqueta para reconocerla, que no aparece en el código y que no necesito Hosting.
+
+### Entrada #32
+- Fecha: 2026-10-26 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir si usar un alias muy corto
+- Prompt:
+
+````text
+o colocamos solo UberCL
+````
+
+- Resumen de la respuesta: Dijo que se puede usar porque es una etiqueta modificable, pero que un nombre tan corto puede confundirse si algún día se agrega otra app (por ejemplo la del pasajero). Dejó la decisión en mí.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los nombres deben poder reconocerse meses después, y que esta decisión es menor y reversible.
+
+### Entrada #33
+- Fecha: 2026-10-26 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Confirmar el alias elegido y seguir con el registro de la app
+- Prompt:
+
+````text
+entonces UberClDr
+````
+
+- Resumen de la respuesta: Aceptó el alias. Indicó registrar la app sin Hosting, copiar los valores de configuración directo a .env sin pegarlos en el chat y comprobar con git status que .env no aparece y que .env.example solo tiene nombres.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: Authentication y Firestore activados en la consola (completar)
+- Aprendizaje: Entendí que los datos de configuración van en .env y que .env.example solo lleva los nombres, sin valores.
+
+### Entrada #34
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber dónde copiar la configuración de Firebase
+- Prompt (los valores reales están reemplazados por [OCULTO]):
+
+````text
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "[OCULTO]",
+  authDomain: "[OCULTO]",
+  projectId: "[OCULTO]",
+  storageBucket: "[OCULTO]",
+  messagingSenderId: "[OCULTO]",
+  appId: "[OCULTO]"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig); esto lo copio en donde , debe ser en services no?
+````
+
+- Resumen de la respuesta: Avisó que pegué mi configuración (incluida la apiKey) y que, aunque no es una llave privada, no debe repetirse; lo que protege los datos son las reglas de Firestore. Explicó que va en un archivo de src/services, con los valores en .env con prefijo EXPO_PUBLIC_, la inicialización una sola vez, la persistencia de sesión y cómo comprobarlo sin imprimir la apiKey.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/config/firebase.js, .env, .env.example — commit: 
+- Verificación: git status sin .env (completar)
+- Aprendizaje: Entendí que no debo pegar claves en un chat ni en el código, y que la seguridad real de Firebase está en las reglas y la autenticación.
+
+### Entrada #35
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Aclarar qué parte del código de Firebase va en .env
+- Prompt:
+
+````text
+pero entonces en env copio todo lo del sdk
+````
+
+- Resumen de la respuesta: Explicó que a .env solo van los seis valores del firebaseConfig, uno por línea, sin comillas, sin espacios y sin coma, con el prefijo EXPO_PUBLIC_. Lo demás es código. En .env.example van las mismas líneas con nada después del igual. Advirtió reiniciar Expo con caché limpia al editar .env.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: .env, .env.example — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que .env guarda solo valores, que los nombres deben coincidir exactamente en .env, .env.example y el código, y que hay que reiniciar Expo después de cambiarlo.
+
+### Entrada #36
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Subir la configuración de forma segura y resolver el cambio a Expo SDK 58
+- Prompt:
+
+````text
+Listo coloque en env example sin las keys pero en env con las keys y voy a subir esto y voy a cambiar la versión pq en mi cel apareció 58
+````
+
+- Resumen de la respuesta: Insistió en comprobar con git status que .env no se sube. Explicó que el SDK 58 aparece porque Expo Go se actualizó y propuso tres caminos (subir el proyecto a 58, quedarse en 57 con una versión anterior de Expo Go, o un development build). Recomendó hacerlo en una rama aparte, leer la guía oficial de actualización y alinear las librerías.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: package.json, .env.example — commit: 
+- Verificación: El proyecto arrancó con SDK 58 (completar)
+- Aprendizaje: Entendí que Expo Go solo abre proyectos de su versión y que actualizar el SDK conviene hacerlo en una rama aparte con un commit propio.
+
+### Entrada #37
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Pasar de "Firebase inicializado" a una autenticación real
+- Prompt:
+
+````text
+Listo actualizamos, y corrí proyecto y en la terminar en log dice fire base mostrando que ya esta conectado
+````
+
+- Resumen de la respuesta: Aclaró que inicializar Firebase no prueba una conexión real y que se comprueba creando un usuario. Describió qué terminar: funciones de cuenta en src/services, traducción de errores a claves, useAuth con limpieza de la suscripción, estado de carga de sesión y persistencia. Dejó pendiente decidir cuándo se crea la cuenta.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/services, src/hooks/useAuth.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que ver un mensaje de conexión no basta: la prueba real es crear un usuario y verlo en Authentication.
+
+### Entrada #38
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Empezar las pestañas 1 y 2 del registro
+- Prompt:
+
+````text
+Listo ya hice el commit, de confección y actualización, ahora la profe dijo que toca hacer pestaña 1 y 2, que me recomiendas para iniciar
+````
+
+- Resumen de la respuesta: Recomendó empezar por las validaciones y por guardar los datos en un solo lugar (Context), calculando los errores desde los datos. Listó casos difíciles (nombre con tilde y ñ, límite de 18 años, placa en mayúsculas, capacidad según categoría), ambigüedades del PDF y cuidados (no guardar el borrador en AsyncStorage, usar datos inventados).
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que conviene probar primero las validaciones solas y que el formulario no debe guardarse en AsyncStorage porque tiene datos sensibles.
+
+### Entrada #39
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para las listas de opciones y las validaciones
+- Prompt:
+
+````text
+Acabo de crear options modificar, index y estoy en validations ya que son varias cosas
+````
+
+- Resumen de la respuesta: Recomendó que cada opción guarde un valor estable y que el texto visible salga del diccionario de idiomas, con una sola fuente por lista. Sugirió validaciones puras, una por campo, que reciban los dos campos cuando dependen entre sí, y probarlas con una tabla de casos. Preguntó si las validaciones devuelven clave o texto.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js, src/utils (options) — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que lo que se guarda es el valor estable de una opción y que el texto que ve el usuario sale del diccionario.
+
+### Entrada #40
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi decisión de que las validaciones devuelvan claves
+- Prompt:
+
+````text
+Elegí que las validaciones devuelvan una clave (por ejemplo 'phoneInvalid') y que la pantalla la traduzca con t.errors[clave], en un solo lugar: el componente TextField. Así validations.js ya no depende de i18n y los mensajes pueden cambiar con el selector de idioma de la pestaña 1. Ya lo probé en Login y los mensajes se muestran en español.
+````
+
+- Resumen de la respuesta: Aprobó la decisión. Señaló que todavía no cambia con el idioma porque t se calcula una sola vez, qué pasa si una clave no existe, cómo llevar números como el límite de 50 caracteres sin duplicarlos, que todos los errores sean claves y el nombre de la prop.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js, src/components/TextField.js — commit: 
+- Verificación: Probado en Login, mensajes en español
+- Aprendizaje: Entendí que una clave sin traducción deja un borde rojo sin mensaje, y que conviene comprobar que toda clave existe en los dos idiomas.
+
+### Entrada #41
+- Fecha: 2026-10-28 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Marcar el código asistido y subir el cambio
+- Prompt:
+
+````text
+Listo ya coloque eso que me dijiste al final y lo subí al repo
+````
+
+- Resumen de la respuesta: Indicó que TextField ahora tiene dos orígenes de ayuda y que el comentario puede llevar los dos números, y recordó anotar el hash del commit en cada entrada. Repasó los puntos pendientes de la revisión anterior.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/components/TextField.js, src/utils/validations.js — commit: 
+- Verificación: Subido al repositorio
+- Aprendizaje: Entendí que el comentario AI-assisted puede llevar varios números cuando un archivo tuvo ayuda de más de una entrada.
+
+### Entrada #42
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para el Context del registro
+- Prompt:
+
+````text
+listo entonces sigo con esto Contexto del registro (este mensaje): guarda los datos y calcula los errores con tus validaciones.
+````
+
+- Resumen de la respuesta: Explicó que el Context guarda solo lo que escribe el usuario y todo lo demás (errores, pestaña completa) se calcula. Planteó decisiones (cómo saber qué campos se tocaron, forma del estado, normalizar la placa), errores comunes (value nuevo en cada render, números como texto, no reiniciar el Context, no guardar en AsyncStorage) y pruebas sin pantallas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/context/RegistrationContext.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí la "fuente única de verdad": guardo lo que escribe el usuario y calculo errores y validez a partir de eso.
+
+### Entrada #43
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi decisión de llevar el control de "tocado" dentro del Context
+- Prompt:
+
+````text
+Mi decisión es llevar el control de “tocado” dentro del contexto, por pestaña, y no en cada pantalla:
+ 
+
+* Sobrevive al cambiar de pestaña, porque el contexto no se desmonta (si estuviera en cada pantalla se perdería).
+* Permite el botón “Continuar”/”Enviar”: al pulsarlo con datos inválidos se marcan todos los campos como tocados y salen todos los errores.
+* Las pantallas solo leen `visibleErrors` y no repiten esa lógica 15 veces.
+````
+
+- Resumen de la respuesta: Valoró que visibleErrors sea un valor calculado. Señaló el choque con el PDF (Enviar solo se habilita con todo válido), que las pestañas suelen quedarse montadas y por eso mi primera razón no es del todo exacta, la ambigüedad entre "tocado por campo" y "por pestaña", que la lista de campos sea la misma que la de validaciones y cuándo se reinicia.
+- Qué se usó / modificó / descartó: Decisión mía, revisada por Claude (completar)
+- Archivos y commit: src/context/RegistrationContext.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el motivo más fuerte del Context es que una pestaña que el usuario nunca abrió igual debe poder validarse.
+
+### Entrada #44
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Avisar que estaba construyendo el Context
+- Prompt:
+
+````text
+espera voy haciendo y ya te digo
+````
+
+- Resumen de la respuesta: Dijo que podía avanzar sin prisa y recordó pedir el Context con datos inventados y dos preguntas pendientes (si el botón se puede pulsar con datos inválidos y si "tocado" es por campo o por pestaña).
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que conviene avanzar por piezas pequeñas y consultar con el código a la vista.
+
+### Entrada #45
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Presentar el avance de la pestaña 1
+- Prompt:
+
+````text
+Trabajé en la primera sección del registro del conductor, correspondiente a Datos personales. Creé el `RegistrationContext` para almacenar y actualizar la información del formulario utilizando `useState`, `useCallback` y `useContext`, evitando que los datos se pierdan al navegar entre pantallas. También desarrollé `PersonalDataScreen.js`, donde agregué los campos de foto de perfil, nombre completo, documento de identidad, celular, fecha de nacimiento, género, correo electrónico e idioma, reutilizando las validaciones existentes para mostrar los errores debajo de cada campo. Además, configuré la navegación desde el login hacia el registro, integré `RegistrationProvider` en `App.js` y ajusté la compatibilidad de los estilos existentes. Por ahora, los datos se mantienen temporalmente en el contexto y la conexión del formulario con Firebase queda pendiente hasta completar las secciones de Vehículo y Documentos. El código está preparado para realizar las pruebas de funcionamiento.
+````
+
+- Resumen de la respuesta: Dijo que sin ver los archivos solo podía hacer preguntas: si el Context calcula los errores y los visibles, las decisiones pendientes, qué librerías se instalaron, qué pasa si se niega el permiso de la foto y si el idioma ya cambia la app. Pidió los archivos con datos inventados y propuso siete pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que una revisión necesita ver el código, y que antes de dar una pestaña por terminada debo probar casos límite como la edad exacta o el permiso negado.
+
+### Entrada #46
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión de RegistrationContext
+- Prompt:
+
+````text
+```javascript
+import { createContext, useState, useCallback } from 'react';
+import {
+  validatePersonalData,
+  validateVehicleData,
+  hasErrors,
+} from '../utils/validations';
+
+const initialPersonalData = {
+  photo: null,
+  fullName: '',
+  documentNumber: '',
+  phone: '',
+  birthDate: null,
+  gender: '',
+  email: '',
+  language: 'es',
+};
+
+const initialVehicleData = {
+  category: '',
+  plate: '',
+  brand: '',
+  model: '',
+  year: '',
+  color: '',
+  capacity: '',
+  vehiclePhoto: null,
+};
+
+const showOnlyTouched = (errors, touched) =>
+  Object.fromEntries(
+    Object.entries(errors).map(([field, error]) => [
+      field,
+      touched[field] ? error : '',
+    ]),
+  );
+
+const allFieldsTouched = (data) =>
+  Object.fromEntries(
+    Object.keys(data).map((field) => [field, true]),
+  );
+
+export const RegistrationContext = createContext(null);
+
+// AI-assisted: see docs/AI_LOG.md
+export function RegistrationProvider({ children }) {
+  const [personalData, setPersonalData] = useState(initialPersonalData);
+  const [vehicleData, setVehicleData] = useState(initialVehicleData);
+
+  const [personalTouched, setPersonalTouched] = useState({});
+  const [vehicleTouched, setVehicleTouched] = useState({});
+
+  const updatePersonal = useCallback((field, value) => {
+    setPersonalData((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  }, []);
+
+  const updateVehicle = useCallback((field, value) => {
+    setVehicleData((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  }, []);
+
+  const touchPersonal = useCallback((field) => {
+    setPersonalTouched((previous) => ({
+      ...previous,
+      [field]: true,
+    }));
+  }, []);
+
+  const touchVehicle = useCallback((field) => {
+    setVehicleTouched((previous) => ({
+      ...previous,
+      [field]: true,
+    }));
+  }, []);
+
+  const touchAllPersonal = useCallback(() => {
+    setPersonalTouched(allFieldsTouched(initialPersonalData));
+  }, []);
+
+  const touchAllVehicle = useCallback(() => {
+    setVehicleTouched(allFieldsTouched(initialVehicleData));
+  }, []);
+
+  const resetRegistration = useCallback(() => {
+    setPersonalData(initialPersonalData);
+    setVehicleData(initialVehicleData);
+    setPersonalTouched({});
+    setVehicleTouched({});
+  }, []);
+
+  const personalErrors = validatePersonalData(personalData);
+  const vehicleErrors = validateVehicleData(vehicleData);
+
+  const value = {
+    personalData,
+    vehicleData,
+    updatePersonal,
+    updateVehicle,
+    touchPersonal,
+    touchVehicle,
+    touchAllPersonal,
+    touchAllVehicle,
+    resetRegistration,
+    personalErrors: showOnlyTouched(personalErrors, personalTouched),
+    vehicleErrors: showOnlyTouched(vehicleErrors, vehicleTouched),
+    isPersonalValid: !hasErrors(personalErrors),
+    isVehicleValid: !hasErrors(vehicleErrors),
+  };
+
+  return (
+    <RegistrationContext.Provider value={value}>
+      {children}
+    </RegistrationContext.Provider>
+  );
+}
+ te paso el registrationContex , estoy terminado el otro es que es largo y no se si quedo bien espera ya te lo paso
+```
+````
+
+- Resumen de la respuesta: Valoró la fuente única de verdad, que la validez salga de los errores reales y no de los visibles, y allFieldsTouched. Señaló como problemas el value que se recrea en cada render (useMemo), la falta de un hook useRegistration, que los nombres de campo deben coincidir entre validaciones y contexto, cuándo llamar a reset, la duplicación entre pestañas, la contraseña sin decidir, el idioma fijo, el formato de fecha y el número del comentario.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/context/RegistrationContext.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que un value que se crea de nuevo en cada render redibuja todas las pantallas y que el PDF pide useMemo y useCallback para esto.
+
+### Entrada #47
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión previa al commit de la pestaña 1
+- Prompt:
+
+````text
+Implementé la primera sección del registro del conductor, correspondiente a Datos personales, en UberCloneDriver. Creé `RegistrationContext.js` para manejar y conservar la información mediante useState, useCallback y useContext. Desarrollé `PersonalDataScreen.js` con los ocho campos requeridos: foto de perfil, nombre completo, documento de identidad, celular, fecha de nacimiento, género, correo electrónico e idioma. Incorporé la selección de imágenes con expo-image-picker y fechas con DateTimePicker, reutilizando las validaciones y componentes existentes. También configuré la navegación desde LoginScreen, integré RegistrationProvider en App.js y corregí la compatibilidad de los estilos. Solucioné un error de compilación instalando las dependencias faltantes y corregí un comentario de IA que aparecía como texto en los mensajes de error. Realicé pruebas manuales en Expo Go y comprobé que funcionan la navegación, los campos obligatorios, las validaciones de nombre, documento, celular y edad, la selección de fotografía, género e idioma, la confirmación de datos válidos y la conservación de la información al regresar al login. Todas las pruebas realizadas fueron satisfactorias. Por ahora los datos se almacenan temporalmente en el contexto; la persistencia en Firebase se implementará cuando estén completas las tres secciones del registro. ahora voy hacer commit
+````
+
+- Resumen de la respuesta: Listó qué revisar antes del commit (git status, dependencias en package.json, comentarios AI-assisted con número real, mensaje de commit). Recordó pruebas que faltaban (límite de edad, ñ, permiso de foto, correo, cambio de idioma), una duda de privacidad sobre conservar datos al volver al login y las fotos solo locales. Introdujo la pestaña 2.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/PersonalDataScreen.js, src/context/RegistrationContext.js, App.js, package.json — commit: 
+- Verificación: Pruebas manuales en Expo Go, todas satisfactorias según lo informado
+- Aprendizaje: Entendí que los datos personales no deben quedar en memoria sin una regla de cuándo se reinician.
+
+### Entrada #48
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Deducir por qué la validación del correo aceptaba cualquier cosa después del punto
+- Prompt:
+
+````text
+el unico error que encontre de lo que quieres confirmar es que el correo, la parte de com, hay error ya que deja un moton de cosas como el te cualquier cosa despues de el . deja
+````
+
+- Resumen de la respuesta: Guió con preguntas y pistas: si la expresión está anclada al final, qué permite después del último punto y si acepta espacios. Dio una tabla de casos para probar y advirtió no buscar la expresión perfecta, porque una demasiado estricta rechaza correos válidos.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: Casos de la tabla probados con console.log (completar)
+- Aprendizaje: Entendí que una expresión regular sin anclar el final puede aceptar cualquier cosa después de la parte que coincidió.
+
+### Entrada #49
+- Fecha: 2026-10-29 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Cerrar el error de validación del correo
+- Prompt:
+
+````text
+ya lo correji si si, era erro mio no habia modifcado la seccion de validar email
+````
+
+- Resumen de la respuesta: Sugirió dejar una sola validación de correo que usen el login y el registro, correr los casos de la tabla (a@b, a@b., a@b.com xyz) y hacer commit antes de empezar la pestaña 2.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: Casos de la tabla probados (completar)
+- Aprendizaje: Entendí que tener dos copias de una misma validación hace que una corrección se quede en una sola.
+
+### Entrada #50
+- Fecha: 2026-10-30 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Comparar mi lista de campos del vehículo con el PDF
+- Prompt:
+
+````text
+Esta sección permitirá que el conductor registre el vehículo con el que va a trabajar.
+Propongo implementar estos campos:
+
+1. Tipo de vehículo (carro o moto, según lo que permita el proyecto).
+2. Marca.
+3. Modelo.
+4. Año.
+5. Color.
+6. Placa.
+7. Capacidad de pasajeros, , esto es lo que pide el pdf o que?
+````
+
+- Resumen de la respuesta: Comparó la lista con el PDF: la categoría debe ser Económico, XL o Premium (no carro o moto) porque es la misma que usa calculateFare, y faltaba la foto del vehículo con la placa visible. Recomendó seguir el PDF y preguntar a la profesora si se quieren motos.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la categoría es la que conecta con el cálculo de tarifa y la capacidad del XL, por eso no puede cambiarse por "carro o moto".
+
+### Entrada #51
+- Fecha: 2026-10-30 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para las pantallas de Bienvenida e Inicio
+- Prompt:
+
+````text
+esta bien voy a crear welcome screen, y despues home screen
+````
+
+- Resumen de la respuesta: Describió qué debe tener Bienvenida (dos botones, nombres de ruta coincidentes, textos del diccionario) y una Inicio pequeña sin mapa: estado de la cuenta simulado, interruptor bloqueado si está pendiente y un botón temporal de cerrar sesión. Dio cinco pruebas del flujo.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/WelcomeScreen.js, src/screens/HomeScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la navegación debe cambiar sola según la sesión y que el estado "pendiente" debe ser un valor y no un texto escrito en la pantalla.
+
+### Entrada #52
+- Fecha: 2026-10-30 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Resolver que el registro no pide contraseña
+- Prompt:
+
+````text
+espera, tengo la bienvenida si le da registra va  a registrarse si va iniciar sesion inicia sesion, y tambien boton de registrarse, pero no hay campo de contraseña para entrar todavia entonces no puedo entrar
+````
+
+- Resumen de la respuesta: Reconoció que el PDF pide correo en el registro pero nunca contraseña. Indicó que el login falso temporal permite seguir construyendo y presentó tres opciones para la contraseña (A en la pestaña 1, B en un paso previo, C al final antes de enviar) ligadas a cuándo se crea la cuenta, con cuidados: confirmación, misma regla, solo en memoria.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que dónde se pide la contraseña depende de cuándo se crea la cuenta, y que la contraseña nunca se guarda en Firestore ni en AsyncStorage.
+
+### Entrada #53
+- Fecha: 2026-10-30 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión de WelcomeScreen antes del commit
+- Prompt:
+
+````text
+voy hacer commit de lo que tenemos en este momento , pero antes te paso para que veas como esta o si tengo que mejorar algp 
+
+```javascript
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+export default function WelcomeScreen({ navigation }) {
+  return (
+    <SafeAreaView style={styles.screen}>
+      <StatusBar barStyle="light-content" />
+
+      <View style={styles.content}>
+        <View>
+          <Text style={styles.logo}>UBER</Text>
+          <Text style={styles.logoSubtitle}>DRIVER</Text>
+        </View>
+
+        <View style={styles.hero}>
+          <Text style={styles.title}>
+            Conduce cuando quieras.
+            {'\n'}
+            Gana a tu manera.
+          </Text>
+
+          <Text style={styles.description}>
+            Únete a nuestra comunidad de conductores y comienza
+            a generar ingresos con tu vehículo.
+          </Text>
+        </View>
+
+        <View style={styles.actions}>
+          <Pressable
+            style={styles.primaryButton}
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={styles.primaryButtonText}>
+              Registrarme como conductor
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={styles.secondaryButton}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.secondaryButtonText}>
+              Iniciar sesión
+            </Text>
+          </Pressable>
+        </View>
+
+        <Text style={styles.footer}>
+          Tu camino comienza aquí.
+        </Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: '#000000',
+  },
+  content: {
+    flex: 1,
+    paddingHorizontal: 28,
+    paddingTop: 35,
+    paddingBottom: 20,
+    justifyContent: 'space-between',
+  },
+  logo: {
+    color: '#FFFFFF',
+    fontSize: 36,
+    fontWeight: '900',
+    letterSpacing: 2,
+  },
+  logoSubtitle: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 5,
+    marginTop: 2,
+  },
+  hero: {
+    marginTop: 40,
+    marginBottom: 40,
+  },
+  title: {
+    color: '#FFFFFF',
+    fontSize: 39,
+    fontWeight: '800',
+    lineHeight: 46,
+    letterSpacing: -1,
+  },
+  description: {
+    color: '#BDBDBD',
+    fontSize: 16,
+    lineHeight: 25,
+    marginTop: 22,
+  },
+  actions: {
+    gap: 14,
+  },
+  primaryButton: {
+    backgroundColor: '#FFFFFF',
+    minHeight: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  primaryButtonText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    backgroundColor: '#333333',
+    minHeight: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  secondaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  footer: {
+    color: '#777777',
+    textAlign: 'center',
+    fontSize: 12,
+    marginTop: 28,
+  },
+});
+
+
+```
+````
+
+- Resumen de la respuesta: Confirmó que el flujo es correcto y que se quitaron los botones de redes sociales y la barra "¿A dónde vamos?". Señaló como problemas los textos escritos dentro de la pantalla (no del diccionario), los colores y medidas fuera del tema, la barra de estado al navegar, pantallas pequeñas o letra grande, el nombre de marca, el salto de línea forzado y la accesibilidad.
+- Qué se usó / modificó / descartó: Pantalla escrita por mí; cambios aplicados tras la revisión: (completar)
+- Archivos y commit: src/screens/WelcomeScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los textos deben salir del diccionario y los colores del tema para que la app cambie de idioma y de estilo en un solo lugar.
+
+### Entrada #54
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir el siguiente paso
+- Prompt:
+
+````text
+listo ahora con que seguimos
+````
+
+- Resumen de la respuesta: Recomendó hacer la pantalla de Inicio pequeña para cerrar las pruebas pendientes de entradas anteriores (entrar con datos válidos, "atrás" de Android y cerrar sesión). Listó lo que debe tener y los pendientes abiertos: contraseña del registro, pestaña de Vehículo, pestañas arriba o abajo, servicio de imágenes y reglas de Firestore.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que conviene cerrar primero las pruebas que quedaron pendientes antes de abrir frentes nuevos.
+
+### Entrada #55
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Planear cómo ampliar la pantalla de Inicio
+- Prompt:
+
+````text
+si, primero voy hacer eso, en este momento tengo algo pequeño con solo titulo y ya, como para tener flujo, entonces ya empiezo con eso
+````
+
+- Resumen de la respuesta: Propuso un orden de cuatro pasos con un commit por paso: dónde vive el estado simulado de la cuenta, mostrarlo con textos del diccionario, el interruptor bloqueado si está pendiente (y qué muestra mientras carga) y el botón temporal de cerrar sesión.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/HomeScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que si el estado simulado vive en un solo lugar, cuando llegue Firebase solo cambia ese valor y no la pantalla.
+
+### Entrada #56
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para darle a la app un estilo parecido a Uber
+- Prompt:
+
+````text
+bueno, ya entramos al inicio, ya que login no valida por el momento, aparece pendiente de aprobacion y el boton esta bloqueado, entonces bien, ahora estilos, como hago para que tenga ese estilo caracteristico de uber
+````
+
+- Resumen de la respuesta: Aclaró que el PDF no pide parecerse a Uber y que conviene poner un límite de tiempo. Explicó qué caracteriza ese estilo (casi monocromático, mucho contraste, tipografía grande, botones grandes, panel inferior) sin copiar marca, y dio pasos: elegir una dirección, cambiar primero el tema, volver componentes lo repetido, estados y revisar pantalla por pantalla. Preguntó si la app sería clara u oscura.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: Inicio funciona con estado pendiente y botón bloqueado, según lo informado
+- Aprendizaje: Entendí que el estilo se cambia primero en el tema para que toda la app se actualice, y que no debo copiar el logo ni la marca de Uber.
+
+### Entrada #57
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Pasar la app a tema oscuro
+- Prompt:
+
+````text
+pues me gustaria tener la app oscura
+````
+
+- Resumen de la respuesta: Explicó cómo pensar la paleta oscura (negro puro solo en el fondo, grises para capas, rojo de error revisado, botón principal invertido). Listó lo que se olvida: tema de navegación, barra de estado, teclado, selector de fecha, íconos, fondo de la pantalla de inicio. Dejó la decisión entre siempre oscura o seguir al sistema y dio pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/theme, src/screens — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que, como el tema usa nombres por función, cambiar los valores en un solo archivo actualiza toda la app.
+
+### Entrada #58
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Preparar el commit y empezar los estilos
+- Prompt:
+
+````text
+voy hacer commit, de lo que se hizo, y ahora cambio el estilos
+````
+
+- Resumen de la respuesta: Dio una lista antes del commit (git status sin .env, números reales en los comentarios AI-assisted, hash en la bitácora) y recomendó un commit aparte para el tema oscuro y uno por pantalla. Sugirió buscar colores escritos a mano en el código.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que conviene separar los commits de funcionalidad y de estilo para saber qué cambio rompe algo.
+
+### Entrada #59
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Ordenar el trabajo de estilos
+- Prompt:
+
+````text
+estoy haciendo ahora lo estilos, ya habia hecho el commit que te dije de inicio
+````
+
+- Resumen de la respuesta: Propuso el orden de estilos: primero el tema (probando cambiar un color), luego Bienvenida, luego las demás pantallas y al final los detalles que se olvidan. Dio dos comprobaciones (buscar colores a mano y revisar el contraste del rojo) y recordó los pendientes abiertos.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/theme — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el tema se arregla antes que las pantallas y que cada color fuera del tema es una tarea pendiente.
+
+### Entrada #60
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar antes de subir el commit de estilos
+- Prompt:
+
+````text
+listo si eso fue lo que hice, habia partes que solo era modificarles cosas pequeñas voy subir el commit
+````
+
+- Resumen de la respuesta: Listó revisiones previas al commit (git status, comentarios AI-assisted con #57 en lo aplicado por esa guía, mensaje claro y hash en la bitácora) y pruebas del flujo completo en Expo Go: pantallas oscuras y coherentes, sin destellos blancos, errores legibles, selector de fecha y de foto visibles.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/theme y varias pantallas — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que cambiar colores es fácil de romper sin darse cuenta y que hay que probar todo el flujo después.
+
+### Entrada #61
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para la pestaña de Vehículo
+- Prompt:
+
+````text
+listo esto te iba decir ahora con cual seguimos jaja,a ver primero pestaña de vehiculo y despues ya miramos credenciales y fire base
+````
+
+- Resumen de la respuesta: Listó los siete campos del PDF y qué reutilizar del Context ya hecho. Explicó la categoría (no carro o moto), la placa con trim y mayúsculas, la capacidad que depende de la categoría, el año calculado con el año actual y la foto local. Dejó las decisiones que el PDF no define (colores, capacidad de Económico y Premium, año mínimo) y nueve pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/VehicleDataScreen.js, src/utils/validations.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que reglas como la capacidad del XL dependen de otro campo y que la validación debe recibir ambos.
+
+### Entrada #62
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para el componente Dropdown
+- Prompt:
+
+````text
+listo primero estoy haciendo un componente dropdown
+````
+
+- Resumen de la respuesta: Describió qué debe tener (misma apariencia que TextField, abrir y cerrar la lista, placeholder), props, valor estable frente al texto traducido, quién guarda la selección, errores comunes (mostrar el valor interno, tocar fuera, botón atrás de Android, lista larga, accesibilidad) y siete pruebas. Sugirió reemplazar los selectores de género e idioma por este componente.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/components/Dropdown.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el componente no guarda la selección: la guarda el Context, como con TextField.
+
+### Entrada #63
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para armar VehicleDataScreen
+- Prompt:
+
+````text
+ahora voy con vehiculoDataScreen
+````
+
+- Resumen de la respuesta: Recomendó leer todo del Context con el hook, marcar tocado igual que en la pestaña 1, usar teclados adecuados por campo, reutilizar el selector de foto y la solución de teclado del Login. Planteó la decisión del botón Continuar frente al indicador de incompleta y siete pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/VehicleDataScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que copiar una pantalla exige revisar cada nombre de campo y de clave de error, porque un error ahí no avisa.
+
+### Entrada #64
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar la función para elegir la foto del vehículo
+- Prompt:
+
+````text
+```javascript
+const selectVehiclePhoto = async () => {
+    try {
+      setPhotoLoading(true);
+
+      const permission =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (!permission.granted) {
+        Alert.alert(
+          'Permiso necesario',
+          'Necesitamos permiso para seleccionar la foto del vehículo.',
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets?.length > 0) {
+        updateVehicle('vehiclePhoto', result.assets[0].uri);
+        touchVehicle('vehiclePhoto');
+      }
+    } catch {
+      Alert.alert('Error', 'No se pudo seleccionar la fotografía.');
+    } finally {
+      setPhotoLoading(false);
+    }
+  };
+
+```
+
+es asi ?
+````
+
+- Resumen de la respuesta: Valoró el try/catch/finally, la revisión del permiso y el manejo de cancelar. Señaló que allowsEditing con aspect puede recortar la placa, que los mensajes van en Alert y en español fijo (el PDF pide error bajo el campo), solo hay galería, que hay que revisar en la documentación si hoy hace falta pedir permiso, y que la función seguramente está repetida en la pestaña 1.
+- Qué se usó / modificó / descartó: Función escrita por mí; cambios por la revisión: (completar)
+- Archivos y commit: src/screens/VehicleDataScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que un finally garantiza que el estado de carga se recupere y que la ruta de la foto guardada es local, solo de ese celular.
+
+### Entrada #65
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber si Firebase sirve para guardar las imágenes y a qué costo
+- Prompt:
+
+````text
+yo, por eso te pregunto si esta bien, y sobre el servidor eso despues, pero vamos a utilzasr fire base, hay opcion de fire base para guardar
+````
+
+- Resumen de la respuesta: Con búsqueda en la documentación oficial, explicó que Cloud Storage for Firebase existe pero exige plan Blaze (de pago por uso y con cuenta de facturación) desde febrero de 2026, lo que choca con querer algo gratis. Avisó que el mismo plan afecta al backend de pagos (Cloud Functions) y propuso comparar Storage con Cloudinary u otro cuando llegue la etapa.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: Revisión de documentación oficial por Claude
+- Aprendizaje: Entendí que "tener la opción" en Firebase no significa que sea gratis y que el plan Blaze puede tocar también el backend de pagos.
+
+### Entrada #66
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Aclarar qué opciones gratuitas propone el PDF
+- Prompt:
+
+````text
+no entiendo, entonces va tocar pagar? que recomienda el pdf que sea gratis
+````
+
+- Resumen de la respuesta: Aclaró que no es obligatorio pagar. Lo gratis hoy: Firebase Spark (Authentication y Firestore), notificaciones y mapa. Para imágenes el PDF recomienda Cloudinary; para el backend de pagos, Node/Express o Cloud Functions, con credenciales de prueba. Dejó pendiente verificar límites cuando llegue cada etapa.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el PDF ya trae una salida gratuita para las imágenes (Cloudinary) y que los pagos son solo de prueba.
+
+### Entrada #67
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir cómo validar la marca del vehículo
+- Prompt:
+
+````text
+listo ya dio, pero tengo una preegunta, osea cuando escribimos la marca del vehiculo, peudo escribir cualquier marca? pues es lo que puedo hacer ahorita, es que pienso que una validacion de todas las marcas que existen es muy dificil
+````
+
+- Resumen de la respuesta: Dijo que según el PDF marca y modelo son texto libre de máximo 30 caracteres, y que la revisión humana está en el estado pendiente de aprobación. Recomendó validar no vacío, máximo 30 después de recortar y caracteres permitidos suaves (letras con tilde, números, espacios y guion), con casos de prueba como Mercedes-Benz y F-150. Una lista de marcas sería un extra.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: Pantalla de Vehículo funcionando, según lo informado
+- Aprendizaje: Entendí que una validación demasiado estricta rechaza datos legítimos y que el PDF ya prevé una revisión humana.
+
+### Entrada #68
+- Fecha: 2026-10-31 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi plan de cinco puntos contra el PDF
+- Prompt:
+
+````text
+listo vamos hacer correjir detalles 1. Terminar validaciones
+Siguiente
+
+* Corregir caracteres permitidos en marca y modelo.
+* Probar límites de 30 y 31 caracteres.
+* Revisar placa, año y capacidad XL.
+2. Completar navegación del registro
+* Datos personales → vehículo.
+* Vehículo → confirmación del registro.
+* Poder regresar sin perder información.
+3. Crear pantalla de confirmación
+* Resumen de datos personales.
+* Resumen del vehículo.
+* Confirmación de envío.
+4. Mejorar experiencia
+* Mensajes de error claros.
+* Indicador de progreso del registro.
+* Botones para continuar y regresar.
+5. Preparar integración
+* Organizar datos para Firebase.
+* Definir cómo se almacenarán las fotografías.
+* Preparar estados: pendiente, aprobado y rechazado.
+````
+
+- Resumen de la respuesta: Valoró el orden y señaló cuatro cosas: falta la pestaña 3 en el flujo (aunque la profesora pidió solo dos), la contraseña sigue sin decidir, los botones se alejan del PDF (Enviar solo con todo válido) y "rechazado" no existe para la cuenta del conductor en el PDF. Propuso un orden: validaciones, decisiones, navegación y experiencia, confirmación e integración.
+- Qué se usó / modificó / descartó: Plan escrito por mí (completar si algún apartado se descartó)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que lo que añado fuera del PDF (indicador de progreso, confirmación, "rechazado") es extra mío y debe decidirse con cuidado.
+
+### Entrada #69
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber si la pestaña 3 hace falta para el miércoles
+- Prompt:
+
+````text
+espera, es que pa el miercoles nesecitamos solo 2 pestañas funcionales completamente con fire base no es nesecario la 3 o si? la profe dijo pestaña 1 y 2
+````
+
+- Resumen de la respuesta: Dijo que para esa entrega la pestaña 3 no entra según lo dicho por la profesora, aunque el PDF la exige para el proyecto final. Sugirió confirmar con ella si incluye crear la cuenta, subir fotos y cómo enviar con solo dos pestañas. Priorizó cuenta, datos en Firestore, reglas, fotos según lo que pida y un envío temporal, y dejó como extras el indicador, la confirmación elaborada y "rechazado".
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que lo que cuenta para cada entrega es lo que pide la profesora, y que conviene preguntarle lo que no queda claro.
+
+### Entrada #70
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mis decisiones para la entrega del miércoles
+- Prompt:
+
+````text
+1. Contraseña: opción B. Crear la contraseña después de completar los datos personales y del vehículo, antes de enviar el registro.
+2. Creación de cuenta: al enviar el registro completo. La cuenta queda inicialmente en estado pending sin habilitar viajes hasta su aprobación.
+3. Pestañas: abajo, usando React Navigation Bottom Tabs. Es una ubicación familiar para una aplicación tipo Uber.
+4. Fotos: usar Firebase Storage para almacenar las fotografías, si ella lo solicita. No invertir tiempo todavía en otro servicio.
+5. Envío temporal: agregar un botón claramente identificado como «Enviar registro temporal» que guarde los datos de las pestañas 1 y 2 y deje el estado en pending
+Orden de prioridad: envío temporal → contraseña y creación de cuenta → pestañas → fotografías.
+````
+
+- Resumen de la respuesta: Aclaró que lo descrito (contraseña al final) es la opción C de la tabla anterior. Señaló un problema de orden: guardar datos sin cuenta obliga a dejar Firestore abierto, así que propuso cuenta, datos con reglas, envío temporal, pestañas y fotos. Avisó de dos riesgos (fallo a medias y plan Blaze de Storage) y dio piezas y pruebas.
+- Qué se usó / modificó / descartó: Decisiones mías; ajuste de orden por la revisión (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que primero va la cuenta y las reglas, y que si falla la creación a medias el usuario debe poder reintentar sin crear otra cuenta.
+
+### Entrada #71
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para la cuenta con Firebase Authentication
+- Prompt:
+
+````text
+si ya tengo el fire base conectado
+````
+
+- Resumen de la respuesta: Pidió confirmar que Authentication con correo y contraseña está habilitado y describió qué terminar: funciones de cuenta en src/services, traducción de errores a claves, useAuth con limpieza de suscripción, estado de carga de sesión, persistencia y reemplazo del login falso. Dio nueve pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/services, src/hooks/useAuth.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la sesión se escucha con una suscripción que debe cancelarse al salir, y que no se imprime nunca la contraseña.
+
+### Entrada #72
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Aclarar qué significa "subir credenciales" a la base de datos
+- Prompt:
+
+````text
+en este momento ando corrijiendo para ya comenzar a subir credenciales a la base de datos
+````
+
+- Resumen de la respuesta: Aclaró que correo y contraseña no van a Firestore, los maneja Authentication, mientras que los datos del registro sí van en un documento con estado pending. Pidió escribir las reglas de Firestore antes de subir datos, usar datos inventados y no guardar nunca la contraseña.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la contraseña nunca se guarda en la base de datos y que las reglas se escriben antes de subir datos.
+
+### Entrada #73
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar el primer registro guardado en Authentication y Firestore
+- Prompt (adjunta dos capturas: el documento en Firestore y el usuario en Authentication):
+
+````text
+ya lo logramos, hicimos un avance
+````
+
+- Resumen de la respuesta: Celebró el flujo completo (cuenta y documento con el uid como identificador y estado pending). Señaló que capacity se guardó como texto, que fullName tenía un espacio al final, que hay que escribir reglas de Firestore, que photosPending es un dato calculable y que el uid está repetido. Avisó de usar datos inventados y de que el aviso de Authentication se refiere a enlace por correo, que no se usa.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/services, src/screens/registration — commit: 
+- Verificación: Cuenta en Authentication y documento en driverRegistrations con status pending
+- Aprendizaje: Entendí que los números deben guardarse como números, que hay que recortar espacios antes de guardar y que no debo compartir capturas con datos reales.
+
+### Entrada #74
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión de RegistrationSuccessScreen
+- Prompt:
+
+````text
+nesecito que revises si esta bien nesecito tu ayuda 
+
+```javascript
+import { View, Text, StyleSheet } from 'react-native';
+import Button from '../../components/Button';
+import { colors, spacing, typography } from '../../theme';
+
+export default function RegistrationSuccessScreen({ navigation }) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.icon}>✓</Text>
+
+      <Text style={styles.title}>¡Registro enviado!</Text>
+
+      <Text style={styles.description}>
+        Tus datos fueron guardados correctamente. Tu cuenta está pendiente
+        de revisión y aprobación.
+      </Text>
+
+      <Text style={styles.status}>Pendiente de aprobación</Text>
+
+      <Button
+        title="Volver al inicio"
+        onPress={() => navigation.reset({
+          index: 0,
+          routes: [{ name: 'Welcome' }],
+        })}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: spacing.lg,
+    backgroundColor: colors.background,
+  },
+  icon: {
+    fontSize: 64,
+    color: '#16A34A',
+    marginBottom: spacing.md,
+  },
+  title: {
+    ...typography.title,
+    textAlign: 'center',
+    marginBottom: spacing.md,
+  },
+  description: {
+    ...typography.body,
+    textAlign: 'center',
+    marginBottom: spacing.lg,
+  },
+  status: {
+    fontWeight: '700',
+    color: '#D97706',
+    marginBottom: spacing.xl,
+  },
+});
+
+```
+````
+
+- Resumen de la respuesta: Señaló que title y description no tienen color y quedarían negros sobre el tema oscuro, que la pantalla puede chocar con la navegación por sesión (al crearse la cuenta Firebase inicia sesión) y que el botón dice "Volver al inicio" pero lleva a Bienvenida. Además, textos y colores fuera del diccionario y del tema, y que el estado debe ser un valor compartido.
+- Qué se usó / modificó / descartó: Pantalla escrita por mí; cambios por la revisión: (completar)
+- Archivos y commit: src/screens/registration/RegistrationSuccessScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que un estilo de tipografía sin color no se ve en un fondo oscuro y que la navegación basada en sesión decide qué pantalla existe en cada momento.
+
+### Entrada #75
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión de SubmitRegistrationScreen
+- Prompt:
+
+````text
+espera y este ?
+
+```javascript
+import { useState, useContext } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+
+import { auth, db } from '../../config/firebase';
+import { RegistrationContext } from '../../context/RegistrationContext';
+import Button from '../../components/Button';
+import { colors, spacing, typography } from '../../theme';
+
+export default function SubmitRegistrationScreen({ route, navigation }) {
+  const { password } = route.params;
+  const { personalData, vehicleData } = useContext(RegistrationContext);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+
+    try {
+      const email = personalData.email.trim().toLowerCase();
+
+      let user = auth.currentUser;
+
+      if (user && user.email?.toLowerCase() !== email) {
+        throw new Error('AUTH_USER_MISMATCH');
+      }
+
+      if (!user) {
+        const credential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        user = credential.user;
+      }
+
+      const uid = user.uid;
+
+      const registration = {
+        uid,
+        personalData: {
+          ...personalData,
+          email,
+          birthDate: personalData.birthDate
+            ? personalData.birthDate.toISOString()
+            : null,
+          photo: null,
+        },
+        vehicleData: {
+          ...vehicleData,
+          vehiclePhoto: null,
+        },
+        status: 'pending',
+        photosPending: true,
+        createdAt: serverTimestamp(),
+      };
+
+      await setDoc(
+        doc(db, 'driverRegistrations', uid),
+        registration,
+        { merge: true }
+      );
+
+      navigation.replace('RegistrationSuccess');
+    } catch (error) {
+      console.error('Error al enviar registro:', error);
+
+      let message = 'No se pudo completar el registro. Inténtalo nuevamente.';
+
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'Este correo ya tiene una cuenta. Inicia sesión con ella.';
+      } else if (error.code === 'auth/weak-password') {
+        message = 'La contraseña no cumple los requisitos de seguridad.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'El correo electrónico no es válido.';
+      } else if (error.code === 'permission-denied') {
+        message = 'Firebase no permite guardar los datos. Revisa las reglas de Firestore.';
+      } else if (error.message === 'AUTH_USER_MISMATCH') {
+        message = 'Hay otra cuenta activa. Cierra esa sesión antes de registrar este correo.';
+      }
+
+      Alert.alert('Error en el registro', message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Enviar registro</Text>
+
+      <Text style={styles.description}>
+        Al continuar, crearemos tu cuenta y enviaremos tus datos para revisión.
+        Tu registro quedará pendiente de aprobación.
+      </Text>
+
+      <Button
+        title={isSubmitting ? 'Enviando...' : 'Crear cuenta y enviar registro'}
+        onPress={handleSubmit}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: spacing.lg,
+    justifyContent: 'center',
+    backgroundColor: colors.background,
+  },
+  title: {
+    ...typography.title,
+    marginBottom: spacing.md,
+  },
+  description: {
+    ...typography.body,
+    marginBottom: spacing.xl,
+  },
+});
+
+```
+````
+
+- Resumen de la respuesta: Valoró el manejo del fallo a medias (si la cuenta ya existe no crea otra), el finally y el uid como identificador. Señaló como problemas la contraseña que viaja por route.params, que la pantalla puede desaparecer a mitad del envío por el cambio de sesión, que no se valida lo que se envía, datos sin normalizar (números, espacios, fecha), merge con status, Alert con textos fijos y sin casos de red.
+- Qué se usó / modificó / descartó: Pantalla escrita por mí; esta pantalla fue luego modificada con ayuda de otra IA (ver entradas #83 y #84); cambios por la revisión: (completar)
+- Archivos y commit: src/screens/registration/SubmitRegistrationScreen.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los datos secretos no deben viajar por los parámetros de navegación y que hay que validar lo que se envía, no solo mostrarlo.
+
+### Entrada #76
+- Fecha: 2026-11-02 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Repasar qué debe tener cada pestaña según el PDF
+- Prompt:
+
+````text
+pregunta como tal las 2 pestañas que deben tener
+````
+
+- Resumen de la respuesta: Listó en dos tablas los campos y validaciones de Datos personales y de Vehículo según el PDF, las reglas comunes (ningún campo vacío, errores bajo el campo, Enviar solo con todo válido) y lo que el PDF no define (opciones de género y color, si 18 años justos cuentan, capacidad de Económico y Premium, año mínimo).
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que repasar campo por campo con la tabla del PDF, con un valor válido y uno inválido, es la mejor forma de cerrar una pestaña.
+
+### Entrada #77
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Entender los problemas de estilo del tema oscuro y cómo registrar el uso de otra IA
+- Prompt (primer mensaje, con cuatro capturas de Android: Datos del vehículo, Enviar registro, Enviando y Registro completado):
+
+````text
+listo ya funciona otro avanza la navegación esta bien pero los estilos, mira el botón no aparece la letra en towrka en una screen debe ir letra arriba ayuda
+````
+
+- Prompt (segundo mensaje):
+
+````text
+como ayer, no pudiste responder por el limite de mensajes, entonces me apoye para resolver los estilos en otra  ia, solo pa eso, entonces tube asistencia en button.js, en dropdown y ensumbit registration
+````
+
+- Prompt (tercer mensaje):
+
+````text
+Continuar
+````
+
+- Resumen de la respuesta: Explicó que cada uso de otra herramienta de IA es una entrada propia (fecha, herramienta, prompt completo, resumen, qué se usó, modificó o descartó, archivos y commit) y que Button.js, el Dropdown y SubmitRegistrationScreen deben llevar el comentario AI-assisted con el número de esa entrada. Explicó las dos causas de las capturas: textos sin color (negros sobre fondo oscuro) y botón blanco sin letras (el color del texto del botón no cambió cuando el botón pasó a ser claro). Recordó los pendientes de #75.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/components/Button.js, Dropdown y SubmitRegistrationScreen — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que un texto sin color explícito se ve negro sobre fondo oscuro, y que cuando cambia el color del botón también debe cambiar el color de su texto.
+
+### Entrada #78
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para conectar Cloudinary porque Firebase Storage no funcionó
+- Prompt:
+
+````text
+espera es que ando conectando el claudinary, para fotos el storage alfinal no funcionó
+````
+
+- Resumen de la respuesta: Con búsqueda en documentación, indicó que el plan gratuito de Cloudinary no pide tarjeta y tiene límites suaves, y que la subida sin firma permite que cualquiera que conozca el preset suba archivos, por lo que es sensible y la clave secreta nunca va en la app. Describió qué terminar (preset sin firma, valores en .env, función de subida, guardar la URL), decisiones (cuándo subir, privacidad de licencia y SOAT), errores comunes y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/config, src/services (Cloudinary) — commit: 
+- Verificación: Revisión de documentación oficial por Claude
+- Aprendizaje: Entendí que se sube la foto, se recibe una URL y se guarda solo esa URL en Firestore, y que el nombre del preset es un dato sensible.
+
+### Entrada #79
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar la configuración de Cloudinary
+- Prompt (los valores reales están reemplazados por [OCULTO]):
+
+````text
+ya cree cuenta y acabjo de crear en config esto export const CLOUDINARY_CLOUD_NAME = '[OCULTO]';
+export const CLOUDINARY_UPLOAD_PRESET = '[OCULTO]';
+
+export const CLOUDINARY_UPLOAD_URL =
+  `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+````
+
+- Resumen de la respuesta: Avisó que pegué el nombre de la nube y del preset y que el preset es sensible (reemplazarlo en la bitácora y rotarlo si hay dudas). Valoró que los valores estén en un solo archivo y la URL derivada. Señaló que los valores deben ir en .env y no en el código, que el preset debe ser sin firma y que conviene restringirlo (carpeta, formatos).
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/config (Cloudinary), .env, .env.example — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los nombres de nube y preset van en .env con prefijo EXPO_PUBLIC_, y que la API key y el secret no se necesitan en la app.
+
+### Entrada #80
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Cómo probar tras cambiar varios archivos a la vez
+- Prompt:
+
+````text
+es que ando configurando esto todo raro nunca habia trabajado con esto, acabo de modifciar  3 archivo en services, en config y el de submit voy a runear a ver si funciona
+````
+
+- Resumen de la respuesta: Resumió la idea (subir la foto, recibir una URL y guardarla en Firestore). Recomendó git diff, reiniciar con caché limpia al tocar .env y verificar en orden: la app arranca, se crea la cuenta, las fotos aparecen en Cloudinary y en Firestore hay URL. Dio pistas según el tipo de error de subida y pidió cambiar y probar de a una pieza.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/services, src/config, SubmitRegistrationScreen — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que si cambio varios archivos a la vez no sé cuál causó un error, y que conviene hacer commits pequeños.
+
+### Entrada #81
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Deducir la causa de un error 500 de Metro (módulo no encontrado)
+- Prompt (adjunta dos capturas del error en el celular; omito las rutas y datos locales):
+
+````text
+Este error de que sería no encuentro solución
+````
+
+- Resumen de la respuesta: Explicó que los códigos de colores se ignoran y que lo importante es "Unable to resolve module" y el campo originModulePath, que dice qué archivo contiene el import que falla. Guió con pistas para comparar qué debería tener ese archivo con lo que importa, revisar con git diff y, si el archivo de configuración de Firebase quedó con código de otra pantalla, recuperarlo desde Git.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/config/firebase.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que en un error de Metro debo leer originModulePath para saber qué archivo falla y que Git permite recuperar un archivo que se dañó.
+
+### Entrada #82
+- Fecha: 2026-11-03 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber qué entrada de la bitácora va en el comentario del RegistrationProvider
+- Prompt:
+
+````text
+```javascript
+/ AI-assisted: see docs/AI_LOG.md
+export function RegistrationProvider({ children }) {
+  const [personalData, setPersonalData] = useState(initialPersonalData);
+  const [vehicleData, setVehicleData] = useState(initialVehicleData);
+
+  const [personalTouched, setPersonalTouched] = useState({});
+  const [vehicleTouched, setVehicleTouched] = useState({});
+
+  const updatePersonal = useCallback((field, value) => {
+    setPersonalData((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  }, []);
+
+  const updateVehicle = useCallback((field, value) => {
+    setVehicleData((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  }, []);
+
+  const touchPersonal = useCallback((field) => {
+    setPersonalTouched((previous) => ({
+      ...previous,
+      [field]: true,
+    }));
+  }, []);
+
+  const touchVehicle = useCallback((field) => {
+    setVehicleTouched((previous) => ({
+      ...previous,
+      [field]: true,
+    }));
+  }, []);
+
+  const touchAllPersonal = useCallback(() => {
+    setPersonalTouched(allFieldsTouched(initialPersonalData));
+  }, []);
+
+  const touchAllVehicle = useCallback(() => {
+    setVehicleTouched(allFieldsTouched(initialVehicleData));
+  }, []);
+
+  const resetRegistration = useCallback(() => {
+    setPersonalData(initialPersonalData);
+    setVehicleData(initialVehicleData);
+    setPersonalTouched({});
+    setVehicleTouched({});
+  }, []);
+  const personalErrors = validatePersonalData(personalData);
+  const vehicleErrors = validateVehicleData(vehicleData);
+
+  const value = {
+    personalData,
+    vehicleData,
+    updatePersonal,
+    updateVehicle,
+    touchPersonal,
+    touchVehicle,
+    touchAllPersonal,
+    touchAllVehicle,
+    resetRegistration,
+    personalErrors: showOnlyTouched(personalErrors, personalTouched),
+    vehicleErrors: showOnlyTouched(vehicleErrors, vehicleTouched),
+    isPersonalValid: !hasErrors(personalErrors),
+    isVehicleValid: !hasErrors(vehicleErrors),
+  };
+  return (
+    <RegistrationContext.Provider value={value}>
+      {children}
+    </RegistrationContext.Provider>
+  );
+}
+ ese assitencia con ia que entrada es
+```
+````
+
+- Resumen de la respuesta: Avisó que el comentario tenía una sola barra y por eso era un error de sintaxis (deben ser dos). Explicó que, para este archivo, el número depende de qué guía se siguió: #42 (guía del Context), #43 (revisión del control de "tocado") y #46 solo si se aplicaron cambios por esa revisión. Preguntó si alguna parte vino de otra herramienta de IA y recordó el error pendiente de config/firebase.
+- Qué se usó / modificó / descartó: Comentario del archivo corregido a `// AI-assisted: see docs/AI_LOG.md #42, #43` (completar el resto)
+- Archivos y commit: src/context/RegistrationContext.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que un comentario necesita dos barras y que el número debe apuntar a la entrada de la ayuda que realmente influyó en ese código.
+
+### Entrada #83
+- Fecha: (completar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: (completar: nombre de la herramienta de IA)
+- Objetivo: Corregir problemas de estilo del tema oscuro (texto que no se veía, botón sin letras); la herramienta entregó código
+- Prompt: (completar: copiar aquí el prompt completo tal como lo escribí en esa herramienta, sin llaves ni datos reales)
+- Resumen de la respuesta: Primer uso, la noche anterior, porque Claude no pudo responder por el límite de mensajes. La herramienta entregó código para arreglar estilos. (completar con 2 o 3 líneas de lo que respondió)
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: Button.js, Dropdown y/o SubmitRegistrationScreen (completar cuáles salieron de este uso) — commit: 
+- Verificación: Probado en el celular con Expo Go (completar)
+- Aprendizaje: (completar)
+
+### Entrada #84
+- Fecha: (completar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: (completar: nombre de la herramienta de IA)
+- Objetivo: Corregir problemas de estilo del tema oscuro; la herramienta entregó código
+- Prompt: (completar: copiar aquí el prompt completo tal como lo escribí en esa herramienta, sin llaves ni datos reales)
+- Resumen de la respuesta: Segundo uso, la misma noche. La herramienta entregó código para arreglar estilos. (completar con 2 o 3 líneas de lo que respondió)
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: Button.js, Dropdown y/o SubmitRegistrationScreen (completar cuáles salieron de este uso) — commit: 
+- Verificación: Probado en el celular con Expo Go (completar)
+- Aprendizaje: (completar)

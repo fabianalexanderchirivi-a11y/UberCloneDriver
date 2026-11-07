@@ -1,9 +1,4 @@
-import {
-    createContext,
-    useState,
-    useEffect,
-    useCallback,
-} from 'react';
+import { createContext,  useState,   useEffect,  useCallback,} from 'react';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { texts } from '../i18n';

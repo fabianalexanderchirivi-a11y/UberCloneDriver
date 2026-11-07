@@ -1,4 +1,4 @@
-
+//docs/AI_LOG.md #83 
 import { useState, useContext } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import {
@@ -78,14 +78,10 @@ export default function SubmitRegistrationScreen({ route, navigation }) {
                 personalData.photo,
                 `${uid}/personal`,
             );
-
-            // Subir fotografía del vehículo a Cloudinary.
             const vehiclePhotoUrl = await uploadImageToCloudinary(
                 vehicleData.vehiclePhoto,
                 `${uid}/vehicles`,
             );
-
-            // Verificar que Cloudinary haya devuelto las dos URL.
             if (!profilePhotoUrl || !vehiclePhotoUrl) {
                 throw new Error(
                     'Cloudinary no devolvió correctamente las URL de las fotografías.',
@@ -128,8 +124,6 @@ export default function SubmitRegistrationScreen({ route, navigation }) {
             );
 
             await setDoc(registrationRef, registration);
-
-            // Comprobar que Firestore tenga las dos URL guardadas.
             const savedRegistration = await getDoc(registrationRef);
 
             if (!savedRegistration.exists()) {

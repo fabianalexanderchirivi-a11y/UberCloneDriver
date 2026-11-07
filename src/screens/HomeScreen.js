@@ -1,13 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import {
-    View,
-    Text,
-    Switch,
-    Pressable,
-    StyleSheet,
-    ActivityIndicator,
-    Alert,
-} from 'react-native';
+import { View, Text,  Switch,  Pressable,  StyleSheet,   ActivityIndicator,  Alert,} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { doc, getDoc } from 'firebase/firestore';
 

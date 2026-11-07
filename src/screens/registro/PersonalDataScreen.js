@@ -1,4 +1,5 @@
-import { useContext, useState, useEffect } from 'react';
+
+import { useContext, useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +8,7 @@ import {
   Image,
   StyleSheet,
   Platform,
+  Keyboard,
   KeyboardAvoidingView,
 } from 'react-native';
 
@@ -27,12 +29,40 @@ export default function PersonalDataScreen({ navigation }) {
   const registration = useContext(RegistrationContext);
   const languageContext = useContext(LanguageContext);
 
+  const scrollRef = useRef(null);
+  const fieldPositions = useRef({});
+  const activeField = useRef(null);
+
+  // Desplazar el formulario hasta el campo seleccionado.
+  const scrollToField = (field) => {
+    const y = fieldPositions.current[field];
+
+    if (typeof y !== 'number') return;
+
+    scrollRef.current?.scrollTo({
+      y: Math.max(0, y - 80),
+      animated: true,
+    });
+  };
+
+  const focusField = (field) => {
+    activeField.current = field;
+
+    requestAnimationFrame(() => {
+      scrollToField(field);
+    });
+  };
+
   if (!registration) {
-    throw new Error('PersonalDataScreen requiere RegistrationProvider');
+    throw new Error(
+      'PersonalDataScreen requiere RegistrationProvider'
+    );
   }
 
   if (!languageContext) {
-    throw new Error('PersonalDataScreen requiere LanguageProvider');
+    throw new Error(
+      'PersonalDataScreen requiere LanguageProvider'
+    );
   }
 
   const {
@@ -50,7 +80,21 @@ export default function PersonalDataScreen({ navigation }) {
   const [deviceError, setDeviceError] = useState('');
   const [message, setMessage] = useState('');
 
-  // Mantener sincronizado el idioma global con el idioma del registro.
+  // Volver a desplazar cuando el teclado termine de abrirse.
+  useEffect(() => {
+    const subscription = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        if (activeField.current) {
+          scrollToField(activeField.current);
+        }
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
+
+  // Sincronizar el idioma con los datos del registro.
   useEffect(() => {
     if (personalData.language !== language) {
       updatePersonal('language', language);
@@ -73,7 +117,9 @@ export default function PersonalDataScreen({ navigation }) {
 
     const translated = t(`errors.${error}`);
 
-    return translated === `errors.${error}` ? error : translated;
+    return translated === `errors.${error}`
+      ? error
+      : translated;
   };
 
   const updateField = (field, value) => {
@@ -85,6 +131,7 @@ export default function PersonalDataScreen({ navigation }) {
     }
   };
 
+  // Seleccionar fotografía del conductor.
   const selectPhoto = async (source) => {
     touchPersonal('photo');
     setDeviceError('');
@@ -124,6 +171,7 @@ export default function PersonalDataScreen({ navigation }) {
     }
   };
 
+  // Seleccionar fecha de nacimiento.
   const handleDateChange = (event, selectedDate) => {
     if (Platform.OS === 'android') {
       setShowDatePicker(false);
@@ -135,6 +183,7 @@ export default function PersonalDataScreen({ navigation }) {
     }
   };
 
+  // Validar antes de continuar.
   const handleValidate = () => {
     touchAllPersonal();
 
@@ -156,12 +205,17 @@ export default function PersonalDataScreen({ navigation }) {
     <SafeAreaView style={styles.screen} edges={['bottom']}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
+          ref={scrollRef}
+          style={styles.flex}
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
         >
+          {/* TÍTULO */}
+
           <Text style={styles.title}>
             {t('personal.title')}
           </Text>
@@ -169,6 +223,8 @@ export default function PersonalDataScreen({ navigation }) {
           <Text style={styles.subtitle}>
             {t('personal.subtitle')}
           </Text>
+
+          {/* FOTO DE PERFIL */}
 
           <Text style={styles.label}>
             {t('personal.profilePhoto')} *
@@ -214,50 +270,91 @@ export default function PersonalDataScreen({ navigation }) {
           )}
 
           {!!deviceError && (
-            <Text style={styles.error}>{deviceError}</Text>
+            <Text style={styles.error}>
+              {deviceError}
+            </Text>
           )}
 
           <View style={styles.photoSpacing} />
 
-          <TextField
-            label={`${t('personal.fullName')} *`}
-            placeholder={t('personal.fullNamePlaceholder')}
-            value={personalData.fullName}
-            onChangeText={(text) => updateField('fullName', text)}
-            onBlur={() => touchPersonal('fullName')}
-            error={translateError(personalErrors.fullName)}
-            maxLength={50}
-            autoCapitalize="words"
-          />
+          {/* NOMBRE COMPLETO */}
 
-          <TextField
-            label={`${t('personal.documentNumber')} *`}
-            placeholder={t('personal.documentPlaceholder')}
-            value={personalData.documentNumber}
-            onChangeText={(text) =>
-              updateField(
-                'documentNumber',
-                text.replace(/\D/g, ''),
-              )
-            }
-            onBlur={() => touchPersonal('documentNumber')}
-            error={translateError(personalErrors.documentNumber)}
-            keyboardType="number-pad"
-            maxLength={10}
-          />
+          <View
+            onLayout={(event) => {
+              fieldPositions.current.fullName =
+                event.nativeEvent.layout.y;
+            }}
+          >
+            <TextField
+              label={`${t('personal.fullName')} *`}
+              placeholder={t('personal.fullNamePlaceholder')}
+              value={personalData.fullName}
+              onChangeText={(text) =>
+                updateField('fullName', text)
+              }
+              onFocus={() => focusField('fullName')}
+              onBlur={() => touchPersonal('fullName')}
+              error={translateError(personalErrors.fullName)}
+              maxLength={50}
+              autoCapitalize="words"
+            />
+          </View>
 
-          <TextField
-            label={`${t('personal.phone')} *`}
-            placeholder="3001234567"
-            value={personalData.phone}
-            onChangeText={(text) =>
-              updateField('phone', text.replace(/\D/g, ''))
-            }
-            onBlur={() => touchPersonal('phone')}
-            error={translateError(personalErrors.phone)}
-            keyboardType="phone-pad"
-            maxLength={10}
-          />
+          {/* NÚMERO DE DOCUMENTO */}
+
+          <View
+            onLayout={(event) => {
+              fieldPositions.current.documentNumber =
+                event.nativeEvent.layout.y;
+            }}
+          >
+            <TextField
+              label={`${t('personal.documentNumber')} *`}
+              placeholder={t('personal.documentPlaceholder')}
+              value={personalData.documentNumber}
+              onChangeText={(text) =>
+                updateField(
+                  'documentNumber',
+                  text.replace(/\D/g, '')
+                )
+              }
+              onFocus={() => focusField('documentNumber')}
+              onBlur={() => touchPersonal('documentNumber')}
+              error={translateError(
+                personalErrors.documentNumber
+              )}
+              keyboardType="number-pad"
+              maxLength={10}
+            />
+          </View>
+
+          {/* TELÉFONO */}
+
+          <View
+            onLayout={(event) => {
+              fieldPositions.current.phone =
+                event.nativeEvent.layout.y;
+            }}
+          >
+            <TextField
+              label={`${t('personal.phone')} *`}
+              placeholder="3001234567"
+              value={personalData.phone}
+              onChangeText={(text) =>
+                updateField(
+                  'phone',
+                  text.replace(/\D/g, '')
+                )
+              }
+              onFocus={() => focusField('phone')}
+              onBlur={() => touchPersonal('phone')}
+              error={translateError(personalErrors.phone)}
+              keyboardType="phone-pad"
+              maxLength={10}
+            />
+          </View>
+
+          {/* FECHA DE NACIMIENTO */}
 
           <View style={styles.field}>
             <Text style={styles.label}>
@@ -275,18 +372,32 @@ export default function PersonalDataScreen({ navigation }) {
                 setShowDatePicker(true);
               }}
             >
-              <Text style={styles.inputText}>{formattedDate}</Text>
+              <Text style={styles.inputText}>
+                {formattedDate}
+              </Text>
+
               <Text>📅</Text>
             </Pressable>
 
             {showDatePicker && (
               <View>
                 <DateTimePicker
-                  value={personalData.birthDate || new Date(2000, 0, 1)}
+                  value={
+                    personalData.birthDate ||
+                    new Date(2000, 0, 1)
+                  }
                   mode="date"
-                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  display={
+                    Platform.OS === 'ios'
+                      ? 'spinner'
+                      : 'default'
+                  }
                   maximumDate={new Date()}
-                  locale={language === 'en' ? 'en-US' : 'es-CO'}
+                  locale={
+                    language === 'en'
+                      ? 'en-US'
+                      : 'es-CO'
+                  }
                   themeVariant="dark"
                   textColor={colors.text}
                   onChange={handleDateChange}
@@ -312,35 +423,57 @@ export default function PersonalDataScreen({ navigation }) {
             )}
           </View>
 
+          {/* GÉNERO */}
+
           <Dropdown
             label={`${t('personal.gender')} *`}
             value={personalData.gender}
             options={genderOptions}
-            onChange={(value) => updateField('gender', value)}
+            onChange={(value) =>
+              updateField('gender', value)
+            }
             onTouch={() => touchPersonal('gender')}
             error={translateError(personalErrors.gender)}
           />
 
-          <TextField
-            label={`${t('personal.email')} *`}
-            placeholder={t('personal.emailPlaceholder')}
-            value={personalData.email}
-            onChangeText={(text) => updateField('email', text)}
-            onBlur={() => touchPersonal('email')}
-            error={translateError(personalErrors.email)}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            autoComplete="email"
-          />
+          {/* CORREO ELECTRÓNICO */}
+
+          <View
+            onLayout={(event) => {
+              fieldPositions.current.email =
+                event.nativeEvent.layout.y;
+            }}
+          >
+            <TextField
+              label={`${t('personal.email')} *`}
+              placeholder={t('personal.emailPlaceholder')}
+              value={personalData.email}
+              onChangeText={(text) =>
+                updateField('email', text)
+              }
+              onFocus={() => focusField('email')}
+              onBlur={() => touchPersonal('email')}
+              error={translateError(personalErrors.email)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          {/* IDIOMA */}
 
           <Dropdown
             label={`${t('personal.language')} *`}
             value={language}
             options={languageOptions}
-            onChange={(value) => updateField('language', value)}
+            onChange={(value) =>
+              updateField('language', value)
+            }
             onTouch={() => touchPersonal('language')}
             error={translateError(personalErrors.language)}
           />
+
+          {/* BOTÓN CONTINUAR */}
 
           <Button
             title={t('common.continue')}
@@ -348,7 +481,10 @@ export default function PersonalDataScreen({ navigation }) {
           />
 
           {!!message && (
-            <Text style={styles.success} accessibilityLiveRegion="polite">
+            <Text
+              style={styles.success}
+              accessibilityLiveRegion="polite"
+            >
               {message}
             </Text>
           )}
@@ -363,31 +499,38 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+
   flex: {
     flex: 1,
   },
+
   content: {
     padding: spacing.xl,
-    paddingBottom: spacing.xxl,
+    paddingBottom: 240,
   },
+
   title: {
     ...typography.title,
     color: colors.text,
     marginBottom: spacing.sm,
   },
+
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
     marginBottom: spacing.xl,
   },
+
   field: {
     marginBottom: spacing.lg,
   },
+
   label: {
     ...typography.label,
     color: colors.text,
     marginBottom: spacing.xs,
   },
+
   select: {
     minHeight: 50,
     borderWidth: 1,
@@ -399,28 +542,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+
   invalid: {
     borderColor: colors.error,
   },
+
   inputText: {
     ...typography.body,
     color: colors.text,
   },
+
   error: {
     ...typography.error,
     color: colors.error,
     marginTop: spacing.xs,
   },
+
   photoContainer: {
     alignItems: 'center',
     marginTop: spacing.sm,
     marginBottom: spacing.md,
   },
+
   photo: {
     width: 110,
     height: 110,
     borderRadius: 55,
   },
+
   photoPlaceholder: {
     width: 110,
     height: 110,
@@ -431,13 +580,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+
   photoIcon: {
     fontSize: 48,
   },
+
   photoActions: {
     flexDirection: 'row',
     gap: spacing.md,
   },
+
   photoButton: {
     flex: 1,
     borderWidth: 1,
@@ -446,17 +598,21 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: 'center',
   },
+
   photoButtonText: {
     color: colors.primary,
     fontWeight: '600',
   },
+
   photoSpacing: {
     marginBottom: spacing.lg,
   },
+
   dateDone: {
     alignSelf: 'flex-end',
     padding: spacing.md,
   },
+
   success: {
     color: colors.success,
     marginTop: spacing.md,
