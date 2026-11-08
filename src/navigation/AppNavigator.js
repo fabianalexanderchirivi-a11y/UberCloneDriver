@@ -1,3 +1,4 @@
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PasswordScreen from '../screens/registro/PasswordScreen';
 import SubmitRegistrationScreen from '../screens/registro/SubmitRegistrationScreen';
@@ -6,6 +7,7 @@ import LoginScreen from '../screens/LoginScreen';
 import HomeScreen from '../screens/HomeScreen';
 import PersonalDataScreen from '../screens/registro/PersonalDataScreen';
 import VehicleDataScreen from '../screens/registro/VehicleDataScreen';
+import DocumentsDataScreen from '../screens/registro/DocumentsDataScreen';
 import RegistrationSuccessScreen from '../screens/registro/RegistrationSuccessScreen';
 
 import useAuth from '../hooks/useAuth';
@@ -67,6 +69,13 @@ export default function AppNavigator() {
             component={VehicleDataScreen}
             options={{ title: 'Datos del vehículo' }}
           />
+
+          <Stack.Screen
+            name="DocumentsData"
+            component={DocumentsDataScreen}
+            options={{ title: 'Documentos y pagos' }}
+          />
+
           <Stack.Screen
             name="Password"
             component={PasswordScreen}

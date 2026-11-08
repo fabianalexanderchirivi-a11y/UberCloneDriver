@@ -1,11 +1,5 @@
 // AI-assisted: see docs/AI_LOG.md #13, #39, #40, #48, #49, #61, #67
-import {
-  genderValues,
-  languageValues,
-  categoryValues,
-  colorValues,
-} from './options';
-
+import {genderValues, languageValues, categoryValues, colorValues,} from './options';
 export const validateEmail = (value) => {
   const email = (value ?? '').trim().toLowerCase();
 
@@ -50,11 +44,14 @@ const PHONE_REGEX = /^\d{10}$/;
 const PLATE_REGEX = /^[A-Z]{3}\d{3}$/;
 const YEAR_REGEX = /^\d{4}$/;
 const DIGITS_REGEX = /^\d+$/;
+const LICENSE_REGEX = /^\d{6,15}$/;
+const PAYMENT_EMAIL_REGEX = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
 const MIN_AGE = 18;
 const MAX_NAME_LENGTH = 50;
 const MAX_TEXT_LENGTH = 30;
 const XL_MIN_CAPACITY = 6;
+const TECHNICAL_REVIEW_YEARS = 5;
 
 const isEmpty = (value) =>
   value === null ||
@@ -146,9 +143,13 @@ export const validateYear = (value) => {
   if (isEmpty(value)) return 'required';
 
   const year = String(value).trim();
+  const currentYear = new Date().getFullYear();
 
   if (!YEAR_REGEX.test(year)) return 'yearInvalid';
-  if (Number(year) > new Date().getFullYear()) return 'yearFuture';
+
+  if (Number(year) > currentYear + 1) {
+    return 'yearFuture';
+  }
 
   return '';
 };
@@ -162,12 +163,72 @@ export const validateCapacity = (value, category) => {
     return 'capacityInvalid';
   }
 
-  if (category === 'xl' && Number(capacity) < XL_MIN_CAPACITY) {
-    return 'capacityXl';
+  const number = Number(capacity);
+
+  if (category === 'xl') {
+    if (number < 6 || number > 7) {
+      return 'capacityXl';
+    }
+  } else if (
+    category === 'economy' ||
+    category === 'premium'
+  ) {
+    if (number > 4) {
+      return 'capacityMax';
+    }
   }
 
   return '';
 };
+
+export const validateLicenseNumber = (value) => {
+  if (isEmpty(value)) return 'required';
+
+  const license = String(value).trim();
+
+  return LICENSE_REGEX.test(license)
+    ? ''
+    : 'licenseInvalid';
+};
+
+export const validateExpiryDate = (value) => {
+  if (!(value instanceof Date) || Number.isNaN(value.getTime())) {
+    return 'required';
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const expiry = new Date(value);
+  expiry.setHours(0, 0, 0, 0);
+
+  if (expiry <= today) {
+    return 'dateExpired';
+  }
+
+  return '';
+};
+
+export const requiresTechnicalReview = (vehicleYear) => {
+  const year = Number(vehicleYear);
+
+  if (
+    !Number.isInteger(year) ||
+    !YEAR_REGEX.test(String(vehicleYear ?? ''))
+  ) {
+    return false;
+  }
+
+  const currentYear = new Date().getFullYear();
+
+  return currentYear - year >= TECHNICAL_REVIEW_YEARS;
+};
+
+export const validatePaymentEmail = (value) => {
+  return validateEmail(value);
+};
+export const validateAcceptedTerms = (value) =>
+  value === true ? '' : 'termsRequired';
 
 export const validatePersonalData = (data) => ({
   photo: validatePhoto(data.photo),
@@ -190,6 +251,31 @@ export const validateVehicleData = (data) => ({
   capacity: validateCapacity(data.capacity, data.category),
   vehiclePhoto: validatePhoto(data.vehiclePhoto),
 });
+
+export const validateDocumentsData = (data, vehicleYear) => {
+  const technicalReviewRequired =
+    requiresTechnicalReview(vehicleYear);
+
+  return {
+    licenseNumber: validateLicenseNumber(data.licenseNumber),
+    licensePhoto: validatePhoto(data.licensePhoto),
+    licenseExpiry: validateExpiryDate(data.licenseExpiry),
+
+    soatPhoto: validatePhoto(data.soatPhoto),
+    soatExpiry: validateExpiryDate(data.soatExpiry),
+
+    technicalReviewPhoto: technicalReviewRequired
+      ? validatePhoto(data.technicalReviewPhoto)
+      : '',
+
+    technicalReviewExpiry: technicalReviewRequired
+      ? validateExpiryDate(data.technicalReviewExpiry)
+      : '',
+
+    mercadoPagoEmail: validatePaymentEmail(data.mercadoPagoEmail),
+    acceptedTerms: validateAcceptedTerms(data.acceptedTerms),
+  };
+};
 
 export const hasErrors = (errors) =>
   Object.values(errors).some(Boolean);

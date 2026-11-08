@@ -1,6 +1,5 @@
-
 import { useContext, useState } from 'react';
-import { View, Text, ScrollView, KeyboardAvoidingView, StyleSheet, Alert,Pressable,Image } from 'react-native';
+import { View, Text, ScrollView, KeyboardAvoidingView, StyleSheet, Alert, Pressable, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
 import { RegistrationContext } from '../../context/RegistrationContext';
@@ -125,7 +124,7 @@ export default function VehicleDataScreen({ navigation }) {
       return;
     }
 
-    navigation.navigate('Password');
+    navigation.navigate('DocumentsData');
   };
 
   return (

@@ -1,3 +1,4 @@
+
 const texts = {
   es: {
     common: {
@@ -79,9 +80,13 @@ const texts = {
       textTooLong: 'No puede tener más de 30 caracteres',
       textInvalid: 'Este campo solo permite letras, números, espacios y guiones',
       yearInvalid: 'El año debe tener 4 dígitos',
-      yearFuture: 'El año no puede ser mayor al actual',
+      yearFuture: 'El año no puede superar el siguiente año al actual',
       capacityInvalid: 'Escribe un número válido de pasajeros',
-      capacityXl: 'La categoría XL exige mínimo 6 pasajeros',
+      capacityXl: 'La categoría XL permite entre 6 y 7 pasajeros',
+      capacityMax: 'Esta categoría permite máximo 4 pasajeros',
+      licenseInvalid: 'La licencia debe contener entre 6 y 15 dígitos',
+      dateExpired: 'La fecha de vencimiento debe ser posterior a hoy',
+      termsRequired: 'Debes aceptar los términos y condiciones',
     },
 
     personal: {
@@ -150,6 +155,48 @@ const texts = {
       reviewTitle: 'Revisa los datos',
       reviewMessage: 'Hay campos que necesitan corrección antes de continuar.',
     },
+
+    documents: {
+      title: 'Documentos y pagos',
+      description: 'Completa tus documentos y la información necesaria para recibir pagos.',
+
+      license: 'Licencia de conducción',
+      licenseNumber: 'Número de licencia',
+      licensePlaceholder: 'Número de licencia',
+      licensePhoto: 'Foto de la licencia',
+      licenseExpiry: 'Vencimiento de la licencia',
+
+      soat: 'SOAT',
+      soatPhoto: 'Foto del SOAT',
+      soatExpiry: 'Vencimiento del SOAT',
+
+      technical: 'Revisión técnico-mecánica',
+      technicalPhoto: 'Foto de la técnico-mecánica',
+      technicalExpiry: 'Vencimiento de la técnico-mecánica',
+      technicalRequired: 'Tu vehículo requiere revisión técnico-mecánica.',
+      technicalNotRequired: 'Por el año modelo de tu vehículo, no necesitas adjuntar la técnico-mecánica.',
+
+      payments: 'Información de pagos',
+      paymentEmail: 'Correo de Mercado Pago',
+      paymentPlaceholder: 'correo@ejemplo.com',
+
+      terms: 'Acepto los términos y condiciones del servicio.',
+      commission: 'La plataforma cobrará una comisión del 20 % por viaje.',
+
+      selectPhoto: 'Seleccionar fotografía',
+      changePhoto: 'Cambiar fotografía',
+      gallery: 'Galería',
+      camera: 'Cámara',
+      noPhoto: 'No has seleccionado una fotografía',
+      selectDate: 'Seleccionar fecha',
+      done: 'Listo',
+      continue: 'Continuar',
+      loading: 'Cargando...',
+
+      imageError: 'No se pudo obtener la fotografía.',
+      cameraPermission: 'Debes permitir el acceso a la cámara.',
+      galleryPermission: 'Debes permitir el acceso a la galería.',
+    },
   },
 
   en: {
@@ -184,10 +231,10 @@ const texts = {
       rejectedTitle: 'Registration not approved',
       rejectedMessage: 'Your application was not approved. Please contact support for more information.',
       invalidStatusTitle: 'Invalid status',
-      invalidStatusMessage: 'We cannot verify your account status. Please contact support.',
+      invalidStatusMessage: 'We cannot verify the status of your account. Please contact support.',
       errorTitle: 'Login error',
       genericError: 'Unable to log in. Please try again.',
-      invalidCredentials: 'The email or password is incorrect.',
+      invalidCredentials: 'The email or password are incorrect.',
       invalidEmail: 'The email address is invalid.',
       userDisabled: 'This account has been disabled.',
       tooManyRequests: 'Too many attempts. Wait a moment and try again.',
@@ -232,9 +279,13 @@ const texts = {
       textTooLong: 'It cannot be longer than 30 characters',
       textInvalid: 'This field only allows letters, numbers, spaces, and hyphens',
       yearInvalid: 'The year must have 4 digits',
-      yearFuture: 'The year cannot be greater than the current one',
+      yearFuture: 'The model year cannot be later than next year',
       capacityInvalid: 'Enter a valid number of passengers',
-      capacityXl: 'The XL category requires at least 6 passengers',
+      capacityXl: 'The XL category allows between 6 and 7 passengers',
+      capacityMax: 'This category allows a maximum of 4 passengers',
+      licenseInvalid: 'The licence must contain between 6 and 15 digits',
+      dateExpired: 'The expiration date must be later than today',
+      termsRequired: 'You must accept the terms and conditions',
     },
 
     personal: {
@@ -302,6 +353,48 @@ const texts = {
       photoError: 'The photo could not be selected.',
       reviewTitle: 'Check your information',
       reviewMessage: 'Some fields need to be corrected before continuing.',
+    },
+
+    documents: {
+      title: 'Documents and payments',
+      description: 'Complete your documents and the information required to receive payments.',
+
+      license: 'Driving licence',
+      licenseNumber: 'Licence number',
+      licensePlaceholder: 'Licence number',
+      licensePhoto: 'Licence photo',
+      licenseExpiry: 'Licence expiration date',
+
+      soat: 'SOAT insurance',
+      soatPhoto: 'SOAT photo',
+      soatExpiry: 'SOAT expiration date',
+
+      technical: 'Technical vehicle inspection',
+      technicalPhoto: 'Technical inspection photo',
+      technicalExpiry: 'Technical inspection expiration date',
+      technicalRequired: 'Your vehicle requires a technical inspection.',
+      technicalNotRequired: 'Based on your vehicle model year, a technical inspection is not required.',
+
+      payments: 'Payment information',
+      paymentEmail: 'Mercado Pago email',
+      paymentPlaceholder: 'email@example.com',
+
+      terms: 'I accept the terms and conditions of service.',
+      commission: 'The platform charges a 20% commission per trip.',
+
+      selectPhoto: 'Select photo',
+      changePhoto: 'Change photo',
+      gallery: 'Gallery',
+      camera: 'Camera',
+      noPhoto: 'No photo selected',
+      selectDate: 'Select date',
+      done: 'Done',
+      continue: 'Continue',
+      loading: 'Loading...',
+
+      imageError: 'Unable to select the photo.',
+      cameraPermission: 'Camera access is required.',
+      galleryPermission: 'Gallery access is required.',
     },
   },
 };
