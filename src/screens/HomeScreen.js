@@ -1,9 +1,11 @@
+
 import { useEffect, useState, useContext } from 'react';
 import {
   View,
   Text,
   Switch,
   Pressable,
+  ScrollView,
   StyleSheet,
   ActivityIndicator,
   Alert,
@@ -14,6 +16,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 import useAuth from '../hooks/useAuth';
 import useDriverLocation from '../hooks/useDriverLocation';
+import TripRequestsPanel from '../components/TripRequestsPanel';
 import { auth, db } from '../config/firebase';
 import { colors, spacing, radius, typography } from '../theme';
 import { LanguageContext } from '../context/LanguageContext';
@@ -24,6 +27,7 @@ export default function HomeScreen() {
 
   const [isAvailable, setIsAvailable] = useState(false);
   const [accountStatus, setAccountStatus] = useState(null);
+  const [vehicleCategory, setVehicleCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const isPending = accountStatus === 'pending';
@@ -46,6 +50,7 @@ export default function HomeScreen() {
     if (!user) {
       setIsAvailable(false);
       setAccountStatus(null);
+      setVehicleCategory(null);
       setIsLoading(false);
       return;
     }
@@ -61,11 +66,17 @@ export default function HomeScreen() {
       (snapshot) => {
         if (!active) return;
 
-        const status = snapshot.exists()
-          ? snapshot.data().status
+        const registration = snapshot.exists()
+          ? snapshot.data()
           : null;
 
+        const status = registration?.status ?? null;
+
         setAccountStatus(status);
+
+        setVehicleCategory(
+          registration?.vehicleData?.category ?? null
+        );
 
         if (status !== 'approved') {
           setIsAvailable(false);
@@ -82,6 +93,7 @@ export default function HomeScreen() {
         );
 
         setAccountStatus(null);
+        setVehicleCategory(null);
         setIsAvailable(false);
         setIsLoading(false);
 
@@ -112,6 +124,9 @@ export default function HomeScreen() {
         locationError: en
           ? 'Could not get your location. Please try again.'
           : 'No se pudo obtener tu ubicación. Inténtalo nuevamente.',
+        syncError: en
+          ? 'Could not synchronize your location with Firebase.'
+          : 'No se pudo sincronizar tu ubicación con Firebase.',
       };
 
       Alert.alert(
@@ -142,6 +157,7 @@ export default function HomeScreen() {
     setIsAvailable(false);
 
     try {
+      await stopSharing();
       await signOut();
     } catch (error) {
       console.error(
@@ -152,8 +168,8 @@ export default function HomeScreen() {
       Alert.alert(
         t('login.errorTitle'),
         en
-          ? 'Could not log out.'
-          : 'No se pudo cerrar la sesión.'
+          ? 'Could not finish disconnecting. Please try again.'
+          : 'No se pudo completar la desconexión. Inténtalo nuevamente.'
       );
     }
   };
@@ -173,7 +189,11 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.content}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={styles.title}>
           {t('home.welcome')}
         </Text>
@@ -208,7 +228,7 @@ export default function HomeScreen() {
 
           <View style={styles.switchRow}>
             <Text style={styles.availabilityText}>
-              {isAvailable
+              {isAvailable && isApproved
                 ? t('home.available')
                 : t('home.unavailable')}
             </Text>
@@ -242,6 +262,17 @@ export default function HomeScreen() {
             </Text>
           )}
         </View>
+
+        {isApproved && (
+          <TripRequestsPanel
+            enabled={
+              isAvailable &&
+              !!location
+            }
+            category={vehicleCategory}
+            language={language}
+          />
+        )}
 
         <View style={styles.mapCard}>
           <Text style={styles.mapTitle}>
@@ -324,7 +355,7 @@ export default function HomeScreen() {
             {t('home.logOut')}
           </Text>
         </Pressable>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -334,9 +365,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
+  scroll: {
     flex: 1,
+  },
+  content: {
+    flexGrow: 1,
     padding: spacing.lg,
+    paddingBottom: spacing.xxl,
     gap: spacing.md,
   },
   loading: {
@@ -390,8 +425,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   mapCard: {
-    flex: 1,
-    minHeight: 180,
+    height: 260,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: spacing.sm,
@@ -432,6 +466,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: spacing.sm,
   },
   logoutPressed: {
     opacity: 0.7,
