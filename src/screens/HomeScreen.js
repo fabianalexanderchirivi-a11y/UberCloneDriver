@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useContext } from 'react';
 import {
   View,
@@ -10,24 +9,38 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MapView, { Marker } from 'react-native-maps';
 import { doc, onSnapshot } from 'firebase/firestore';
 
 import useAuth from '../hooks/useAuth';
+import useDriverLocation from '../hooks/useDriverLocation';
 import { auth, db } from '../config/firebase';
 import { colors, spacing, radius, typography } from '../theme';
 import { LanguageContext } from '../context/LanguageContext';
 
 export default function HomeScreen() {
   const { signOut } = useAuth();
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   const [isAvailable, setIsAvailable] = useState(false);
   const [accountStatus, setAccountStatus] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const isPending = accountStatus === 'pending';
+  const isApproved = accountStatus === 'approved';
+  const isRejected = accountStatus === 'rejected';
+
+  const {
+    location,
+    error: locationError,
+    isLocating,
+    stopSharing,
+  } = useDriverLocation(isAvailable && isApproved);
+
+  const en = language === 'en';
+
   useEffect(() => {
     let active = true;
-
     const user = auth.currentUser;
 
     if (!user) {
@@ -64,7 +77,7 @@ export default function HomeScreen() {
         if (!active) return;
 
         console.error(
-          'Error al escuchar el estado del conductor:',
+          'Error al escuchar el estado:',
           error.code || error.message
         );
 
@@ -85,9 +98,28 @@ export default function HomeScreen() {
     };
   }, [t]);
 
-  const isPending = accountStatus === 'pending';
-  const isApproved = accountStatus === 'approved';
-  const isRejected = accountStatus === 'rejected';
+  useEffect(() => {
+    if (locationError && isAvailable) {
+      setIsAvailable(false);
+
+      const messages = {
+        permissionDenied: en
+          ? 'Allow location access to become available.'
+          : 'Debes permitir el acceso a la ubicación para estar disponible.',
+        locationDisabled: en
+          ? 'Turn on your device location services.'
+          : 'Activa la ubicación GPS de tu celular.',
+        locationError: en
+          ? 'Could not get your location. Please try again.'
+          : 'No se pudo obtener tu ubicación. Inténtalo nuevamente.',
+      };
+
+      Alert.alert(
+        en ? 'Location' : 'Ubicación',
+        messages[locationError] || messages.locationError
+      );
+    }
+  }, [locationError, isAvailable, en]);
 
   const statusText = isPending
     ? t('home.pending')
@@ -104,6 +136,26 @@ export default function HomeScreen() {
     }
 
     setIsAvailable(value);
+  };
+
+  const handleSignOut = async () => {
+    setIsAvailable(false);
+
+    try {
+      await signOut();
+    } catch (error) {
+      console.error(
+        'Error al cerrar sesión:',
+        error.code || error.message
+      );
+
+      Alert.alert(
+        t('login.errorTitle'),
+        en
+          ? 'Could not log out.'
+          : 'No se pudo cerrar la sesión.'
+      );
+    }
   };
 
   if (isLoading) {
@@ -191,12 +243,81 @@ export default function HomeScreen() {
           )}
         </View>
 
+        <View style={styles.mapCard}>
+          <Text style={styles.mapTitle}>
+            {en ? 'My location' : 'Mi ubicación'}
+          </Text>
+
+          {location && isAvailable && isApproved ? (
+            <MapView
+              style={styles.map}
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              showsUserLocation
+              showsMyLocationButton
+            >
+              <Marker
+                coordinate={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }}
+                title={
+                  en ? 'My vehicle' : 'Mi vehículo'
+                }
+                description={
+                  en
+                    ? 'Current driver location'
+                    : 'Ubicación actual del conductor'
+                }
+              />
+            </MapView>
+          ) : (
+            <View style={styles.mapPlaceholder}>
+              {isLocating && isAvailable ? (
+                <>
+                  <ActivityIndicator
+                    size="large"
+                    color={colors.primary}
+                  />
+                  <Text style={styles.mapMessage}>
+                    {en
+                      ? 'Getting your location...'
+                      : 'Obteniendo tu ubicación...'}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.mapMessage}>
+                  {isApproved
+                    ? en
+                      ? 'Turn on availability to see your location on the map.'
+                      : 'Activa Disponible para ver tu ubicación en el mapa.'
+                    : en
+                      ? 'Your account must be approved to enable GPS.'
+                      : 'Tu cuenta debe estar aprobada para activar el GPS.'}
+                </Text>
+              )}
+            </View>
+          )}
+
+          {location && isAvailable && (
+            <Text style={styles.locationStatus}>
+              {en
+                ? 'GPS location active'
+                : 'Ubicación GPS activa'}
+            </Text>
+          )}
+        </View>
+
         <Pressable
           style={({ pressed }) => [
             styles.logoutButton,
             pressed && styles.logoutPressed,
           ]}
-          onPress={signOut}
+          onPress={handleSignOut}
           accessibilityRole="button"
         >
           <Text style={styles.logoutText}>
@@ -215,14 +336,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: spacing.xl,
-    gap: spacing.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   loading: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: spacing.md,
   },
   title: {
     ...typography.title,
@@ -234,7 +354,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: colors.surface,
-    padding: spacing.lg,
+    padding: spacing.md,
     borderRadius: radius.md,
     gap: spacing.sm,
   },
@@ -269,13 +389,49 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: 13,
   },
+  mapCard: {
+    flex: 1,
+    minHeight: 180,
+    backgroundColor: colors.surface,
+    borderRadius: radius.md,
+    padding: spacing.sm,
+    gap: spacing.sm,
+  },
+  mapTitle: {
+    ...typography.label,
+    color: colors.text,
+    paddingHorizontal: spacing.sm,
+  },
+  map: {
+    flex: 1,
+    borderRadius: radius.md,
+  },
+  mapPlaceholder: {
+    flex: 1,
+    backgroundColor: colors.background,
+    borderRadius: radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  mapMessage: {
+    ...typography.body,
+    color: colors.textSecondary,
+    textAlign: 'center',
+  },
+  locationStatus: {
+    ...typography.body,
+    color: colors.success,
+    fontSize: 12,
+    paddingHorizontal: spacing.sm,
+  },
   logoutButton: {
     backgroundColor: colors.primary,
-    minHeight: 56,
+    minHeight: 52,
     borderRadius: radius.md,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 'auto',
   },
   logoutPressed: {
     opacity: 0.7,
