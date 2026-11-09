@@ -1,3 +1,4 @@
+
 import {
   View,
   Text,
@@ -6,11 +7,15 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors, radius } from '../theme';
 
 export default function WelcomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.screen}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor={colors.background}
+      />
 
       <View style={styles.content}>
         <View>
@@ -33,7 +38,10 @@ export default function WelcomeScreen({ navigation }) {
 
         <View style={styles.actions}>
           <Pressable
-            style={styles.primaryButton}
+            style={({ pressed }) => [
+              styles.primaryButton,
+              pressed && styles.pressed,
+            ]}
             onPress={() => navigation.navigate('Register')}
           >
             <Text style={styles.primaryButtonText}>
@@ -42,7 +50,10 @@ export default function WelcomeScreen({ navigation }) {
           </Pressable>
 
           <Pressable
-            style={styles.secondaryButton}
+            style={({ pressed }) => [
+              styles.secondaryButton,
+              pressed && styles.pressed,
+            ]}
             onPress={() => navigation.navigate('Login')}
           >
             <Text style={styles.secondaryButtonText}>
@@ -62,7 +73,7 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: colors.background,
   },
   content: {
     flex: 1,
@@ -72,13 +83,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   logo: {
-    color: '#FFFFFF',
+    color: colors.primary,
     fontSize: 36,
     fontWeight: '900',
     letterSpacing: 2,
   },
   logoSubtitle: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 12,
     fontWeight: '600',
     letterSpacing: 5,
@@ -89,14 +100,14 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   title: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 39,
     fontWeight: '800',
     lineHeight: 46,
     letterSpacing: -1,
   },
   description: {
-    color: '#BDBDBD',
+    color: colors.textSecondary,
     fontSize: 16,
     lineHeight: 25,
     marginTop: 22,
@@ -105,34 +116,38 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   primaryButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     minHeight: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: radius.md,
   },
   primaryButtonText: {
-    color: '#000000',
+    color: colors.onPrimary,
     fontSize: 16,
     fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: '#333333',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
     minHeight: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: radius.md,
   },
   secondaryButtonText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
+  pressed: {
+    opacity: 0.8,
+  },
   footer: {
-    color: '#777777',
+    color: colors.textSecondary,
     textAlign: 'center',
     fontSize: 12,
     marginTop: 28,
   },
 });
-
