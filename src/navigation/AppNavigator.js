@@ -9,7 +9,7 @@ import PersonalDataScreen from '../screens/registro/PersonalDataScreen';
 import VehicleDataScreen from '../screens/registro/VehicleDataScreen';
 import DocumentsDataScreen from '../screens/registro/DocumentsDataScreen';
 import RegistrationSuccessScreen from '../screens/registro/RegistrationSuccessScreen';
-
+import ActiveTripScreen from '../screens/ActiveTripScreen';
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
 import { t } from '../i18n';
@@ -35,15 +35,25 @@ export default function AppNavigator() {
       }}
     >
       {isSignedIn ? (
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: t.home.title,
-            headerBackVisible: false,
-            gestureEnabled: false,
-          }}
-        />
+        <>
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              title: t.home.title,
+              headerBackVisible: false,
+              gestureEnabled: false,
+            }}
+          />
+
+          <Stack.Screen
+            name="ActiveTrip"
+            component={ActiveTripScreen}
+            options={{
+              title: 'Viaje de prueba',
+            }}
+          />
+        </>
       ) : (
         <>
           <Stack.Screen

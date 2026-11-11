@@ -28,7 +28,7 @@ const TEST_PICKUP = {
   address: 'Parque Principal de Bello, Antioquia',
 };
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const { signOut } = useAuth();
   const { t, language } = useContext(LanguageContext);
 
@@ -375,6 +375,7 @@ export default function HomeScreen() {
                 )}
               </>
             )}
+            
 
             <Pressable
               style={styles.logoutButton}
