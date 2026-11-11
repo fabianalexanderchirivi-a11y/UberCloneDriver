@@ -2397,3 +2397,404 @@ export function RegistrationProvider({ children }) {
 - Archivos y commit: Button.js, Dropdown y/o SubmitRegistrationScreen (completar cuáles salieron de este uso) — commit: 
 - Verificación: Probado en el celular con Expo Go (completar)
 - Aprendizaje: (completar)
+
+> 
+### Entrada #85
+- Fecha: (completar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para la pestaña 3 del registro (Documentos y pagos)
+- Prompt:
+
+````text
+bueno ahora vamos hacer pestaña 3, que tiene que tener esta éstaña
+````
+
+- Resumen de la respuesta: Listó los cinco bloques de la pestaña 3 según el PDF (licencia con número, foto y vencimiento; SOAT; revisión técnico-mecánica si aplica; correo de Mercado Pago; términos con la comisión visible) y la regla de no guardar números de tarjeta ni de cuenta. Señaló lo que el PDF deja abierto (regla de "si aplica", "posterior a hoy", formato de la licencia, texto de los términos, pasarela sin decidir) y dio decisiones, errores comunes y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/screens/DocumentsScreen.js, src/context/RegistrationContext.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la pestaña 3 tiene cinco bloques, que la comisión visible debe salir de pricing.js y que nunca se guardan números de tarjeta ni de cuenta.
+
+### Entrada #86
+- Fecha: 2026-11-07 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber qué validaciones lleva cada campo de la pestaña 3
+- Prompt:
+
+````text
+espera dime que validaciones,tendria lo que pide el doc , osea la licencia soat y que mas? osea que validaciones como tal
+````
+
+- Resumen de la respuesta: Dio una tabla con las validaciones campo por campo (número y foto de la licencia, vencimientos posteriores a hoy, revisión técnico-mecánica solo si aplica, correo de Mercado Pago, términos). Aclaró que las fechas se comparan sin la hora, que la revisión depende del año del vehículo y que no se guardan datos de tarjeta o cuenta. Sugirió claves de error y casos de prueba.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js, src/i18n — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que las fechas de vencimiento se comparan sin la hora y que la revisión técnico-mecánica depende de otro campo, igual que la capacidad depende de la categoría.
+
+### Entrada #87
+- Fecha: 2026-11-07 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir si el año del vehículo puede ser el año siguiente (2027)
+- Prompt:
+
+````text
+listo pregunta, el año del carro no deberia dejar 2027 verdad, pq ese que carros despues de junio salen con 2027 o no
+````
+
+- Resumen de la respuesta: Explicó que el PDF dice "no mayor al año actual", por lo que un 2027 se rechazaría. Comparó seguir el PDF con permitir un año más, recomendó seguir el PDF o preguntar a la profesora, y avisó que, si se permite, el "+1" debe estar en un solo lugar con un comentario y que el año actual se calcula, no se escribe fijo.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que desviarme del PDF debe ser una decisión consciente y documentada, y que el año actual se calcula al validar.
+
+### Entrada #88
+- Fecha: 2026-11-07 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisión de la función validateYear
+- Prompt:
+
+````text
+export const validateYear = (value) => {
+  if (isEmpty(value)) return 'required';
+
+  const year = String(value).trim();
+  const currentYear = new Date().getFullYear();
+
+  if (!YEAR_REGEX.test(year)) {
+    return 'yearInvalid';
+  }
+
+  if (Number(year) > currentYear + 1) {
+    return 'yearFuture';
+  }
+
+  return '';
+}; listo quedo asi
+````
+
+- Resumen de la respuesta: Valoró que calcula el año actual, devuelve claves y recorta espacios. Señaló que el "+ 1" está escrito dentro de la función (debe ir en configuración con un comentario), que dependía de cómo estuvieran isEmpty y YEAR_REGEX, que no hay límite inferior, que el texto de yearFuture debe coincidir con la regla y que el año debe guardarse como número. Dio una tabla de pruebas.
+- Qué se usó / modificó / descartó: Función escrita por mí; decisión del "+1" mía (completar el resto)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los valores como el "+1" deben tener un nombre y vivir en un solo lugar, y que debo revisar qué hacen las funciones de las que depende una validación.
+
+### Entrada #89
+- Fecha: 2026-11-07 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Orientación para agregar la fecha de matrícula y calcular si hace falta revisión técnico-mecánica
+- Prompt:
+
+````text
+voy a implementar un dato ams que es fecha de matricula, para calulcar si neseecita tecnico mecanica
+````
+
+- Resumen de la respuesta: Aclaró que es un campo extra mío (el PDF habla del año del vehículo). Con búsqueda web indicó que la primera revisión de particulares es desde el quinto año contado desde la matrícula y que motos y servicio público van a los dos años, con excepciones por fecha, y que debía confirmarlo en una fuente oficial. Dio qué terminar, decisiones (en qué pestaña va, si es obligatoria, preguntar a la profesora), detalles (comparar fechas completas, no futura, campos condicionales) y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/context/RegistrationContext.js, src/utils/validations.js, src/config — commit: 
+- Verificación: Fuentes web consultadas por Claude; confirmar en fuente oficial (completar)
+- Aprendizaje: Entendí que la matrícula es el dato que usa la ley para la revisión, que se compara con fechas completas y que el número de años va en la configuración.
+
+### Entrada #90
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Confirmar los 5 años de la revisión y saber qué se coloca para el pago con Mercado Pago
+- Prompt:
+
+````text
+listo,pregunta entonces pa confirmar, son 5 años si son nuevos, y otra pregunta en el pago que toca colocar, osea vamos a utilizar mercado pago pero exactamente que se coloca
+````
+
+- Resumen de la respuesta: Confirmó los 5 años para carros particulares con los matices de las fuentes y pidió verificar en una fuente oficial. Explicó que en el registro solo se coloca el correo de la cuenta de Mercado Pago (validando el formato) y que más adelante el cobro necesita cuentas de prueba, un access token solo en el backend y un backend (Express o Cloud Functions, aún sin decidir). Anotó que la pasarela elegida es Mercado Pago.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que en el registro solo se guarda un correo de pagos y que las llaves secretas de la pasarela nunca van en la app.
+
+### Entrada #91
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Aclarar la validación de la placa y las validaciones del correo de Mercado Pago
+- Prompt:
+
+````text
+bueno, queria tener una validacioncon la placa, pero no pude hacerla y no me voy a complicar, entonces tengo la funcionalidad, pero ahora nesecito que esos datos se suban a fire store cuando tenga te  digo, y una pregunta el correo d emercado pago cuales son sus validaciones
+````
+
+- Resumen de la respuesta: Dijo que el PDF solo pide el formato ABC123 con mayúsculas antes de validar y que otras ideas (placa repetida, que se vea en la foto) no son exigidas. Explicó que el correo de Mercado Pago solo lleva validación de formato, reutilizando la función del correo, y dejó una lista de decisiones para cuando los datos se suban a Firestore.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que no hace falta complicar una validación más allá de lo que pide el PDF, y que antes de subir datos conviene decidir cómo se normalizan.
+
+### Entrada #92
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi decisión de reutilizar la función del correo para el correo de pagos
+- Prompt:
+
+````text
+lo que hice fue escribir la funcion y retornar la funcion de email que teniamos antes, ya que esas validaciones estan melas
+````
+
+- Resumen de la respuesta: Valoró reutilizar la función existente (una sola regla para los dos correos). Señaló revisar el mensaje de error genérico y recortar espacios y pasar a minúsculas al guardar. Dio pruebas rápidas.
+- Qué se usó / modificó / descartó: Función escrita por mí
+- Archivos y commit: src/utils/validations.js — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que reutilizar una función evita que una corrección se quede en un solo lugar.
+
+### Entrada #93
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir las validaciones de la capacidad de pasajeros por categoría
+- Prompt:
+
+````text
+ayuda que validaciones tiene la capacidad del carro porfa, osea si es premium cuantos maximo y minimo puede colocar
+````
+
+- Resumen de la respuesta: Explicó que el PDF solo fija mínimo 6 para XL y que los límites de Económico y Premium los decido yo. Propuso validar un número entero positivo, ejemplos de límites por categoría guardados en la configuración, qué hacer sin categoría y si la capacidad incluye al conductor, con claves de error y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/utils/validations.js, src/config — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que los límites por categoría van en la configuración y que los errores se recalculan solos cuando cambia la categoría.
+
+### Entrada #94
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber cuál es el paso siguiente después de terminar el registro del conductor
+- Prompt:
+
+````text
+listo ya quedo el registro de conductor, ahora cual seria el paso a seguir
+````
+
+- Resumen de la respuesta: Dio una lista para cerrar el registro (tres pestañas, datos normalizados en Firestore, fotos en Cloudinary, reglas, contraseña, pruebas de fallo). Recomendó seguir con el login real y el estado real de la cuenta, y señaló que faltaba confirmar pricing.js y calculateFare. Anticipó las decisiones que se acercan: ubicación, mapas y rutas, notificaciones y backend de pagos.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que antes de dar una etapa por terminada conviene repasar datos, reglas y casos de fallo, y que calculateFare es necesaria para la solicitud y el cobro.
+
+### Entrada #95
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi tabla de funcionalidades del login y planear persistencia de sesión y estado en tiempo real
+- Prompt:
+
+````text
+Funcionalidad	Estado
+Login con Firebase Authentication	Implementado
+Validaciones de correo y contraseña	Implementadas
+Mensajes de error traducidos	Implementados
+Estado de carga al iniciar sesión	Implementado
+Consultar el estado real en Firestore	Implementado
+Bloquear login si está pending	Implementado
+Permitir login si está approved	Implementado
+Bloquear disponibilidad si no está aprobado	Implementado
+Persistencia de la sesión al reiniciar la app	Pendiente
+Escuchar cambios de aprobación en tiempo real	Pendiente toca hacer es esto antes del mapa Mi recomendación es terminar estas dos funcionalidades antes de comenzar el mapa:
+
+1. Persistencia de sesión: para que un conductor aprobado no tenga que iniciar sesión cada vez que abre la aplicación.
+2. Estado en tiempo real: para detectar cambios de aprobación y bloquear inmediatamente la disponibilidad cuando corresponda.
+````
+
+- Resumen de la respuesta: Señaló una contradicción: bloquear el login con estado pending se aleja del PDF (el conductor debe poder entrar y ver su estado, solo no puede ponerse Disponible) y le quita sentido al tiempo real. Dio guía para la persistencia de sesión (carga mientras se restaura, releer el estado, no guardar datos sensibles) y para el estado en tiempo real (suscripción con limpieza, apagar la disponibilidad si el estado cambia), con errores comunes y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/hooks/useAuth.js, src/services — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el estado de la cuenta debe escucharse con una suscripción que se cancela al cerrar sesión, y que el bloqueo debe impedir ponerse Disponible, no entrar a la app.
+
+### Entrada #96
+- Fecha: 2026-11-08 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Saber cómo implementar la ubicación del conductor
+- Prompt (primer mensaje):
+
+````text
+tengo una pregunta , como seria la implementacion de la ubicacion que se nesecita
+````
+
+- Prompt (segundo mensaje):
+
+````text
+Continuar
+````
+
+- Resumen de la respuesta: Con consulta de la documentación de Expo, explicó que el PDF solo necesita ubicación con la app abierta mientras se está Disponible (hook useDriverLocation, limpieza, guardado cada pocos segundos). Comparó expo-location (incluida en Expo Go) con la librería del PDF y dejó la decisión en mí. Dio qué terminar (permiso, lectura inicial, seguimiento, hook, guardado limitado y solo si está aprobado), decisiones de diseño, errores comunes y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/hooks/useDriverLocation.js — commit: 
+- Verificación: Documentación de Expo consultada por Claude (completar)
+- Aprendizaje: Entendí que el seguimiento en primer plano basta para este PDF y que hay que cancelarlo al apagar Disponible, al salir de la pantalla y al cerrar sesión.
+
+### Entrada #97
+- Fecha: 2026-11-09 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Decidir el siguiente paso después de la ubicación
+- Prompt:
+
+````text
+si ya he hecho eso, y lo mas importante se guarda en fire store ahora con que me recomiendas seguir
+````
+
+- Resumen de la respuesta: Recomendó seguir con las solicitudes entrantes antes que el mapa. Pidió revisar el cupo de escrituras de Firestore y confirmar calculateFare. Describió qué terminar (viajes de prueba, hook useTripRequests, pantalla con temporizador de 15 segundos, aceptar y rechazar con useCallback, reglas), decisiones, errores comunes y pruebas.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que las solicitudes dependen de un temporizador que debe limpiarse y que la tarifa debe salir solo de calculateFare.
+
+### Entrada #98
+- Fecha: 2026-11-09 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar qué atender al cambiar el tema de oscuro a azul y blanco
+- Prompt:
+
+````text
+listo es que estaba cambiando estilos a un azul blanco
+````
+
+- Resumen de la respuesta: Dio una lista de lo que suele fallar al pasar a un tema claro (texto del botón sobre el azul, contraste, barra de estado, tema de navegación, teclado, selector de fecha, colores escritos a mano y estados) y pruebas. Recordó ponerle límite de tiempo al estilo y preguntó otra vez por calculateFare.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: src/theme y varias pantallas — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que lo que queda fuera del tema (barra de estado, navegación, teclado) es lo que más se rompe al cambiar de colores.
+
+### Entrada #99
+- Fecha: 2026-11-09 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Revisar mi documento de viaje de prueba contra el modelo de datos del PDF
+- Prompt:
+
+````text
+passengerName
+stringCarlos Pérez
+origin
+stringParque de Bello
+destination
+stringParque de Berrío, Medellín
+category
+stringeconomy
+status
+stringpending
+driverId
+nullnull
+createdAt
+timestampFecha y hora actual para la simulacion de pasajero estoy pasando estos datos
+````
+
+- Resumen de la respuesta: Señaló que el estado de un viaje nuevo es requested (no pending), que origin y destination deben ser objetos con latitud, longitud y dirección, y que faltaban distanceKm, durationMin, paymentMethod, passengerId y commissionRate. Comparó los diseños de driverId (asignada o abierta) y sugirió usar 8,5 km y 22 minutos para probar calculateFare.
+- Qué se usó / modificó / descartó: Documento de prueba creado por mí; cambios por la revisión: (completar)
+- Archivos y commit: colección trips en Firestore — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que el estado de un viaje y el de una cuenta son cosas distintas y que el modelo de datos debe seguir la forma del PDF.
+
+### Entrada #100
+- Fecha: 2026-11-09 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Entender de dónde vienen las solicitudes de viaje
+- Prompt:
+
+````text
+Tengo una pregunta espera no entiendo lo de enviar solicitudes esas solicitudes de donde vienen
+````
+
+- Resumen de la respuesta: Explicó que en una app real el pasajero crea un documento y el conductor lo escucha, y que como el proyecto solo tiene la app del conductor, el pasajero se simula creando el documento en la colección trips. Dio el flujo paso a paso y tres formas de simularlo (a mano en la consola, botón de prueba, mini-app aparte).
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que la base de datos funciona como un tablón compartido entre la app del pasajero y la del conductor, y que aquí yo hago de pasajero.
+
+### Entrada #101
+- Fecha: 2026-11-10 (verificar)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: Claude (claude.ai)
+- Objetivo: Qué hacer mientras la profesora entrega la API de solicitudes
+- Prompt (primer mensaje):
+
+````text
+La profe dijo que nos pasaba una api para eso, osea que toca esperar pa eso
+````
+
+- Prompt (segundo mensaje):
+
+````text
+Continuar
+````
+
+- Resumen de la respuesta: Dijo que no se debe armar nada que dependa de la API hasta saber cómo funciona y dio seis preguntas para la profesora (cómo llega la solicitud, qué datos trae, cómo vuelve el estado, llaves, límites y fechas). Propuso avanzar con calculateFare, la tarjeta de solicitud con datos locales, ganancias, historial y perfil, y poner un punto único de entrada para los datos del viaje.
+- Qué se usó / modificó / descartó: (completar)
+- Archivos y commit: ninguno en esta entrada — commit: 
+- Verificación: (completar)
+- Aprendizaje: Entendí que conviene aislar el origen de los datos del viaje en un solo lugar, para cambiarlo cuando llegue la API sin tocar las pantallas.
+### Entrada #102
+
+- **Fecha:** 2026-11-10
+- **Integrante:** Fabian Alexander Chirivi
+- **Herramienta:** ChatGPT (OpenAI)
+- **Objetivo:** Identificar las funcionalidades de UberCloneDriver que se pueden desarrollar mientras la profesora entrega la API de solicitudes de viajes.
+- **Prompt:**
+
+```text
+bueno, comencemoz, resulta que la profe dijo que la api que va mandar las solicitudes la da ella, pero todavia no, asi que adelantemos lo que no depende de esa api que podria ser?
+```
+
+- **Resumen de la respuesta:** La IA recomendó continuar con funcionalidades independientes de la API: cálculo de tarifas y ganancias, visualización de rutas, pantalla de viaje en curso e historial. También aconsejó posponer la integración de solicitudes hasta conocer el funcionamiento de la API proporcionada por la profesora.
+- **Qué se usó / modificó / descartó:** Se decidió comenzar por el cálculo de tarifas. Se dejó pendiente la integración de solicitudes y los cambios en las reglas de Firestore.
+- **Archivos y commit:** Ninguno. No se realizaron modificaciones de código durante esta interacción.
+- **Verificación:** No aplica; fue una actividad de planificación.
+- **Aprendizaje:** Comprendí que puedo continuar desarrollando funcionalidades independientes mientras espero una API externa, evitando implementar servicios que posteriormente tendría que reemplazar.
+
+---
+
+### Entrada #103
+
+- **Fecha:** 2026-11-10
+- **Integrante:** Fabian Alexander Chirivi
+- **Herramienta:** ChatGPT (OpenAI)
+- **Objetivo:** Evaluar si la ubicación y el mapa de UberCloneDriver deberían mostrarse como fondo de la pantalla principal.
+- **Prompt:**
+
+```text
+listo iniciemos con calculatefare pero antes de eso te pregunto, ya que tenemos esa ubicacion pero en uber o driver esa ubicacion esta como de fondo atras no importa? o que dices tu
+```
+
+- **Resumen de la respuesta:** La IA explicó las diferencias entre mantener el mapa dentro de una tarjeta y utilizarlo como fondo de la pantalla principal, similar a las aplicaciones de conductores. Recomendó usar el mapa como fondo con controles flotantes de disponibilidad y tarjetas para las solicitudes, pero aplazar el cambio visual hasta terminar el cálculo de tarifas.
+- **Qué se usó / modificó / descartó:** Se tomó como referencia el diseño de mapa de fondo para una futura actualización de HomeScreen. Se decidió conservar temporalmente la implementación actual para no afectar el GPS ni las funcionalidades existentes.
+- **Archivos y commit:** Ninguno. `src/screens/HomeScreen.js` quedó sin modificaciones durante esta interacción.
+- **Verificación:** No se realizaron pruebas porque únicamente se evaluó una propuesta visual.
+- **Aprendizaje:** Comprendí que la ubicación del conductor puede mostrarse en un mapa de fondo sin necesidad de cambiar la lógica del GPS, y que es conveniente separar los cambios de interfaz de los cambios funcionales.
+
+---
+
+### Entrada #104
+
+- **Fecha:** 2026-11-10
+- **Integrante:** Fabian Alexander Chirivi
+- **Herramienta:** ChatGPT (OpenAI)
+- **Objetivo:** Implementar una función independiente para calcular las tarifas de los viajes, la comisión de la plataforma y las ganancias del conductor.
+- **Prompt:**
+
+```text
+listo hagamos el calculatefare
+```
+
+- **Resumen de la respuesta:** La IA revisó la rama `developer` del repositorio para comprobar si existía una implementación de `calculateFare`. Al no encontrarla, proporcionó el código de una función que recibe distancia, duración, tarifa base, precio por kilómetro, precio por minuto, comisión y tarifa mínima. La función valida los valores, calcula el precio total, aplica la comisión y devuelve la ganancia del conductor en pesos enteros.
+- **Qué se usó / modificó / descartó:** Se proporcionó el código para crear `calculateFare.js`. Las tarifas se dejaron como parámetros configurables porque todavía no se habían confirmado los valores oficiales del PDF. Se propuso una prueba con 8,5 km, 22 minutos y una comisión del 20 %, utilizando valores ilustrativos para obtener una tarifa de $19.200 y una ganancia de $15.360. No se modificaron HomeScreen, Firebase ni el GPS.
+- **Archivos y commit:** `src/utils/calculateFare.js` — creación propuesta. Commit pendiente de confirmar.
+- **Verificación:** La prueba matemática fue planteada, pero no se confirmó su ejecución en el proyecto.
+- **Aprendizaje:** Comprendí cómo separar el cálculo de tarifas de la interfaz y de la API de solicitudes. También aprendí a calcular la comisión de la plataforma y la ganancia neta del conductor, y la importancia de utilizar las tarifas oficiales del proyecto.
+
