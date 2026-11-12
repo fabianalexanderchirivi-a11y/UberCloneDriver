@@ -58,7 +58,8 @@ export default function AppNavigator() {
             name="DriverProfile"
             component={DriverProfileScreen}
             options={{
-              headerTitle: () => null,
+              title: 'Perfil',
+              headerBackTitle: 'volver',
             }}
           />
 
