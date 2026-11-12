@@ -375,7 +375,17 @@ export default function HomeScreen({ navigation }) {
                 )}
               </>
             )}
-            
+
+            <Pressable
+              style={styles.profileButton}
+              onPress={() => navigation.navigate('DriverProfile')}
+              accessibilityRole="button"
+            >
+              <Text style={styles.profileButtonText}>
+                {t('profile.open')}
+              </Text>
+            </Pressable>
+
 
             <Pressable
               style={styles.logoutButton}
@@ -386,6 +396,7 @@ export default function HomeScreen({ navigation }) {
                 {t('home.logOut')}
               </Text>
             </Pressable>
+
           </View>
         </View>
       </SafeAreaView>
@@ -529,4 +540,19 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 1,
   },
+
+  profileButton: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: radius.md,
+    minHeight: 46,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.sm,
+  },
+  profileButtonText: {
+    color: colors.text,
+    fontWeight: '700',
+  },
+
 });

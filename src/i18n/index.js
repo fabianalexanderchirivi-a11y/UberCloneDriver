@@ -7,6 +7,18 @@ const texts = {
       continue: 'Continuar',
     },
 
+    profile: {
+      title: 'Perfil del conductor',
+      open: 'Mi perfil',
+      personalSection: 'Información personal',
+      vehicleSection: 'Mi vehículo',
+      documentsSection: 'Vencimiento de documentos',
+      notAvailable: 'No disponible',
+      loadError: 'No se pudo cargar tu perfil.',
+      readOnlyNotice: 'Esta información es de consulta. Próximamente podrás cambiar tu teléfono, idioma y contraseña.',
+    },
+
+
     welcome: {
       title: 'UberClone Conductor',
       subtitle: 'Recibe viajes y consulta tus ganancias',
@@ -205,6 +217,18 @@ const texts = {
       hidePassword: 'Hide password',
       continue: 'Continue',
     },
+
+    profile: {
+      title: 'Driver profile',
+      open: 'My profile',
+      personalSection: 'Personal information',
+      vehicleSection: 'My vehicle',
+      documentsSection: 'Document expiration dates',
+      notAvailable: 'Not available',
+      loadError: 'Could not load your profile.',
+      readOnlyNotice: 'This information is read-only. You will soon be able to change your phone number, language, and password.',
+    },
+
 
     welcome: {
       title: 'UberClone Driver',

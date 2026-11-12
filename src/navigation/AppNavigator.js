@@ -13,6 +13,7 @@ import ActiveTripScreen from '../screens/ActiveTripScreen';
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
 import { t } from '../i18n';
+import DriverProfileScreen from '../screens/DriverProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -53,6 +54,14 @@ export default function AppNavigator() {
               title: 'Viaje de prueba',
             }}
           />
+          <Stack.Screen
+            name="DriverProfile"
+            component={DriverProfileScreen}
+            options={{
+              headerTitle: () => null,
+            }}
+          />
+
         </>
       ) : (
         <>
