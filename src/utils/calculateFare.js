@@ -1,24 +1,15 @@
 
- // AI-assisted: see docs/AI_LOG.md #104
+// AI-assisted: see docs/AI_LOG.md #104, #137
+
+import { PRICING } from '../config/pricing';
 
 export const calculateFare = ({
   distanceKm,
   durationMin,
-  baseFare,
-  pricePerKm,
-  pricePerMin,
-  commissionRate,
-  minimumFare = 0,
+  category,
+  tip = 0,
 }) => {
-  const values = [
-    distanceKm,
-    durationMin,
-    baseFare,
-    pricePerKm,
-    pricePerMin,
-    commissionRate,
-    minimumFare,
-  ];
+  const values = [distanceKm, durationMin, tip];
 
   if (
     values.some(
@@ -31,24 +22,32 @@ export const calculateFare = ({
     throw new Error('INVALID_FARE_VALUES');
   }
 
-  if (commissionRate > 1) {
-    throw new Error('INVALID_COMMISSION_RATE');
+  if (!Number.isInteger(tip)) {
+    throw new Error('INVALID_TIP');
   }
 
-  const calculatedFare =
-    baseFare +
-    distanceKm * pricePerKm +
-    durationMin * pricePerMin;
+  const multiplier = PRICING.multipliers[category];
+
+  if (multiplier === undefined) {
+    throw new Error('INVALID_CATEGORY');
+  }
+
+  const subtotal =
+    PRICING.baseFare +
+    distanceKm * PRICING.pricePerKm +
+    durationMin * PRICING.pricePerMin;
+
+  const calculatedFare = subtotal * multiplier;
 
   const fare = Math.round(
-    Math.max(calculatedFare, minimumFare)
-  );
+    Math.max(calculatedFare, PRICING.minimumFare) / 100
+  ) * 100;
 
   const commission = Math.round(
-    fare * commissionRate
+    fare * PRICING.commissionRate
   );
 
-  const driverEarnings = fare - commission;
+  const driverEarnings = fare - commission + tip;
 
   return {
     fare,
