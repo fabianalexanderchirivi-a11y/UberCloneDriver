@@ -12,13 +12,16 @@ import RegistrationSuccessScreen from '../screens/registro/RegistrationSuccessSc
 import ActiveTripScreen from '../screens/ActiveTripScreen';
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
-import { t } from '../i18n';
+
 import DriverProfileScreen from '../screens/DriverProfileScreen';
+import { useContext } from 'react';
+import { LanguageContext } from '../context/LanguageContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { isSignedIn } = useAuth();
+  const { t } = useContext(LanguageContext);
 
   return (
     <Stack.Navigator
@@ -41,7 +44,7 @@ export default function AppNavigator() {
             name="Home"
             component={HomeScreen}
             options={{
-              title: t.home.title,
+              title: t('home.title'),
               headerBackVisible: false,
               gestureEnabled: false,
             }}
@@ -58,8 +61,7 @@ export default function AppNavigator() {
             name="DriverProfile"
             component={DriverProfileScreen}
             options={{
-              title: 'Perfil',
-              headerBackTitle: 'volver',
+              title: t('profile.title'),
             }}
           />
 
