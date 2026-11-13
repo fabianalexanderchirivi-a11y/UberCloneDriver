@@ -1,7 +1,7 @@
 
-// AI-assisted: see docs/AI_LOG.md #10
+// AI-assisted: see docs/AI_LOG.md #10, #143
 
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,7 +17,11 @@ import { doc, onSnapshot } from 'firebase/firestore';
 
 import useAuth from '../hooks/useAuth';
 import useDriverLocation from '../hooks/useDriverLocation';
+import useTripRequests from '../hooks/useTripRequests';
+
+import TripRequestsPanel from '../components/TripRequestsPanel';
 import DriverMap from '../components/DriverMap';
+
 import { auth, db } from '../config/firebase';
 import { colors, spacing, radius, typography } from '../theme';
 import { LanguageContext } from '../context/LanguageContext';
@@ -34,10 +38,12 @@ export default function HomeScreen({ navigation }) {
 
   const [isAvailable, setIsAvailable] = useState(false);
   const [accountStatus, setAccountStatus] = useState(null);
+  const [category, setCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showTestPickup, setShowTestPickup] = useState(false);
 
-  const en = language === 'en';
+  const lastOpenedTrip = useRef(null);
+
   const isApproved = accountStatus === 'approved';
   const isPending = accountStatus === 'pending';
 
@@ -48,12 +54,27 @@ export default function HomeScreen({ navigation }) {
     stopSharing,
   } = useDriverLocation(isAvailable && isApproved);
 
+  const enabled =
+    isAvailable &&
+    isApproved &&
+    Boolean(location);
+
+  const {
+    pendingTrip,
+    activeTrip,
+    busy,
+    error: tripError,
+    now,
+    acceptTrip,
+    rejectTrip,
+  } = useTripRequests(enabled, category);
+
   useEffect(() => {
-    let active = true;
     const user = auth.currentUser;
 
     if (!user) {
       setAccountStatus(null);
+      setCategory(null);
       setIsAvailable(false);
       setIsLoading(false);
       return;
@@ -68,47 +89,36 @@ export default function HomeScreen({ navigation }) {
     const unsubscribe = onSnapshot(
       registrationRef,
       (snapshot) => {
-        if (!active) return;
-
-        const status = snapshot.exists()
-          ? snapshot.data().status
+        const data = snapshot.exists()
+          ? snapshot.data()
           : null;
 
-        setAccountStatus(status);
+        setAccountStatus(data?.status ?? null);
+        setCategory(data?.vehicleData?.category ?? null);
         setIsLoading(false);
 
-        if (status !== 'approved') {
+        if (data?.status !== 'approved') {
           setIsAvailable(false);
           setShowTestPickup(false);
         }
       },
       (error) => {
-        if (!active) return;
-
         console.error(
-          'Error al consultar conductor:',
+          'Registro:',
           error.code || error.message
         );
 
         setAccountStatus(null);
+        setCategory(null);
         setIsAvailable(false);
-        setShowTestPickup(false);
         setIsLoading(false);
 
-        Alert.alert(
-          en ? 'Error' : 'Error',
-          en
-            ? 'Could not verify your account.'
-            : 'No se pudo verificar tu cuenta.'
-        );
+        Alert.alert(t('profile.loadError'));
       }
     );
 
-    return () => {
-      active = false;
-      unsubscribe();
-    };
-  }, [en]);
+    return unsubscribe;
+  }, [t]);
 
   useEffect(() => {
     if (!locationError || !isAvailable) return;
@@ -116,42 +126,26 @@ export default function HomeScreen({ navigation }) {
     setIsAvailable(false);
     setShowTestPickup(false);
 
-    const messages = {
-      permissionDenied: en
-        ? 'Allow location access to become available.'
-        : 'Permite el acceso a la ubicación.',
-      locationDisabled: en
-        ? 'Enable GPS on your phone.'
-        : 'Activa el GPS del celular.',
-      locationError: en
-        ? 'Could not get your location.'
-        : 'No se pudo obtener tu ubicación.',
-      syncError: en
-        ? 'Could not synchronize with Firebase.'
-        : 'No se pudo sincronizar con Firebase.',
-    };
+    Alert.alert(t('requests.locationError'));
+  }, [locationError, isAvailable, t]);
 
-    Alert.alert(
-      en ? 'Location' : 'Ubicación',
-      messages[locationError] ||
-      messages.locationError
-    );
-  }, [locationError, isAvailable, en]);
-
-  const handleAvailabilityChange = (value) => {
-    if (!isApproved) return;
-
-    setIsAvailable(value);
-
-    if (!value) {
-      setShowTestPickup(false);
-    }
-  };
-
-  const handleOpenDirections = async () => {
-    if (!location || !isAvailable || !isApproved) {
+  useEffect(() => {
+    if (
+      !activeTrip ||
+      lastOpenedTrip.current === activeTrip.id
+    ) {
       return;
     }
+
+    lastOpenedTrip.current = activeTrip.id;
+
+    navigation.navigate('ActiveTrip', {
+      tripId: activeTrip.id,
+    });
+  }, [activeTrip?.id, navigation]);
+
+  const handleDirections = async () => {
+    if (!enabled) return;
 
     const destination = encodeURIComponent(
       `${TEST_PICKUP.lat},${TEST_PICKUP.lng}`
@@ -160,23 +154,12 @@ export default function HomeScreen({ navigation }) {
     const url =
       'https://www.google.com/maps/dir/?api=1' +
       `&destination=${destination}` +
-      '&travelmode=driving' +
-      '&dir_action=navigate';
+      '&travelmode=driving&dir_action=navigate';
 
     try {
       await Linking.openURL(url);
-    } catch (error) {
-      console.error(
-        'Error al abrir Google Maps:',
-        error.message
-      );
-
-      Alert.alert(
-        en ? 'Navigation error' : 'Error de navegación',
-        en
-          ? 'Could not open Google Maps.'
-          : 'No se pudo abrir Google Maps.'
-      );
+    } catch {
+      Alert.alert(t('requests.directionsError'));
     }
   };
 
@@ -187,18 +170,8 @@ export default function HomeScreen({ navigation }) {
     try {
       await stopSharing();
       await signOut();
-    } catch (error) {
-      console.error(
-        'Error al cerrar sesión:',
-        error.code || error.message
-      );
-
-      Alert.alert(
-        en ? 'Error' : 'Error',
-        en
-          ? 'Could not finish signing out.'
-          : 'No se pudo completar el cierre de sesión.'
-      );
+    } catch {
+      Alert.alert(t('requests.logoutError'));
     }
   };
 
@@ -225,16 +198,24 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.screen}>
-      <DriverMap
-        location={isAvailable && isApproved ? location : null}
-        pickup={
-          showTestPickup && isAvailable && isApproved
-            ? TEST_PICKUP
-            : null
-        }
-        language={language}
-
-      />
+      <View
+        style={styles.mapLayer}
+        collapsable={false}
+      >
+        <DriverMap
+          location={
+            isApproved && isAvailable
+              ? location
+              : null
+          }
+          pickup={
+            showTestPickup && enabled
+              ? TEST_PICKUP
+              : null
+          }
+          language={language}
+        />
+      </View>
 
       <SafeAreaView
         style={styles.overlay}
@@ -276,7 +257,7 @@ export default function HomeScreen({ navigation }) {
                 </Text>
 
                 <Text style={styles.description}>
-                  {isAvailable && isApproved
+                  {enabled
                     ? t('home.available')
                     : t('home.unavailable')}
                 </Text>
@@ -284,19 +265,33 @@ export default function HomeScreen({ navigation }) {
 
               <Switch
                 value={isAvailable && isApproved}
-                onValueChange={handleAvailabilityChange}
-                disabled={!isApproved}
+                onValueChange={(value) => {
+                  if (
+                    !isApproved ||
+                    (activeTrip && !value)
+                  ) {
+                    return;
+                  }
+
+                  setIsAvailable(value);
+
+                  if (!value) {
+                    setShowTestPickup(false);
+                  }
+                }}
+                disabled={
+                  !isApproved ||
+                  Boolean(activeTrip)
+                }
                 trackColor={{
                   false: colors.disabled,
                   true: colors.primary,
                 }}
                 thumbColor={
-                  isAvailable && isApproved
+                  isAvailable
                     ? colors.onPrimary
                     : colors.textSecondary
                 }
-                accessibilityRole="switch"
-                accessibilityLabel={t('home.availability')}
               />
             </View>
 
@@ -308,84 +303,93 @@ export default function HomeScreen({ navigation }) {
               </Text>
             )}
 
-            {isApproved && isAvailable && isLocating && (
-              <View style={styles.loadingRow}>
-                <ActivityIndicator
-                  color={colors.primary}
-                  size="small"
-                />
-                <Text style={styles.hint}>
-                  {en
-                    ? 'Getting GPS location...'
-                    : 'Obteniendo ubicación GPS...'}
-                </Text>
-              </View>
+            {isApproved &&
+              isAvailable &&
+              isLocating && (
+                <View style={styles.loadingRow}>
+                  <ActivityIndicator
+                    color={colors.primary}
+                    size="small"
+                  />
+
+                  <Text style={styles.hint}>
+                    {t('requests.gettingLocation')}
+                  </Text>
+                </View>
+              )}
+
+            {enabled && (
+              <Text style={styles.gpsText}>
+                {t('requests.gpsActive')}
+              </Text>
             )}
 
-            {isApproved && isAvailable && location && (
-              <>
-                <Text style={styles.gpsText}>
-                  {en
-                    ? 'GPS active'
-                    : 'GPS activo'}
+            {enabled && !activeTrip && (
+              <Pressable
+                style={styles.secondaryButton}
+                onPress={() =>
+                  setShowTestPickup(!showTestPickup)
+                }
+              >
+                <Text style={styles.secondaryButtonText}>
+                  {showTestPickup
+                    ? t('requests.hidePickup')
+                    : t('requests.showPickup')}
                 </Text>
+              </Pressable>
+            )}
 
-                <Pressable
-                  style={styles.secondaryButton}
-                  onPress={() =>
-                    setShowTestPickup((previous) => !previous)
-                  }
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.secondaryButtonText}>
-                    {showTestPickup
-                      ? en
-                        ? 'Hide test pickup'
-                        : 'Ocultar recogida de prueba'
-                      : en
-                        ? 'Show test pickup'
-                        : 'Mostrar recogida de prueba'}
+            {enabled &&
+              showTestPickup &&
+              !activeTrip && (
+                <View style={styles.testSection}>
+                  <Text style={styles.testAddress}>
+                    {TEST_PICKUP.address}
                   </Text>
-                </Pressable>
 
-                {showTestPickup && (
-                  <View style={styles.testSection}>
-                    <Text style={styles.testLabel}>
-                      {en
-                        ? 'Test pickup location'
-                        : 'Punto de recogida de prueba'}
+                  <Pressable
+                    style={styles.primaryButton}
+                    onPress={handleDirections}
+                  >
+                    <Text style={styles.primaryButtonText}>
+                      {t('requests.directions')}
                     </Text>
+                  </Pressable>
+                </View>
+              )}
 
-                    <Text style={styles.testAddress}>
-                      {TEST_PICKUP.address}
-                    </Text>
+            {activeTrip && (
+              <Pressable
+                style={styles.primaryButton}
+                onPress={() =>
+                  navigation.navigate('ActiveTrip', {
+                    tripId: activeTrip.id,
+                  })
+                }
+              >
+                <Text style={styles.primaryButtonText}>
+                  {t('requests.continueTrip')}
+                </Text>
+              </Pressable>
+            )}
 
-                    <Pressable
-                      style={styles.primaryButton}
-                      onPress={handleOpenDirections}
-                      accessibilityRole="button"
-                    >
-                      <Text style={styles.primaryButtonText}>
-                        {en
-                          ? 'Get directions'
-                          : 'Cómo llegar'}
-                      </Text>
-                    </Pressable>
-                  </View>
-                )}
-              </>
+            {!!tripError && !pendingTrip && (
+              <Text style={styles.error}>
+                {t(`requests.${tripError}`)}
+              </Text>
             )}
 
             <Pressable
               style={styles.profileButton}
-              onPress={() => navigation.navigate('DriverProfile')}
+              onPress={() =>
+                navigation.navigate('DriverProfile')
+              }
               accessibilityRole="button"
             >
               <Text style={styles.profileButtonText}>
                 {t('profile.open')}
               </Text>
             </Pressable>
-
 
             <Pressable
               style={styles.logoutButton}
@@ -396,10 +400,18 @@ export default function HomeScreen({ navigation }) {
                 {t('home.logOut')}
               </Text>
             </Pressable>
-
           </View>
         </View>
       </SafeAreaView>
+
+      <TripRequestsPanel
+        trip={pendingTrip}
+        now={now}
+        busy={busy}
+        error={tripError}
+        onAccept={acceptTrip}
+        onReject={rejectTrip}
+      />
     </View>
   );
 }
@@ -408,6 +420,10 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  mapLayer: {
+    flex: 1,
+    minHeight: 1,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -440,8 +456,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   statusDot: {
-    height: 9,
     width: 9,
+    height: 9,
     borderRadius: 5,
   },
   statusText: {
@@ -457,7 +473,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: spacing.lg,
-    gap: spacing.md,
+    gap: spacing.sm,
     elevation: 6,
   },
   availabilityRow: {
@@ -479,52 +495,55 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   hint: {
-    ...typography.body,
     color: colors.textSecondary,
     fontSize: 13,
   },
   loadingRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     gap: spacing.sm,
+    alignItems: 'center',
   },
   gpsText: {
-    fontSize: 13,
     color: colors.success,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
   },
   secondaryButton: {
     borderWidth: 1,
     borderColor: colors.primary,
-    borderRadius: radius.md,
     padding: spacing.md,
+    borderRadius: radius.md,
     alignItems: 'center',
   },
   secondaryButtonText: {
     color: colors.text,
     fontWeight: '600',
   },
-  testSection: {
-    gap: spacing.sm,
-  },
-  testLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-  },
-  testAddress: {
-    ...typography.body,
-    color: colors.text,
-    fontSize: 14,
-  },
   primaryButton: {
     backgroundColor: colors.primary,
-    borderRadius: radius.md,
     padding: spacing.md,
+    borderRadius: radius.md,
     alignItems: 'center',
   },
   primaryButtonText: {
     color: colors.onPrimary,
+    fontWeight: '700',
+  },
+  testSection: {
+    gap: spacing.sm,
+  },
+  testAddress: {
+    color: colors.text,
+  },
+  profileButton: {
+    borderWidth: 1,
+    borderColor: colors.primary,
+    padding: spacing.md,
+    borderRadius: radius.md,
+    alignItems: 'center',
+  },
+  profileButtonText: {
+    color: colors.text,
     fontWeight: '700',
   },
   logoutButton: {
@@ -536,23 +555,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  mapLayer: {
-    flex: 1,
-    minHeight: 1,
+  error: {
+    color: colors.error,
   },
-
-  profileButton: {
-    borderWidth: 1,
-    borderColor: colors.primary,
-    borderRadius: radius.md,
-    minHeight: 46,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing.sm,
-  },
-  profileButtonText: {
-    color: colors.text,
-    fontWeight: '700',
-  },
-
 });

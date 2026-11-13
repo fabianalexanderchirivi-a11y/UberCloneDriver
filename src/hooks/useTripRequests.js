@@ -1,4 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+
+// AI-assisted: see docs/AI_LOG.md #143
+
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   collection,
   doc,
@@ -11,175 +14,184 @@ import {
 
 import { auth, db } from '../config/firebase';
 
+const OPEN_STATUSES = [
+  'accepted',
+  'driver_arriving',
+  'in_progress',
+];
+
+const timestampMillis = (value) =>
+  value?.toMillis?.() ?? 0;
+
 export default function useTripRequests(enabled, category) {
-  const [requests, setRequests] = useState([]);
-  const [dismissedIds, setDismissedIds] = useState([]);
-  const [activeTrip, setActiveTrip] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAccepting, setIsAccepting] = useState(false);
-  const [error, setError] = useState(null);
+  const [trips, setTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     const user = auth.currentUser;
 
     if (!user || !category) {
-      setRequests([]);
-      setActiveTrip(null);
-      setIsLoading(false);
+      setTrips([]);
+      setLoading(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    setLoading(true);
 
     const tripsQuery = query(
-      collection(db, 'trips'),
+      collection(db, 'trip'),
       where('driverId', '==', user.uid)
     );
 
     const unsubscribe = onSnapshot(
       tripsQuery,
       (snapshot) => {
-        const trips = snapshot.docs.map((item) => ({
-          id: item.id,
-          ...item.data(),
-        }));
-
-        const accepted = trips.find(
-          (trip) =>
-            trip.category === category &&
-            trip.status === 'accepted'
+        setTrips(
+          snapshot.docs.map((item) => ({
+            id: item.id,
+            ...item.data(),
+          }))
         );
 
-        const pending = trips
-          .filter(
-            (trip) =>
-              trip.category === category &&
-              trip.status === 'requested'
-          )
-          .sort((a, b) => {
-            const first = a.createdAt?.seconds ?? 0;
-            const second = b.createdAt?.seconds ?? 0;
-            return first - second;
-          });
-
-        setActiveTrip(accepted ?? null);
-        setRequests(pending);
-        setIsLoading(false);
+        setLoading(false);
+        setError('');
       },
       (snapshotError) => {
         console.error(
-          'Error al recibir viajes:',
+          'Trip listener:',
           snapshotError.code || snapshotError.message
         );
 
+        setTrips([]);
+        setLoading(false);
         setError('listenError');
-        setRequests([]);
-        setActiveTrip(null);
-        setIsLoading(false);
       }
     );
 
-    return () => {
-      unsubscribe();
-    };
+    return unsubscribe;
   }, [category]);
 
-  const rejectTrip = useCallback((tripId) => {
-    setDismissedIds((previous) =>
-      previous.includes(tripId)
-        ? previous
-        : [...previous, tripId]
+  useEffect(() => {
+    if (!enabled) return;
+
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 250);
+
+    return () => clearInterval(interval);
+  }, [enabled]);
+
+  const activeTrip = useMemo(
+    () =>
+      trips.find(
+        (trip) =>
+          trip.category === category &&
+          OPEN_STATUSES.includes(trip.status)
+      ) ?? null,
+    [trips, category]
+  );
+
+  const pendingTrip = useMemo(() => {
+    if (!enabled || activeTrip) return null;
+
+    return (
+      trips
+        .filter(
+          (trip) =>
+            trip.category === category &&
+            trip.status === 'requested'
+        )
+        .sort(
+          (a, b) =>
+            timestampMillis(a.expiresAt) -
+            timestampMillis(b.expiresAt)
+        )[0] ?? null
     );
-  }, []);
+  }, [trips, enabled, category, activeTrip, now]);
 
-  const acceptTrip = useCallback(async (tripId) => {
-    if (
-      !enabled ||
-      !category ||
-      isAccepting ||
-      activeTrip
-    ) {
-      return false;
-    }
+  const changeStatus = useCallback(
+    async (tripId, status) => {
+      if (!enabled || busy || !auth.currentUser) {
+        return false;
+      }
 
-    const user = auth.currentUser;
+      setBusy(true);
+      setError('');
 
-    if (!user) {
-      setError('authError');
-      return false;
-    }
+      try {
+        const uid = auth.currentUser.uid;
 
-    setIsAccepting(true);
-    setError(null);
-
-    try {
-      const tripRef = doc(db, 'trips', tripId);
-
-      const acceptedTrip = await runTransaction(
-        db,
-        async (transaction) => {
+        await runTransaction(db, async (transaction) => {
+          const tripRef = doc(db, 'trip', tripId);
           const snapshot = await transaction.get(tripRef);
 
           if (!snapshot.exists()) {
-            throw new Error('tripUnavailable');
+            throw new Error('unavailable');
           }
 
           const trip = snapshot.data();
 
           if (
+            trip.driverId !== uid ||
+            trip.category !== category ||
             trip.status !== 'requested' ||
-            trip.driverId !== user.uid ||
-            trip.category !== category
+            (
+              status === 'accepted' &&
+              timestampMillis(trip.expiresAt) <= Date.now()
+            )
           ) {
-            throw new Error('tripUnavailable');
+            throw new Error('unavailable');
           }
 
           transaction.update(tripRef, {
-            status: 'accepted',
-            acceptedAt: serverTimestamp(),
+            status,
+            ...(status === 'accepted'
+              ? { acceptedAt: serverTimestamp() }
+              : { rejectedAt: serverTimestamp() }),
           });
+        });
 
-          return {
-            id: tripId,
-            ...trip,
-            status: 'accepted',
-          };
-        }
-      );
+        return true;
+      } catch (changeError) {
+        console.error(
+          'Trip status:',
+          changeError.code || changeError.message
+        );
 
-      setActiveTrip(acceptedTrip);
-      setRequests([]);
+        setError(
+          changeError.message === 'unavailable'
+            ? 'unavailable'
+            : 'writeError'
+        );
 
-      return true;
-    } catch (acceptError) {
-      console.error(
-        'Error al aceptar viaje:',
-        acceptError.code || acceptError.message
-      );
+        return false;
+      } finally {
+        setBusy(false);
+      }
+    },
+    [enabled, busy, category]
+  );
 
-      setError(
-        acceptError.message === 'tripUnavailable'
-          ? 'tripUnavailable'
-          : 'acceptError'
-      );
+  const acceptTrip = useCallback(
+    (tripId) => changeStatus(tripId, 'accepted'),
+    [changeStatus]
+  );
 
-      return false;
-    } finally {
-      setIsAccepting(false);
-    }
-  }, [enabled, category, isAccepting, activeTrip]);
+  const rejectTrip = useCallback(
+    (tripId) => changeStatus(tripId, 'rejected'),
+    [changeStatus]
+  );
 
   return {
-    requests: enabled && !activeTrip
-      ? requests.filter(
-          (trip) => !dismissedIds.includes(trip.id)
-        )
-      : [],
+    pendingTrip,
     activeTrip,
-    isLoading,
-    isAccepting,
+    loading,
+    busy,
     error,
+    now,
     acceptTrip,
     rejectTrip,
   };

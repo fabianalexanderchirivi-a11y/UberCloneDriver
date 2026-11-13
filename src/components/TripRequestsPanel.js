@@ -1,291 +1,245 @@
 
-import { useState } from 'react';
+// AI-assisted: see docs/AI_LOG.md #143
+
+import { useContext, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
+  Modal,
   Pressable,
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 
-import useTripRequests from '../hooks/useTripRequests';
-import { colors, radius, spacing, typography } from '../theme';
+import { LanguageContext } from '../context/LanguageContext';
+import { calculateFare } from '../utils/calculateFare';
+import { colors, spacing, radius, typography } from '../theme';
+
+const money = (value) =>
+  `$${Math.round(value).toLocaleString('es-CO')} COP`;
 
 export default function TripRequestsPanel({
-  enabled,
-  category,
-  language,
+  trip,
+  now,
+  busy,
+  error,
+  onAccept,
+  onReject,
 }) {
-  const {
-    requests,
-    activeTrip,
-    isLoading,
-    isAccepting,
-    error,
-    acceptTrip,
-    rejectTrip,
-  } = useTripRequests(enabled, category);
+  const { t } = useContext(LanguageContext);
 
   const [message, setMessage] = useState('');
-  const en = language === 'en';
+  const expiring = useRef(null);
 
-  const labels = en
-    ? {
-        title: 'Trip requests',
-        waiting: 'Waiting for trip requests...',
-        enable: 'Enable availability and GPS to receive trips.',
-        origin: 'Pickup',
-        destination: 'Destination',
-        passenger: 'Passenger',
-        category: 'Category',
-        distance: 'Distance',
-        duration: 'Duration',
-        payment: 'Payment method',
-        accept: 'Accept',
-        reject: 'Reject',
-        accepting: 'Accepting...',
-        accepted: 'Trip accepted',
-        acceptedDescription: 'This trip is assigned to your account.',
-        loadError: 'Could not load trips. Check Firebase permissions.',
-        acceptError: 'Could not accept this trip.',
-        unavailable: 'This trip is no longer available.',
-      }
-    : {
-        title: 'Solicitudes de viajes',
-        waiting: 'Esperando solicitudes de viajes...',
-        enable: 'Activa Disponible y el GPS para recibir viajes.',
-        origin: 'Recogida',
-        destination: 'Destino',
-        passenger: 'Pasajero',
-        category: 'Categoría',
-        distance: 'Distancia',
-        duration: 'Duración',
-        payment: 'Método de pago',
-        accept: 'Aceptar',
-        reject: 'Rechazar',
-        accepting: 'Aceptando...',
-        accepted: 'Viaje aceptado',
-        acceptedDescription: 'Este viaje está asignado a tu cuenta.',
-        loadError: 'No se pudieron cargar los viajes. Revisa los permisos de Firebase.',
-        acceptError: 'No se pudo aceptar este viaje.',
-        unavailable: 'Este viaje ya no está disponible.',
-      };
+  const expiresAt = trip?.expiresAt?.toMillis?.() ?? 0;
 
-  const categoryLabel = (value) => {
-    if (value === 'economy') {
-      return en ? 'Economy' : 'Económico';
-    }
-
-    if (value === 'xl') return 'XL';
-    if (value === 'premium') return 'Premium';
-
-    return value || '-';
-  };
-
-  const paymentLabel = (value) => {
-    if (value === 'cash') {
-      return en ? 'Cash' : 'Efectivo';
-    }
-
-    if (value === 'mercadopago') return 'Mercado Pago';
-    if (value === 'stripe') return 'Stripe';
-
-    return value || '-';
-  };
-
-  const handleAccept = async (tripId) => {
-    setMessage('');
-
-    const accepted = await acceptTrip(tripId);
-
-    if (!accepted) {
-      setMessage(labels.acceptError);
-    }
-  };
-
-  const renderTrip = (trip) => (
-    <View key={trip.id} style={styles.trip}>
-      <Text style={styles.passenger}>
-        {labels.passenger}: {trip.passengerName || trip.passengerId || '-'}
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.origin}: {trip.origin?.address || '-'}
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.destination}: {trip.destination?.address || '-'}
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.category}: {categoryLabel(trip.category)}
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.distance}: {
-          typeof trip.distanceKm === 'number'
-            ? `${trip.distanceKm.toLocaleString(
-                en ? 'en-US' : 'es-CO'
-              )} km`
-            : '-'
-        }
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.duration}: {
-          typeof trip.durationMin === 'number'
-            ? `${trip.durationMin} min`
-            : '-'
-        }
-      </Text>
-
-      <Text style={styles.detail}>
-        {labels.payment}: {paymentLabel(trip.paymentMethod)}
-      </Text>
-
-      {!activeTrip && (
-        <View style={styles.actions}>
-          <Pressable
-            style={[
-              styles.rejectButton,
-              isAccepting && styles.disabled,
-            ]}
-            onPress={() => rejectTrip(trip.id)}
-            disabled={isAccepting}
-          >
-            <Text style={styles.rejectText}>
-              {labels.reject}
-            </Text>
-          </Pressable>
-
-          <Pressable
-            style={[
-              styles.acceptButton,
-              isAccepting && styles.disabled,
-            ]}
-            onPress={() => handleAccept(trip.id)}
-            disabled={isAccepting}
-          >
-            <Text style={styles.acceptText}>
-              {isAccepting
-                ? labels.accepting
-                : labels.accept}
-            </Text>
-          </Pressable>
-        </View>
-      )}
-    </View>
+  const secondsLeft = Math.max(
+    0,
+    Math.ceil((expiresAt - now) / 1000)
   );
 
+  const amount = trip
+    ? (() => {
+        try {
+          return calculateFare({
+            distanceKm: trip.distanceKm,
+            durationMin: trip.durationMin,
+            category: trip.category,
+            tip: 0,
+          });
+        } catch {
+          return null;
+        }
+      })()
+    : null;
+
+  useEffect(() => {
+    setMessage('');
+    expiring.current = null;
+  }, [trip?.id]);
+
+  useEffect(() => {
+    if (
+      !trip ||
+      secondsLeft > 0 ||
+      busy ||
+      expiring.current === trip.id
+    ) {
+      return;
+    }
+
+    expiring.current = trip.id;
+    onReject(trip.id);
+  }, [trip, secondsLeft, busy, onReject]);
+
+  const handleAction = async (action) => {
+    if (!trip || secondsLeft === 0 || busy) {
+      return;
+    }
+
+    setMessage('');
+
+    const success = await action(trip.id);
+
+    if (!success) {
+      setMessage(t('requests.unavailable'));
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {activeTrip ? labels.accepted : labels.title}
-      </Text>
+    <Modal
+      visible={Boolean(trip)}
+      transparent
+      animationType="fade"
+      onRequestClose={() => {}}
+    >
+      <View style={styles.backdrop}>
+        {trip && (
+          <View style={styles.card}>
+            <Text style={styles.title}>
+              {t('requests.title')}
+            </Text>
 
-      {activeTrip ? (
-        <>
-          <Text style={styles.success}>
-            {labels.acceptedDescription}
-          </Text>
-          {renderTrip(activeTrip)}
-        </>
-      ) : !enabled ? (
-        <Text style={styles.hint}>
-          {labels.enable}
-        </Text>
-      ) : isLoading ? (
-        <ActivityIndicator color={colors.primary} />
-      ) : requests.length === 0 ? (
-        <Text style={styles.hint}>
-          {labels.waiting}
-        </Text>
-      ) : (
-        renderTrip(requests[0])
-      )}
+            <Text style={styles.timer}>
+              {t('requests.time')}: {secondsLeft}s
+            </Text>
 
-      {(error || message) && !activeTrip && (
-        <Text style={styles.error}>
-          {error === 'listenError'
-            ? labels.loadError
-            : error === 'tripUnavailable'
-              ? labels.unavailable
-              : message || labels.acceptError}
-        </Text>
-      )}
-    </View>
+            <Text style={styles.info}>
+              {t('requests.origin')}: {trip.origin?.address || '-'}
+            </Text>
+
+            <Text style={styles.info}>
+              {t('requests.destination')}: {trip.destination?.address || '-'}
+            </Text>
+
+            <Text style={styles.info}>
+              {t('requests.category')}: {t(`vehicle.${trip.category}`)}
+            </Text>
+
+            <Text style={styles.info}>
+              {t('requests.distance')}: {trip.distanceKm} km
+            </Text>
+
+            <Text style={styles.info}>
+              {t('requests.duration')}: {trip.durationMin} min
+            </Text>
+
+            <Text style={styles.info}>
+              {t('requests.payment')}:{' '}
+              {t(`requests.payment_${trip.paymentMethod}`)}
+            </Text>
+
+            <Text style={styles.amount}>
+              {t('requests.fare')}:{' '}
+              {amount ? money(amount.fare) : '-'}
+            </Text>
+
+            <Text style={styles.amount}>
+              {t('requests.earnings')}:{' '}
+              {amount ? money(amount.driverEarnings) : '-'}
+            </Text>
+
+            {!!(error || message) && (
+              <Text style={styles.error}>
+                {message || t(`requests.${error}`)}
+              </Text>
+            )}
+
+            <View style={styles.actions}>
+              <Pressable
+                style={styles.secondary}
+                disabled={busy}
+                onPress={() => handleAction(onReject)}
+                accessibilityRole="button"
+              >
+                <Text style={styles.secondaryText}>
+                  {t('requests.reject')}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.primary}
+                disabled={busy || secondsLeft === 0 || !amount}
+                onPress={() => handleAction(onAccept)}
+                accessibilityRole="button"
+              >
+                {busy ? (
+                  <ActivityIndicator color={colors.onPrimary} />
+                ) : (
+                  <Text style={styles.primaryText}>
+                    {t('requests.accept')}
+                  </Text>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        )}
+      </View>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.68)',
+    justifyContent: 'center',
+    padding: spacing.lg,
+  },
+  card: {
     backgroundColor: colors.surface,
-    borderRadius: radius.md,
-    padding: spacing.md,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
     gap: spacing.sm,
   },
   title: {
-    ...typography.label,
+    ...typography.title,
     color: colors.text,
+    fontSize: 22,
+  },
+  timer: {
+    color: colors.warning,
+    fontWeight: '700',
+    fontSize: 20,
+  },
+  info: {
+    color: colors.text,
+    fontSize: 14,
+  },
+  amount: {
+    color: colors.success,
+    fontWeight: '700',
     fontSize: 16,
   },
-  hint: {
-    ...typography.body,
-    color: colors.textSecondary,
-    fontSize: 13,
-  },
-  trip: {
-    backgroundColor: colors.background,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  passenger: {
-    ...typography.label,
-    color: colors.text,
-  },
-  detail: {
-    ...typography.body,
-    color: colors.textSecondary,
-    fontSize: 13,
+  error: {
+    color: colors.error,
   },
   actions: {
     flexDirection: 'row',
     gap: spacing.sm,
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
   },
-  acceptButton: {
+  primary: {
     flex: 1,
-    backgroundColor: colors.primary,
     padding: spacing.md,
+    backgroundColor: colors.primary,
     borderRadius: radius.md,
     alignItems: 'center',
   },
-  acceptText: {
+  secondary: {
+    flex: 1,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+    alignItems: 'center',
+  },
+  primaryText: {
     color: colors.onPrimary,
     fontWeight: '700',
   },
-  rejectButton: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    alignItems: 'center',
-  },
-  rejectText: {
+  secondaryText: {
     color: colors.text,
     fontWeight: '700',
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-  success: {
-    color: colors.success,
-    fontSize: 13,
-  },
-  error: {
-    color: colors.error,
-    fontSize: 13,
   },
 });
