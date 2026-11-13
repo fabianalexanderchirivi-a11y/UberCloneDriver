@@ -1,5 +1,5 @@
 
-// AI-assisted: see docs/AI_LOG.md #120, #143, #164, #171, #175
+// AI-assisted: see docs/AI_LOG.md #120, #143, #164, #171, #175, #179, #186
 
 import {
   useContext,
@@ -7,6 +7,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+
 import {
   View,
   Text,
@@ -15,8 +16,10 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Location from 'expo-location';
+
 import {
   doc,
   onSnapshot,
@@ -27,6 +30,7 @@ import {
 import { auth, db } from '../config/firebase';
 import DriverMap from '../components/DriverMap';
 import { getDrivingRoute } from '../services/routingService';
+import { resolveTripLocation } from '../services/geocodingService';
 import { LanguageContext } from '../context/LanguageContext';
 import { colors, spacing, radius, typography } from '../theme';
 
@@ -58,10 +62,12 @@ const WORDS = {
     start: 'Iniciar recorrido',
     onboard: 'Pasajero a bordo',
     finish: 'Finalizar viaje',
+    loadingPlaces: 'Buscando ubicaciones...',
     loadingRoute: 'Calculando recorrido...',
+    placeError: 'No se encontraron las ubicaciones. Revisa los nombres.',
     routeError: 'No fue posible calcular la ruta.',
     gpsError: 'Se necesita el GPS para iniciar.',
-    retry: 'Reintentar ruta',
+    retry: 'Reintentar',
     waiting: 'Preparando recorrido...',
     distance: 'Distancia',
     duration: 'Tiempo estimado',
@@ -85,10 +91,12 @@ const WORDS = {
     start: 'Start route',
     onboard: 'Passenger onboard',
     finish: 'Finish trip',
+    loadingPlaces: 'Finding locations...',
     loadingRoute: 'Calculating route...',
-    routeError: 'Unable to calculate route.',
+    placeError: 'Locations not found. Check their names.',
+    routeError: 'Unable to calculate the route.',
     gpsError: 'GPS is required to start.',
-    retry: 'Retry route',
+    retry: 'Retry',
     waiting: 'Preparing route...',
     distance: 'Distance',
     duration: 'Estimated time',
@@ -118,7 +126,6 @@ const toCoordinate = (point) => {
   return { latitude, longitude };
 };
 
-// Distancia aproximada entre dos coordenadas, en metros.
 const distanceMeters = (a, b) => {
   const radians = Math.PI / 180;
   const dLat = (b.latitude - a.latitude) * radians;
@@ -133,22 +140,26 @@ const distanceMeters = (a, b) => {
   return 6371000 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
 };
 
-// Dirección del vehículo de 0 a 360 grados.
 const getHeading = (a, b) => {
   const radians = Math.PI / 180;
+
   const lat1 = a.latitude * radians;
   const lat2 = b.latitude * radians;
   const delta = (b.longitude - a.longitude) * radians;
 
   const y = Math.sin(delta) * Math.cos(lat2);
+
   const x =
     Math.cos(lat1) * Math.sin(lat2) -
-    Math.sin(lat1) * Math.cos(lat2) * Math.cos(delta);
+    Math.sin(lat1) *
+      Math.cos(lat2) *
+      Math.cos(delta);
 
-  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+  return (
+    Math.atan2(y, x) * 180 / Math.PI + 360
+  ) % 360;
 };
 
-// Prepara la ruta para mover el vehículo sin saltar puntos.
 const buildSegments = (coordinates) => {
   const segments = [];
   let total = 0;
@@ -156,6 +167,7 @@ const buildSegments = (coordinates) => {
   for (let i = 1; i < coordinates.length; i += 1) {
     const start = coordinates[i - 1];
     const end = coordinates[i];
+
     const length = distanceMeters(start, end);
 
     if (length < 0.01) continue;
@@ -180,9 +192,11 @@ const pointAtDistance = (route, distance) => {
 
   if (!segments.length) return null;
 
-  const traveled = Math.max(0, Math.min(distance, total));
+  const traveled = Math.max(
+    0,
+    Math.min(distance, total)
+  );
 
-  // Búsqueda binaria del tramo correspondiente.
   let left = 0;
   let right = segments.length - 1;
 
@@ -197,16 +211,19 @@ const pointAtDistance = (route, distance) => {
   }
 
   const segment = segments[left];
+
   const fraction =
     (traveled - segment.from) / segment.length;
 
   return {
     latitude:
       segment.start.latitude +
-      (segment.end.latitude - segment.start.latitude) * fraction,
+      (segment.end.latitude - segment.start.latitude) *
+        fraction,
     longitude:
       segment.start.longitude +
-      (segment.end.longitude - segment.start.longitude) * fraction,
+      (segment.end.longitude - segment.start.longitude) *
+        fraction,
     heading: segment.heading,
   };
 };
@@ -222,15 +239,22 @@ export default function ActiveTripScreen({ route }) {
   const [error, setError] = useState(false);
 
   const [location, setLocation] = useState(null);
+
+  const [resolvedLocations, setResolvedLocations] =
+    useState(null);
+
+  const [geocoding, setGeocoding] = useState(false);
+  const [geoError, setGeoError] = useState('');
+
   const [routeData, setRouteData] = useState(null);
   const [routeLoading, setRouteLoading] = useState(false);
   const [routeError, setRouteError] = useState('');
-  const [retryCount, setRetryCount] = useState(0);
 
+  const [retryCount, setRetryCount] = useState(0);
   const [distanceTraveled, setDistanceTraveled] = useState(0);
   const [moving, setMoving] = useState(false);
 
-  // Escuchar el estado del viaje desde Firestore.
+  // Escuchar el viaje en Firestore.
   useEffect(() => {
     if (!tripId || !auth.currentUser) {
       setError(true);
@@ -241,8 +265,12 @@ export default function ActiveTripScreen({ route }) {
     return onSnapshot(
       doc(db, 'trip', tripId),
       (snapshot) => {
-        const data = snapshot.exists() ? snapshot.data() : null;
-        const owned = data?.driverId === auth.currentUser?.uid;
+        const data = snapshot.exists()
+          ? snapshot.data()
+          : null;
+
+        const owned =
+          data?.driverId === auth.currentUser?.uid;
 
         setTrip(owned ? data : null);
         setError(!owned);
@@ -253,13 +281,14 @@ export default function ActiveTripScreen({ route }) {
           'Active trip:',
           snapshotError.code || snapshotError.message
         );
+
         setError(true);
         setLoading(false);
       }
     );
   }, [tripId]);
 
-  // GPS real: se usa únicamente como punto de partida.
+  // GPS real del conductor.
   useEffect(() => {
     let mounted = true;
     let watcher;
@@ -286,21 +315,28 @@ export default function ActiveTripScreen({ route }) {
           });
 
         if (!mounted) return;
+
         setLocation(current.coords);
 
-        const subscription = await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.High,
-            distanceInterval: 10,
-            timeInterval: 5000,
-          },
-          (position) => {
-            if (mounted) setLocation(position.coords);
-          }
-        );
+        const subscription =
+          await Location.watchPositionAsync(
+            {
+              accuracy: Location.Accuracy.High,
+              distanceInterval: 10,
+              timeInterval: 5000,
+            },
+            (position) => {
+              if (mounted) {
+                setLocation(position.coords);
+              }
+            }
+          );
 
-        if (mounted) watcher = subscription;
-        else subscription.remove();
+        if (mounted) {
+          watcher = subscription;
+        } else {
+          subscription.remove();
+        }
       } catch (gpsError) {
         console.error('Trip GPS:', gpsError.message);
       }
@@ -317,7 +353,8 @@ export default function ActiveTripScreen({ route }) {
   const status = trip?.status;
 
   const phase =
-    status === 'accepted' || status === 'driver_arriving'
+    status === 'accepted' ||
+    status === 'driver_arriving'
       ? 'pickup'
       : status === 'in_progress'
         ? 'destination'
@@ -327,12 +364,79 @@ export default function ActiveTripScreen({ route }) {
     Number.isFinite(location?.latitude) &&
     Number.isFinite(location?.longitude);
 
-  const originLat = trip?.origin?.lat;
-  const originLng = trip?.origin?.lng;
-  const destinationLat = trip?.destination?.lat;
-  const destinationLng = trip?.destination?.lng;
+  const originAddress = trip?.origin?.address;
+  const originLat = trip?.origin?.lat ?? trip?.origin?.latitude;
+  const originLng = trip?.origin?.lng ?? trip?.origin?.longitude;
 
-  // Obtiene el recorrido desde el servicio OSRM.
+  const destinationAddress = trip?.destination?.address;
+  const destinationLat =
+    trip?.destination?.lat ?? trip?.destination?.latitude;
+  const destinationLng =
+    trip?.destination?.lng ?? trip?.destination?.longitude;
+
+  // Convertir nombres de lugares a coordenadas.
+  useEffect(() => {
+    let cancelled = false;
+
+    setResolvedLocations(null);
+    setGeoError('');
+
+    if (
+      !tripId ||
+      !phase ||
+      !trip?.origin ||
+      !trip?.destination
+    ) {
+      setGeocoding(false);
+      return;
+    }
+
+    setGeocoding(true);
+
+    const resolvePlaces = async () => {
+      try {
+        const origin = await resolveTripLocation(trip.origin);
+        const destination = await resolveTripLocation(
+          trip.destination
+        );
+
+        if (!cancelled) {
+          setResolvedLocations({ origin, destination });
+        }
+      } catch (resolveError) {
+        if (!cancelled) {
+          console.error(
+            'Trip geocoding:',
+            resolveError.message
+          );
+
+          setGeoError('place');
+        }
+      } finally {
+        if (!cancelled) {
+          setGeocoding(false);
+        }
+      }
+    };
+
+    resolvePlaces();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    tripId,
+    phase,
+    originAddress,
+    originLat,
+    originLng,
+    destinationAddress,
+    destinationLat,
+    destinationLng,
+    retryCount,
+  ]);
+
+  // Obtener la ruta real por las calles mediante OSRM.
   useEffect(() => {
     setRouteData(null);
     setRouteError('');
@@ -340,17 +444,27 @@ export default function ActiveTripScreen({ route }) {
     setDistanceTraveled(0);
     setMoving(false);
 
-    if (!trip || !phase) return;
+    if (!trip || !phase || !resolvedLocations) {
+      return;
+    }
 
-    const pickup = toCoordinate(trip.origin);
-    const destination = toCoordinate(trip.destination);
+    const pickup = resolvedLocations.origin;
+    const destination = resolvedLocations.destination;
     const gps = toCoordinate(location);
 
-    const start = phase === 'pickup' ? gps : pickup;
-    const end = phase === 'pickup' ? pickup : destination;
+    const start =
+      phase === 'pickup' ? gps : pickup;
+
+    const end =
+      phase === 'pickup' ? pickup : destination;
 
     if (!start || !end) {
-      setRouteError(phase === 'pickup' ? 'gps' : 'route');
+      if (!gps && phase === 'pickup') {
+        setRouteError('gps');
+      } else {
+        setRouteError('route');
+      }
+
       return;
     }
 
@@ -370,8 +484,7 @@ export default function ActiveTripScreen({ route }) {
           setRouteData(result);
           setRouteError('');
 
-          // Comienza automáticamente después de iniciar
-          // la recogida o subir al pasajero.
+          // Recorrido automático en las etapas activas.
           if (
             status === 'driver_arriving' ||
             status === 'in_progress'
@@ -381,7 +494,11 @@ export default function ActiveTripScreen({ route }) {
         }
       } catch (fetchError) {
         if (!controller.signal.aborted) {
-          console.error('Trip routing:', fetchError.message);
+          console.error(
+            'Trip routing:',
+            fetchError.message
+          );
+
           setRouteError('route');
         }
       } finally {
@@ -398,10 +515,7 @@ export default function ActiveTripScreen({ route }) {
     tripId,
     phase,
     status,
-    originLat,
-    originLng,
-    destinationLat,
-    destinationLng,
+    resolvedLocations,
     gpsReady,
     retryCount,
   ]);
@@ -415,11 +529,13 @@ export default function ActiveTripScreen({ route }) {
 
   const totalDistance = routeGeometry.total;
 
-  // Cada recorrido dura aproximadamente entre 25 y 90
-  // segundos, independientemente de su duración real.
+  // Simulación acelerada: entre 25 y 90 segundos.
   const simulationSeconds = Math.max(
     25,
-    Math.min(90, (routeData?.distanceKm ?? 1) * 8)
+    Math.min(
+      90,
+      (routeData?.distanceKm ?? 1) * 8
+    )
   );
 
   const distancePerTick =
@@ -430,23 +546,35 @@ export default function ActiveTripScreen({ route }) {
 
     const interval = setInterval(() => {
       setDistanceTraveled((previous) =>
-        Math.min(previous + distancePerTick, totalDistance)
+        Math.min(
+          previous + distancePerTick,
+          totalDistance
+        )
       );
     }, 100);
 
     return () => clearInterval(interval);
-  }, [moving, totalDistance, distancePerTick]);
+  }, [
+    moving,
+    totalDistance,
+    distancePerTick,
+  ]);
 
   const arrived =
     totalDistance > 0 &&
     distanceTraveled >= totalDistance;
 
   useEffect(() => {
-    if (moving && arrived) setMoving(false);
+    if (moving && arrived) {
+      setMoving(false);
+    }
   }, [moving, arrived]);
 
   const vehiclePosition = useMemo(
-    () => pointAtDistance(routeGeometry, distanceTraveled),
+    () => pointAtDistance(
+      routeGeometry,
+      distanceTraveled
+    ),
     [routeGeometry, distanceTraveled]
   );
 
@@ -454,16 +582,19 @@ export default function ActiveTripScreen({ route }) {
     status === 'driver_arriving' ||
     status === 'in_progress';
 
-  const followVehicle = journeyStarted && !!vehiclePosition;
+  const followVehicle =
+    journeyStarted && !!vehiclePosition;
 
   const nextStep = NEXT_STEP[status];
 
-  // Guarda el avance del viaje en Firestore.
+  // Actualizar el estado del viaje en Firestore.
   const updateTripStatus = async () => {
     const step = NEXT_STEP[status];
     const uid = auth.currentUser?.uid;
 
-    if (!step || !uid || !tripId || busy) return;
+    if (!step || !uid || !tripId || busy) {
+      return;
+    }
 
     setBusy(true);
 
@@ -492,7 +623,10 @@ export default function ActiveTripScreen({ route }) {
       });
 
       if (step.next === 'completed') {
-        Alert.alert(labels.confirmTitle, labels.success);
+        Alert.alert(
+          labels.confirmTitle,
+          labels.success
+        );
       }
     } catch (updateError) {
       console.error(
@@ -521,7 +655,10 @@ export default function ActiveTripScreen({ route }) {
       labels.confirmTitle,
       labels.confirmMessage,
       [
-        { text: labels.cancel, style: 'cancel' },
+        {
+          text: labels.cancel,
+          style: 'cancel',
+        },
         {
           text: labels.confirm,
           onPress: updateTripStatus,
@@ -532,7 +669,10 @@ export default function ActiveTripScreen({ route }) {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.screen} edges={['bottom']}>
+      <SafeAreaView
+        style={styles.screen}
+        edges={['bottom']}
+      >
         <View style={styles.center}>
           <ActivityIndicator color={colors.primary} />
         </View>
@@ -542,7 +682,10 @@ export default function ActiveTripScreen({ route }) {
 
   if (error || !trip) {
     return (
-      <SafeAreaView style={styles.screen} edges={['bottom']}>
+      <SafeAreaView
+        style={styles.screen}
+        edges={['bottom']}
+      >
         <View style={styles.center}>
           <Text style={styles.error}>
             {labels.unavailable}
@@ -574,19 +717,39 @@ export default function ActiveTripScreen({ route }) {
 
   const actionEnabled =
     !busy &&
+    !geocoding &&
     !routeLoading &&
     !!routeData &&
     (
       status === 'accepted' ||
       (
-        (status === 'driver_arriving' ||
-          status === 'in_progress') &&
+        (
+          status === 'driver_arriving' ||
+          status === 'in_progress'
+        ) &&
         arrived
       )
     );
 
+  const mapPickup = resolvedLocations
+    ? {
+        ...resolvedLocations.origin,
+        address: trip.origin?.address,
+      }
+    : trip.origin;
+
+  const mapDestination = resolvedLocations
+    ? {
+        ...resolvedLocations.destination,
+        address: trip.destination?.address,
+      }
+    : trip.destination;
+
   return (
-    <SafeAreaView style={styles.screen} edges={['bottom']}>
+    <SafeAreaView
+      style={styles.screen}
+      edges={['bottom']}
+    >
       <View style={styles.header}>
         <Text style={styles.title}>
           {labels.trip}
@@ -597,16 +760,21 @@ export default function ActiveTripScreen({ route }) {
         </Text>
       </View>
 
-      <View style={styles.mapContainer} collapsable={false}>
+      <View
+        style={styles.mapContainer}
+        collapsable={false}
+      >
         <DriverMap
           location={location}
-          pickup={trip.origin}
-          destination={trip.destination}
+          pickup={mapPickup}
+          destination={mapDestination}
           routeCoordinates={routeCoordinates}
           simulatedLocation={
             followVehicle ? vehiclePosition : null
           }
-          vehicleHeading={vehiclePosition?.heading ?? 0}
+          vehicleHeading={
+            vehiclePosition?.heading ?? 0
+          }
           followVehicle={followVehicle}
           language={language}
         />
@@ -636,42 +804,61 @@ export default function ActiveTripScreen({ route }) {
               {labels.passenger}: {trip.passengerName ?? '-'}
             </Text>
 
-            {routeLoading ? (
+            {geocoding ? (
               <View style={styles.infoRow}>
-                <ActivityIndicator color={colors.primary} />
+                <ActivityIndicator
+                  color={colors.primary}
+                />
+                <Text style={styles.info}>
+                  {labels.loadingPlaces}
+                </Text>
+              </View>
+            ) : geoError ? (
+              <Text style={styles.warning}>
+                {labels.placeError}
+              </Text>
+            ) : routeLoading ? (
+              <View style={styles.infoRow}>
+                <ActivityIndicator
+                  color={colors.primary}
+                />
                 <Text style={styles.info}>
                   {labels.loadingRoute}
                 </Text>
               </View>
             ) : routeError ? (
-              <>
-                <Text style={styles.warning}>
-                  {routeError === 'gps'
-                    ? labels.gpsError
-                    : labels.routeError}
-                </Text>
-
-                <Pressable
-                  style={styles.retryButton}
-                  onPress={() =>
-                    setRetryCount((previous) => previous + 1)
-                  }
-                >
-                  <Text style={styles.retryText}>
-                    {labels.retry}
-                  </Text>
-                </Pressable>
-              </>
+              <Text style={styles.warning}>
+                {routeError === 'gps'
+                  ? labels.gpsError
+                  : labels.routeError}
+              </Text>
             ) : routeData ? (
               <Text style={styles.info}>
-                {labels.distance}: {routeData.distanceKm.toFixed(1)} km
+                {labels.distance}:{' '}
+                {routeData.distanceKm.toFixed(1)} km
                 {'  ·  '}
-                {labels.duration}: {Math.round(routeData.durationMin)} min
+                {labels.duration}:{' '}
+                {Math.round(routeData.durationMin)} min
               </Text>
             ) : (
               <Text style={styles.info}>
                 {labels.waiting}
               </Text>
+            )}
+
+            {!!(geoError || routeError) && (
+              <Pressable
+                style={styles.retryButton}
+                onPress={() =>
+                  setRetryCount(
+                    (previous) => previous + 1
+                  )
+                }
+              >
+                <Text style={styles.retryText}>
+                  {labels.retry}
+                </Text>
+              </Pressable>
             )}
 
             {nextStep && (

@@ -102,7 +102,8 @@ export default function useTripRequests(enabled, category) {
         .filter(
           (trip) =>
             trip.category === category &&
-            trip.status === 'requested'
+            trip.status === 'requested' &&
+            timestampMillis(trip.expiresAt) > now
         )
         .sort(
           (a, b) =>

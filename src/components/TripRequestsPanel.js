@@ -1,7 +1,7 @@
 
-// AI-assisted: see docs/AI_LOG.md #143
+// AI-assisted: see docs/AI_LOG.md #143, #190, #192
 
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Pressable,
   ActivityIndicator,
   StyleSheet,
+  Alert,
 } from 'react-native';
 
 import { LanguageContext } from '../context/LanguageContext';
@@ -28,15 +29,32 @@ export default function TripRequestsPanel({
 }) {
   const { t } = useContext(LanguageContext);
 
-  const [message, setMessage] = useState('');
-  const expiring = useRef(null);
+  const [dismissedKey, setDismissedKey] = useState(null);
+  const [processing, setProcessing] = useState(false);
+
+  const actionInProgress = useRef(false);
 
   const expiresAt = trip?.expiresAt?.toMillis?.() ?? 0;
+
+  const requestKey = trip
+    ? `${trip.id}:${expiresAt}`
+    : null;
 
   const secondsLeft = Math.max(
     0,
     Math.ceil((expiresAt - now) / 1000)
   );
+
+  const isDismissed =
+    requestKey !== null &&
+    dismissedKey === requestKey;
+
+  const visible =
+    Boolean(trip) &&
+    !isDismissed &&
+    secondsLeft > 0;
+
+  const isBusy = busy || processing;
 
   const amount = trip
     ? (() => {
@@ -53,45 +71,67 @@ export default function TripRequestsPanel({
       })()
     : null;
 
-  useEffect(() => {
-    setMessage('');
-    expiring.current = null;
-  }, [trip?.id]);
-
-  useEffect(() => {
+  const handleAction = async (action) => {
     if (
       !trip ||
-      secondsLeft > 0 ||
-      busy ||
-      expiring.current === trip.id
+      !visible ||
+      isBusy ||
+      actionInProgress.current
     ) {
       return;
     }
 
-    expiring.current = trip.id;
-    onReject(trip.id);
-  }, [trip, secondsLeft, busy, onReject]);
+    const currentKey = requestKey;
+    const tripId = trip.id;
 
-  const handleAction = async (action) => {
-    if (!trip || secondsLeft === 0 || busy) {
-      return;
-    }
+    actionInProgress.current = true;
+    setProcessing(true);
 
-    setMessage('');
+    try {
+      const success = await action(tripId);
 
-    const success = await action(trip.id);
+      if (!success) {
+        setDismissedKey(currentKey);
 
-    if (!success) {
-      setMessage(t('requests.unavailable'));
+        Alert.alert(
+          'UberCloneDriver',
+          t('requests.unavailable'),
+          [{ text: 'OK' }]
+        );
+
+        return;
+      }
+
+      setDismissedKey(currentKey);
+    } catch (actionError) {
+      console.error(
+        'Trip request action:',
+        actionError.code || actionError.message
+      );
+
+      setDismissedKey(currentKey);
+
+      Alert.alert(
+        'UberCloneDriver',
+        t('requests.unavailable'),
+        [{ text: 'OK' }]
+      );
+    } finally {
+      actionInProgress.current = false;
+      setProcessing(false);
     }
   };
 
   return (
     <Modal
-      visible={Boolean(trip)}
+      visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={() => {}}
+      onRequestClose={() => {
+        if (!isBusy && requestKey) {
+          setDismissedKey(requestKey);
+        }
+      }}
     >
       <View style={styles.backdrop}>
         {trip && (
@@ -105,15 +145,18 @@ export default function TripRequestsPanel({
             </Text>
 
             <Text style={styles.info}>
-              {t('requests.origin')}: {trip.origin?.address || '-'}
+              {t('requests.origin')}:{' '}
+              {trip.origin?.address || '-'}
             </Text>
 
             <Text style={styles.info}>
-              {t('requests.destination')}: {trip.destination?.address || '-'}
+              {t('requests.destination')}:{' '}
+              {trip.destination?.address || '-'}
             </Text>
 
             <Text style={styles.info}>
-              {t('requests.category')}: {t(`vehicle.${trip.category}`)}
+              {t('requests.category')}:{' '}
+              {t(`vehicle.${trip.category}`)}
             </Text>
 
             <Text style={styles.info}>
@@ -139,16 +182,16 @@ export default function TripRequestsPanel({
               {amount ? money(amount.driverEarnings) : '-'}
             </Text>
 
-            {!!(error || message) && (
+            {error === 'listenError' && (
               <Text style={styles.error}>
-                {message || t(`requests.${error}`)}
+                {t(`requests.${error}`)}
               </Text>
             )}
 
             <View style={styles.actions}>
               <Pressable
                 style={styles.secondary}
-                disabled={busy}
+                disabled={isBusy}
                 onPress={() => handleAction(onReject)}
                 accessibilityRole="button"
               >
@@ -159,12 +202,18 @@ export default function TripRequestsPanel({
 
               <Pressable
                 style={styles.primary}
-                disabled={busy || secondsLeft === 0 || !amount}
+                disabled={
+                  isBusy ||
+                  secondsLeft === 0 ||
+                  !amount
+                }
                 onPress={() => handleAction(onAccept)}
                 accessibilityRole="button"
               >
-                {busy ? (
-                  <ActivityIndicator color={colors.onPrimary} />
+                {isBusy ? (
+                  <ActivityIndicator
+                    color={colors.onPrimary}
+                  />
                 ) : (
                   <Text style={styles.primaryText}>
                     {t('requests.accept')}
