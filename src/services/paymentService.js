@@ -1,10 +1,10 @@
 
-// AI-assisted: see docs/AI_LOG.md #197
+// AI-assisted: see docs/AI_LOG.md #197, #208
 
 import { auth } from '../config/firebase';
 
-// Cambiar por la IPv4 de tu computador.
-// El celular y el computador deben usar la misma red Wi-Fi.
+// Mantén aquí la IP de tu computador.
+// El celular y el computador deben estar en la misma red.
 const BACKEND_URL = 'http://10.157.4.37:3000';
 
 async function paymentRequest(path, payload) {
@@ -50,6 +50,7 @@ async function paymentRequest(path, payload) {
   }
 }
 
+// Crear pago Stripe Sandbox.
 export async function createStripePayment(
   tripId,
   estimate
@@ -65,8 +66,25 @@ export async function createStripePayment(
   });
 }
 
+// Consultar si Stripe confirmó el pago.
 export async function verifyStripePayment(tripId) {
   return paymentRequest('/payments/verify', {
     tripId,
+  });
+}
+
+// Confirmar dinero recibido en efectivo.
+export async function confirmCashPayment(
+  tripId,
+  estimate
+) {
+  if (!estimate) {
+    throw new Error('ESTIMATE_REQUIRED');
+  }
+
+  return paymentRequest('/payments/cash', {
+    tripId,
+    distanceKm: estimate.distanceKm,
+    durationMin: estimate.durationMin,
   });
 }

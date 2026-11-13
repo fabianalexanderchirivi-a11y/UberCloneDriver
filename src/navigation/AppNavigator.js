@@ -17,9 +17,11 @@ import ActiveTripScreen from '../screens/ActiveTripScreen';
 import PaymentSummaryScreen from '../screens/PaymentSummaryScreen';
 import DriverProfileScreen from '../screens/DriverProfileScreen';
 
+import TripHistoryScreen from '../screens/TripHistoryScreen';
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
 import { LanguageContext } from '../context/LanguageContext';
+import EarningsScreen from '../screens/EarningsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +82,24 @@ export default function AppNavigator() {
             component={DriverProfileScreen}
             options={{
               title: t('profile.title'),
+            }}
+          />
+          <Stack.Screen
+            name="TripHistory"
+            component={TripHistoryScreen}
+            options={{
+              title: language === 'en'
+                ? 'Trip history'
+                : 'Historial de viajes',
+            }}
+          />
+          <Stack.Screen
+            name="Earnings"
+            component={EarningsScreen}
+            options={{
+              title: language === 'en'
+                ? 'Earnings'
+                : 'Ganancias',
             }}
           />
         </>
