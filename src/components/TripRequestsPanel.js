@@ -1,5 +1,5 @@
 
-// AI-assisted: see docs/AI_LOG.md #143, #190, #192
+// AI-assisted: see docs/AI_LOG.md #143, #190, #192, #193
 
 import { useContext, useRef, useState } from 'react';
 import {
@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 
 import { LanguageContext } from '../context/LanguageContext';
-import { calculateFare } from '../utils/calculateFare';
+import useTripEstimate from '../hooks/useTripEstimate';
 import { colors, spacing, radius, typography } from '../theme';
 
 const money = (value) =>
@@ -27,12 +27,14 @@ export default function TripRequestsPanel({
   onAccept,
   onReject,
 }) {
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   const [dismissedKey, setDismissedKey] = useState(null);
   const [processing, setProcessing] = useState(false);
-
   const actionInProgress = useRef(false);
+
+  const { estimate, loading, error: estimateError, retry } =
+    useTripEstimate(trip);
 
   const expiresAt = trip?.expiresAt?.toMillis?.() ?? 0;
 
@@ -45,31 +47,28 @@ export default function TripRequestsPanel({
     Math.ceil((expiresAt - now) / 1000)
   );
 
-  const isDismissed =
-    requestKey !== null &&
-    dismissedKey === requestKey;
-
   const visible =
     Boolean(trip) &&
-    !isDismissed &&
+    dismissedKey !== requestKey &&
     secondsLeft > 0;
 
   const isBusy = busy || processing;
 
-  const amount = trip
-    ? (() => {
-        try {
-          return calculateFare({
-            distanceKm: trip.distanceKm,
-            durationMin: trip.durationMin,
-            category: trip.category,
-            tip: 0,
-          });
-        } catch {
-          return null;
-        }
-      })()
-    : null;
+  const text = language === 'en'
+    ? {
+        calculating: 'Calculating distance and fare...',
+        calculationError:
+          'Unable to calculate the route. Try again.',
+        retry: 'Retry calculation',
+        estimated: 'Estimated price based on route',
+      }
+    : {
+        calculating: 'Calculando distancia y tarifa...',
+        calculationError:
+          'No se pudo calcular la ruta. Intenta nuevamente.',
+        retry: 'Reintentar cálculo',
+        estimated: 'Precio estimado según el recorrido',
+      };
 
   const handleAction = async (action) => {
     if (
@@ -95,8 +94,7 @@ export default function TripRequestsPanel({
 
         Alert.alert(
           'UberCloneDriver',
-          t('requests.unavailable'),
-          [{ text: 'OK' }]
+          t('requests.unavailable')
         );
 
         return;
@@ -113,8 +111,7 @@ export default function TripRequestsPanel({
 
       Alert.alert(
         'UberCloneDriver',
-        t('requests.unavailable'),
-        [{ text: 'OK' }]
+        t('requests.unavailable')
       );
     } finally {
       actionInProgress.current = false;
@@ -160,27 +157,60 @@ export default function TripRequestsPanel({
             </Text>
 
             <Text style={styles.info}>
-              {t('requests.distance')}: {trip.distanceKm} km
-            </Text>
-
-            <Text style={styles.info}>
-              {t('requests.duration')}: {trip.durationMin} min
-            </Text>
-
-            <Text style={styles.info}>
               {t('requests.payment')}:{' '}
               {t(`requests.payment_${trip.paymentMethod}`)}
             </Text>
 
-            <Text style={styles.amount}>
-              {t('requests.fare')}:{' '}
-              {amount ? money(amount.fare) : '-'}
-            </Text>
+            {loading || (!estimate && !estimateError) ? (
+              <View style={styles.loadingRow}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={styles.info}>
+                  {text.calculating}
+                </Text>
+              </View>
+            ) : estimateError ? (
+              <View style={styles.estimateBox}>
+                <Text style={styles.error}>
+                  {text.calculationError}
+                </Text>
 
-            <Text style={styles.amount}>
-              {t('requests.earnings')}:{' '}
-              {amount ? money(amount.driverEarnings) : '-'}
-            </Text>
+                <Pressable
+                  onPress={retry}
+                  disabled={isBusy}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.retryText}>
+                    {text.retry}
+                  </Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={styles.estimateBox}>
+                <Text style={styles.info}>
+                  {t('requests.distance')}:{' '}
+                  {estimate.distanceKm.toFixed(1)} km
+                </Text>
+
+                <Text style={styles.info}>
+                  {t('requests.duration')}:{' '}
+                  {Math.round(estimate.durationMin)} min
+                </Text>
+
+                <Text style={styles.amount}>
+                  {t('requests.fare')}:{' '}
+                  {money(estimate.fare)}
+                </Text>
+
+                <Text style={styles.amount}>
+                  {t('requests.earnings')}:{' '}
+                  {money(estimate.driverEarnings)}
+                </Text>
+
+                <Text style={styles.caption}>
+                  {text.estimated}
+                </Text>
+              </View>
+            )}
 
             {error === 'listenError' && (
               <Text style={styles.error}>
@@ -205,7 +235,8 @@ export default function TripRequestsPanel({
                 disabled={
                   isBusy ||
                   secondsLeft === 0 ||
-                  !amount
+                  !estimate ||
+                  loading
                 }
                 onPress={() => handleAction(onAccept)}
                 accessibilityRole="button"
@@ -260,8 +291,25 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
+  caption: {
+    fontSize: 11,
+    color: colors.textSecondary,
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  estimateBox: {
+    gap: spacing.sm,
+  },
+  retryText: {
+    color: colors.primary,
+    fontWeight: '700',
+  },
   error: {
     color: colors.error,
+    fontSize: 13,
   },
   actions: {
     flexDirection: 'row',

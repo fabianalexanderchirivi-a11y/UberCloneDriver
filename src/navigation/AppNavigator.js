@@ -1,5 +1,9 @@
 
+// AI-assisted: see docs/AI_LOG.md #194
+
+import { useContext } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import PasswordScreen from '../screens/registro/PasswordScreen';
 import SubmitRegistrationScreen from '../screens/registro/SubmitRegistrationScreen';
 import WelcomeScreen from '../screens/WelcomeScreen';
@@ -10,18 +14,18 @@ import VehicleDataScreen from '../screens/registro/VehicleDataScreen';
 import DocumentsDataScreen from '../screens/registro/DocumentsDataScreen';
 import RegistrationSuccessScreen from '../screens/registro/RegistrationSuccessScreen';
 import ActiveTripScreen from '../screens/ActiveTripScreen';
+import PaymentSummaryScreen from '../screens/PaymentSummaryScreen';
+import DriverProfileScreen from '../screens/DriverProfileScreen';
+
 import useAuth from '../hooks/useAuth';
 import { colors } from '../theme';
-
-import DriverProfileScreen from '../screens/DriverProfileScreen';
-import { useContext } from 'react';
 import { LanguageContext } from '../context/LanguageContext';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   const { isSignedIn } = useAuth();
-  const { t } = useContext(LanguageContext);
+  const { t, language } = useContext(LanguageContext);
 
   return (
     <Stack.Navigator
@@ -54,9 +58,23 @@ export default function AppNavigator() {
             name="ActiveTrip"
             component={ActiveTripScreen}
             options={{
-              title: 'Viaje de prueba',
+              title: language === 'en' ? 'Route' : 'Recorrido',
             }}
           />
+
+          <Stack.Screen
+            name="PaymentSummary"
+            component={PaymentSummaryScreen}
+            options={{
+              title:
+                language === 'en'
+                  ? 'Payment summary'
+                  : 'Resumen del pago',
+              headerBackVisible: false,
+              gestureEnabled: false,
+            }}
+          />
+
           <Stack.Screen
             name="DriverProfile"
             component={DriverProfileScreen}
@@ -64,7 +82,6 @@ export default function AppNavigator() {
               title: t('profile.title'),
             }}
           />
-
         </>
       ) : (
         <>
