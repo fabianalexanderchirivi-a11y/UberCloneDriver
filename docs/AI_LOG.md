@@ -2798,3 +2798,1323 @@ listo hagamos el calculatefare
 - **Verificación:** La prueba matemática fue planteada, pero no se confirmó su ejecución en el proyecto.
 - **Aprendizaje:** Comprendí cómo separar el cálculo de tarifas de la interfaz y de la API de solicitudes. También aprendí a calcular la comisión de la plataforma y la ganancia neta del conductor, y la importancia de utilizar las tarifas oficiales del proyecto.
 
+Entrada #104
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Implementar una función independiente para calcular tarifas, comisión y ganancias.
+- Prompt:
+listo hagamos el calculatefare
+- Resumen de la respuesta: Se propuso una función pura de cálculo de tarifa que recibe distancia, duración y parámetros de precio; calcula el total y la ganancia descontando comisión.
+- Qué se usó / modificó / descartó: Se planteó separar la fórmula de la interfaz y parametrizar importes.
+- Archivos y commit: src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Se planteó una prueba matemática; no consta su ejecución en esa interacción.
+- Aprendizaje: La lógica financiera debe poder comprobarse sin depender de mapas ni Firebase.
+Entrada #105
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar configuración de tarifas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar configuración de tarifas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir base, precio por kilómetro y minuto, tarifa mínima y redondeo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/config/pricing.js, src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #106
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Aplicar categorías de vehículos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para aplicar categorías de vehículos en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Considerar los multiplicadores economy, xl y premium en el cálculo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/config/pricing.js, src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #107
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar comisión y propinas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para validar comisión y propinas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Separar comisión del 20 % y propinas para el conductor. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #108
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar pruebas de cálculo
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar pruebas de cálculo en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Revisar casos de duración, distancia, tarifa mínima y redondeo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #109
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Integrar estimación de tarifas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para integrar estimación de tarifas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Conectar resultados del cálculo con los datos de un recorrido. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/calculateFare.js, pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #110
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar navegación del conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar navegación del conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Organizar rutas de Inicio, viajes, perfil y opciones adicionales. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/navigation/. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #111
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Ajustar pantalla de mapa
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para ajustar pantalla de mapa en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mantener el mapa como referencia de ubicación del conductor. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/screens/HomeScreen.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #112
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar permisos de ubicación
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar permisos de ubicación en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Controlar autorizaciones antes de acceder al GPS. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/hooks/useDriverLocation.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #113
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Actualizar localización del conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para actualizar localización del conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir sincronización de coordenadas y disponibilidad con Firestore. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/hooks/useDriverLocation.js, driverLocations. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #114
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Proteger disponibilidad
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para proteger disponibilidad en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Restringir el estado disponible a conductores aprobados. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore, src/hooks/useDriverLocation.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #115
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar estados de viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar estados de viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Documentar requested, accepted, driver_arriving, in_progress y completed. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Colección trip, pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #116
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Diseñar tarjetas de solicitud
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para diseñar tarjetas de solicitud en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar pasajero, origen, destino y categoría. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Componentes de solicitud, pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #117
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Configurar temporizador
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para configurar temporizador en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Gestionar los 15 segundos de vigencia de las solicitudes. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de solicitudes, componentes de solicitud. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #118
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Controlar aceptación y rechazo
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para controlar aceptación y rechazo en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Enviar la respuesta del conductor a Firestore. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de solicitudes, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #119
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar expiración
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para validar expiración en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar aceptar solicitudes vencidas. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de solicitudes, reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #120
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Consultar viajes asignados
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para consultar viajes asignados en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar únicamente solicitudes relacionadas con el conductor. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de solicitudes, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #121
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Organizar botones del viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para organizar botones del viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Adaptar acciones al estado actual del recorrido. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #122
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Mostrar llegada del conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para mostrar llegada del conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Gestionar el paso de accepted a driver_arriving. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #123
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Iniciar recorrido
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para iniciar recorrido en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Gestionar el paso de driver_arriving a in_progress. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #124
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Finalizar recorrido
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para finalizar recorrido en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Gestionar el paso de in_progress a completed. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #125
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar seguridad de estados
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar seguridad de estados en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Restringir transiciones permitidas al conductor asignado. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #126
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Gestionar listeners
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para gestionar listeners en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar listeners duplicados y liberar suscripciones. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hooks de viajes. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #127
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Mostrar direcciones
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para mostrar direcciones en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Presentar origen y destino como textos legibles. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #128
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Consultar rutas con OSRM
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para consultar rutas con osrm en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Explorar el trazado de rutas entre origen y destino. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicio de rutas, pantallas de mapa. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #129
+- Fecha: 2026-11-10
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Calcular distancia estimada
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para calcular distancia estimada en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Diferenciar distancia del mapa y distancia para tarifas. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicios de ruta, src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #130
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Calcular duración estimada
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para calcular duración estimada en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Relacionar tiempo estimado con la tarifa. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicios de ruta, src/utils/calculateFare.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #131
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Representar ruta en mapa
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para representar ruta en mapa en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar visualmente el recorrido al conductor. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de mapa y viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #132
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Gestionar error de rutas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para gestionar error de rutas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir comportamiento cuando el servicio de rutas falla. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicio de rutas. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #133
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar datos de Firestore
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar datos de firestore en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Contrastar la estructura del viaje con los campos disponibles. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #134
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Separar lógica y UI
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para separar lógica y ui en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar mezclar consultas de Firebase con presentación. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hooks, servicios y pantallas. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #135
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar configuración backend
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar configuración backend en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Comprobar la estructura del servidor de pruebas. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #136
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar servidor Express
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar servidor express en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir un backend local para operaciones que no deben ejecutarse en la app. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/server.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #137
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Mantener secretos fuera de Expo
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para mantener secretos fuera de expo en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Reservar claves privadas para el backend. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/.env, .gitignore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #138
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Configurar Stripe Sandbox
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para configurar stripe sandbox en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Distinguir pagos de prueba de pagos reales. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/server.js, servicios de pago. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #139
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Iniciar flujo de pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para iniciar flujo de pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Crear un punto de acceso desde el resumen del recorrido. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de resumen de pago. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #140
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Conectar servicio de pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para conectar servicio de pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Enviar datos de pago desde la app al backend local. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/services/paymentService.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #141
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Gestionar respuesta del servidor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para gestionar respuesta del servidor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Controlar resultados satisfactorios y errores de la solicitud. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicio y pantalla de pagos. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #142
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar dirección IP local
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar dirección ip local en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar confundir localhost del teléfono con el equipo de desarrollo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/services/paymentService.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #143
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Probar conectividad Android
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para probar conectividad android en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Preparar la comunicación entre Expo Go y backend en la misma red. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Backend y aplicación móvil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #144
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar importes del pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para validar importes del pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mantener consistencia entre tarifa del viaje y cobro. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/calculateFare.js, backend. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #145
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Registrar método de pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para registrar método de pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Distinguir Stripe y efectivo en la información del viaje. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #146
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Mostrar resumen del viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para mostrar resumen del viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Presentar ruta, importe y opciones relacionadas con el pago. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de resumen. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #147
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Evitar doble confirmación
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para evitar doble confirmación en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Considerar idempotencia y estado de pago al repetir acciones. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/server.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #148
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Consultar estado de pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para consultar estado de pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Separar viaje completado de pago confirmado. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicio de pagos, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #149
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar tarifas por categoría
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar tarifas por categoría en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Comparar el importe cuando cambia la categoría del vehículo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/config/pricing.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #150
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Presentar importe en COP
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para presentar importe en cop en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Dar formato local a valores monetarios. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje y pago. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #151
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar saldo de conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar saldo de conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Distinguir ingresos Stripe y comisiones por efectivo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Lógica de ganancias. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #152
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Planear pantalla de ganancias
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para planear pantalla de ganancias en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir indicadores de hoy, semana y mes. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla y hook de ganancias. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #153
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Consultar viajes históricos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para consultar viajes históricos en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Identificar documentos de viajes anteriores del conductor. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #154
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Planear filtros del historial
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para planear filtros del historial en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Separar recorridos por fecha, estado o pago según datos existentes. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de historial. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #155
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Mostrar ruta histórica
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para mostrar ruta histórica en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Contemplar información de origen y destino de recorridos previos. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de historial. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #156
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar perfil del conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar perfil del conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Separar información personal, vehículo y documentos. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/screens/DriverProfileScreen.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #157
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Consultar aprobación
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para consultar aprobación en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Conservar restricciones de lectura y edición de registros. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore, perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #158
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar fotografías documentales
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar fotografías documentales en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Guardar URLs remotas en lugar de rutas del dispositivo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Cloudinary, perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #159
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar datos editables
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para validar datos editables en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Aplicar reglas de teléfono y número de licencia. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/validations.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #160
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Usar selector de fechas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para usar selector de fechas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Trabajar con vencimientos de licencia, SOAT y revisión. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #161
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar guardado parcial
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar guardado parcial en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar actualizar campos sin cambios. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #162
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar reglas de perfil
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar reglas de perfil en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Permitir ediciones autorizadas sin cambiar status o uid. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #163
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar experiencia del teclado
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar experiencia del teclado en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar campos y botones ocultos por el teclado. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de formulario. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #164
+- Fecha: 2026-11-11
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar navegación a ganancias
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar navegación a ganancias en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Crear acceso desde el perfil a la pantalla financiera. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Navegación y perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #165
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar navegación a historial
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar navegación a historial en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Crear acceso desde el perfil a viajes anteriores. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Navegación y perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #166
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Considerar carga de imágenes
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para considerar carga de imágenes en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: No subir fotografías que no hayan cambiado. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Cloudinary, perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #167
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Organizar documentos obligatorios
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para organizar documentos obligatorios en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Diferenciar revisión técnico-mecánica según requisitos del vehículo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #168
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar contraseña
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para validar contraseña en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Plantear cambio seguro con reautenticación. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Firebase Authentication, perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #169
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar mensajes de error
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar mensajes de error en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar errores de red y permisos de forma comprensible. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas y servicios. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #170
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Comprobar trazas de depuración
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para comprobar trazas de depuración en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Registrar campos modificados sin exponer valores sensibles. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #171
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar consistencia del proyecto
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar consistencia del proyecto en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Alinear nombres de campos usados en Firebase y la interfaz. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas, hooks, servicios. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #172
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Diseñar una prueba de viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para diseñar una prueba de viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Crear documentos de prueba con origen, destino y categoría. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Firestore, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #173
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Separar datos manuales y automáticos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para separar datos manuales y automáticos en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: No duplicar estados y campos gestionados por el backend. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Firestore, backend. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #174
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Planificar asignación automática
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para planificar asignación automática en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Buscar conductores aprobados y disponibles. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/autoAssignTrips.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #175
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Evitar doble asignación
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para evitar doble asignación en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Considerar concurrencia en solicitudes y disponibilidad. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/autoAssignTrips.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #176
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Configurar vencimiento de solicitud
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para configurar vencimiento de solicitud en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Generar límite temporal para aceptación. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/autoAssignTrips.js. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #177
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar aceptación automática de datos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar aceptación automática de datos en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Compatibilizar las solicitudes creadas manualmente con el backend. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/autoAssignTrips.js, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #178
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar lectura de la solicitud
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar lectura de la solicitud en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar nuevos viajes sin recargar manualmente la app. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de solicitudes. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #179
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar ruta del viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar ruta del viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Relacionar los datos de dirección con el mapa. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #180
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar cálculo al finalizar
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar cálculo al finalizar en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Aplicar distancia, duración, categoría y comisión. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: src/utils/calculateFare.js, flujo de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #181
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Conectar resumen y pagos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para conectar resumen y pagos en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mostrar las opciones disponibles al cerrar el viaje. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de resumen de pago. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #182
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar persistencia del pago
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar persistencia del pago en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Considerar registro de estado y valor pagado en Firestore. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Backend, colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #183
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Planificar pago en efectivo
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para planificar pago en efectivo en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir que el conductor recibe efectivo y adeuda comisión. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Backend, pantalla de pago. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #184
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Planificar movimientos financieros
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para planificar movimientos financieros en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Distinguir cobro bruto, comisión, propina y saldo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Hook de ganancias. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #185
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar historial por conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar historial por conductor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Evitar mostrar viajes de otros usuarios. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore, pantalla de historial. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #186
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar estado aprobado
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar estado aprobado en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Mantener autorización de conductor en transiciones. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #187
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Verificar integridad del perfil
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para verificar integridad del perfil en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: No permitir que el conductor se apruebe modificando Firestore. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #188
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Evitar URLs locales de imágenes
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para evitar urls locales de imágenes en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Persistir enlaces de Cloudinary válidos. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Cloudinary, perfil. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #189
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar formato ISO de fechas
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar formato iso de fechas en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Preparar fechas compatibles con Firestore. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Pantalla de perfil, reglas. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #190
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar validación de fechas futuras
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar validación de fechas futuras en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Asegurar una fecha válida al editar documentos. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Validaciones, reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #191
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar cierre de funcionalidades
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar cierre de funcionalidades en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Identificar pruebas pendientes por módulo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Bitácora y módulos implementados. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #192
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Comprobar flujo de solicitudes
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para comprobar flujo de solicitudes en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Organizar prueba de creación, asignación, aceptación y finalización. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Firestore, backend, app. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #193
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar separación de responsabilidades
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar separación de responsabilidades en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Conservar lógica de backend, interfaz y seguridad independiente. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Servicios, hooks, pantallas. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #194
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar funcionamiento del servidor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar funcionamiento del servidor en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Considerar arranque del backend junto a Expo. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: backend/server.js, comandos locales. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #195
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar evidencias de validación
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar evidencias de validación en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Registrar únicamente pruebas ejecutadas y resultados confirmados. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: docs/AI_LOG.md. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #196
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Actualizar bitácora de IA
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para actualizar bitácora de ia en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Registrar ayuda, archivos y decisiones sin credenciales. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: docs/AI_LOG.md. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #197
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar cambios antes de Git
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar cambios antes de git en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Preparar verificación de archivos y secretos excluidos. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Repositorio Git. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #198
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar integración de funcionalidades
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para preparar integración de funcionalidades en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Coordinar solicitud, recorrido, pago e historial. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Backend y aplicación. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #199
+- Fecha: 2026-11-12
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Revisar simulación de viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito ayuda para revisar simulación de viaje en UberCloneDriver.
+- Resumen de la respuesta: Se explicó cómo abordar este punto: Definir valores mínimos del documento de prueba. Se propusieron comprobaciones puntuales para evitar afectar otros módulos.
+- Qué se usó / modificó / descartó: Se consideró la propuesta como orientación técnica; los detalles precisos y el grado de implementación deben cotejarse con el historial y el código.
+- Archivos y commit: Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: Reconstrucción documental: no se dispone del resultado exacto de esta interacción; no se declara una prueba aprobada.
+- Aprendizaje: Aprendí a tratar este aspecto por separado y a comprobar su integración con el flujo del conductor.
+Entrada #200
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Asignación automática de solicitudes
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Vamos a permitir que las solicitudes de Firestore se asignen automáticamente a un conductor disponible.
+- Resumen de la respuesta: Se añadió un proceso en el backend para detectar viajes nuevos, seleccionar un conductor aprobado y disponible y generar una solicitud con tiempo de respuesta.
+- Qué se usó / modificó / descartó: Se conectó la asignación con los documentos de viaje y ubicación.
+- Archivos y commit: backend/autoAssignTrips.js, backend/server.js. Commit: pendiente de completar con el hash real.
+- Verificación: En la simulación posterior el usuario confirmó recepción y funcionamiento de solicitudes.
+- Aprendizaje: La app del conductor no debe encargarse de seleccionar automáticamente al conductor.
+Entrada #201
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Comprobar datos mínimos de solicitud
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+¿Qué datos necesito crear en Firestore para probar una solicitud?
+- Resumen de la respuesta: Se revisó la estructura mínima de viaje de prueba y se distinguieron campos generados automáticamente.
+- Qué se usó / modificó / descartó: Se usaron origen, destino, nombre del pasajero y categoría.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: El flujo se probó después con un documento manual.
+- Aprendizaje: No es necesario simular manualmente el trabajo del backend.
+Entrada #202
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Validar estados de viaje
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Revisemos que el viaje cambie de estado al aceptar y avanzar.
+- Resumen de la respuesta: Se repasaron transiciones de viaje y el permiso de edición del conductor asignado.
+- Qué se usó / modificó / descartó: Se conservó la validación por estado.
+- Archivos y commit: Reglas de Firestore, pantallas de viaje. Commit: pendiente de completar con el hash real.
+- Verificación: No consta una prueba individual de esta entrada.
+- Aprendizaje: Los estados son parte del control de seguridad.
+Entrada #203
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Comprobar resumen de recorrido
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito revisar los datos que aparecen cuando termina un viaje.
+- Resumen de la respuesta: Se repasó la visualización de ruta, tarifa y método de pago del viaje completado.
+- Qué se usó / modificó / descartó: Se usaron datos existentes del viaje.
+- Archivos y commit: Pantalla de resumen de pago. Commit: pendiente de completar con el hash real.
+- Verificación: No consta una prueba individual de esta entrada.
+- Aprendizaje: El resumen debe partir de los datos persistidos.
+Entrada #204
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Integración con pagos
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Vamos a probar la integración del recorrido con el pago.
+- Resumen de la respuesta: Se explicó la conexión entre finalización del viaje y el proceso de pago.
+- Qué se usó / modificó / descartó: Se mantuvo Stripe Sandbox y se consideró efectivo como segundo método.
+- Archivos y commit: backend/server.js, src/services/paymentService.js. Commit: pendiente de completar con el hash real.
+- Verificación: No consta una prueba individual de esta entrada.
+- Aprendizaje: El cobro debe registrarse por un flujo controlado.
+Entrada #205
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Corregir y mostrar el perfil del conductor
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+En el perfil aparece el mapa en vez de los datos del conductor.
+- Resumen de la respuesta: Se corrigió el contenido de DriverProfileScreen.js para mostrar el registro del conductor en Firestore.
+- Qué se usó / modificó / descartó: Se reemplazó la pantalla incorrecta conservando navegación y datos existentes.
+- Archivos y commit: src/screens/DriverProfileScreen.js. Commit: pendiente de completar con el hash real.
+- Verificación: El usuario confirmó posteriormente que el perfil cargaba correctamente.
+- Aprendizaje: Cada pantalla debe mostrar solo la información que le corresponde.
+Entrada #206
+- Fecha: 2026-11-12 (aproximada)
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Agregar historial de viajes
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Hagamos una pantalla para ver el historial de viajes.
+- Resumen de la respuesta: Se construyó una pantalla de consulta de recorridos anteriores del conductor.
+- Qué se usó / modificó / descartó: Se utilizó la colección trip y el vínculo al conductor.
+- Archivos y commit: src/screens/TripHistoryScreen.js, navegación. Commit: pendiente de completar con el hash real.
+- Verificación: El usuario confirmó que funcionaba.
+- Aprendizaje: El historial debe consultar datos existentes y no duplicar viajes.
+Entrada #207
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Permitir edición del perfil y resolver permisos y teclado
+- Prompt:
+ERROR  Save profile: permission-denied
+- Resumen de la respuesta: Se incorporó edición de teléfono, documentos, fotos y contraseña; se diagnosticaron reglas de Firestore y el teclado que cubría los campos.
+- Qué se usó / modificó / descartó: Se guardan solo campos cambiados; Cloudinary maneja fotos; KeyboardAvoidingView y desplazamiento mantienen campos visibles.
+- Archivos y commit: src/screens/DriverProfileScreen.js, reglas de Firestore. Commit: pendiente de completar con el hash real.
+- Verificación: El usuario confirmó guardado de fecha y solución del teclado; otras variantes requieren verificación específica.
+- Aprendizaje: Los logs de nombres de campos ayudan a diagnosticar permisos sin exponer valores.
+Entrada #208
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Incorporar pago en efectivo
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Necesito agregar la opción de cobrar viajes en efectivo, además de Stripe.
+- Resumen de la respuesta: Se propuso endpoint de confirmación de efectivo, servicio de consumo y botón en resumen.
+- Qué se usó / modificó / descartó: Se mantuvieron separados Stripe Sandbox y efectivo; se contempló la comisión del 20 %.
+- Archivos y commit: backend/server.js, src/services/paymentService.js, src/screens/PaymentSummaryScreen.js. Commit: pendiente de completar con el hash real.
+- Verificación: Se confirmó una simulación de viaje; no consta verificación aislada de la confirmación de efectivo.
+- Aprendizaje: Los pagos por efectivo y Stripe se registran con flujos diferentes.
+Entrada #209
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Crear pantalla de ganancias
+- **Prompt (reconstrucción aproximada; no es una transcripción literal):**
+Hagamos la pantalla de ganancias del conductor.
+- Resumen de la respuesta: Se desarrolló hook de ganancias y pantalla de indicadores financieros.
+- Qué se usó / modificó / descartó: Se contemplaron montos facturados, comisiones, propinas y saldo según medio de pago.
+- Archivos y commit: src/hooks/useEarnings.js, src/screens/EarningsScreen.js, navegación. Commit: pendiente de completar con el hash real.
+- Verificación: No consta una comprobación específica de cada indicador.
+- Aprendizaje: La lógica financiera se debe separar de la presentación.
+Entrada #210
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar una solicitud de prueba
+- Prompt:
+listo funciono ahora vamos a simular el viaje y ya que datos coloco
+- Resumen de la respuesta: Se dieron los campos para insertar una solicitud manual en Firestore usando nombre de pasajero, categoría, pago y direcciones.
+- Qué se usó / modificó / descartó: Se tomó una ruta de prueba en Medellín con categoría xl y efectivo.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: La simulación fue confirmada en la interacción posterior.
+- Aprendizaje: Los datos mínimos permiten disparar la asignación automática.
+Entrada #211
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: No agregar status manualmente
+- Prompt:
+no es nesecario ese status pq no tiene sentido
+- Resumen de la respuesta: Se reconoció que el backend administra el estado y se retiró la indicación de agregarlo a mano.
+- Qué se usó / modificó / descartó: Se mantuvieron únicamente datos mínimos del viaje.
+- Archivos y commit: Colección trip. Commit: pendiente de completar con el hash real.
+- Verificación: El usuario confirmó después que funcionó.
+- Aprendizaje: No se deben duplicar responsabilidades del backend.
+Entrada #212
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Preparar último commit
+- Prompt:
+bueno funciono vamos hacerel ultimo commit
+- Resumen de la respuesta: Se indicaron pasos para revisar cambios, actualizar la bitácora y confirmar la rama developer.
+- Qué se usó / modificó / descartó: Se propuso git add ., revisión de staging, commit y push; no se confirmó ejecución.
+- Archivos y commit: docs/AI_LOG.md, archivos modificados. Commit: pendiente de completar con el hash real.
+- Verificación: Pendiente verificar commit y push real.
+- Aprendizaje: Se revisan los archivos y secretos antes de confirmar un commit.
+Entrada #213
+- Fecha: 2026-11-13
+- Integrante: Fabian Alexander Chirivi
+- Herramienta: ChatGPT (OpenAI)
+- Objetivo: Solicitar consolidación de bitácora
+- Prompt:
+mandame porfa desde la 105 hasta ahorita la bitacora para colocarla
+- Resumen de la respuesta: Se consultó la bitácora publicada: llegaba a #104; se preparó una reconstrucción de entradas posteriores.
+- Qué se usó / modificó / descartó: Se buscó conservar el formato existente.
+- Archivos y commit: docs/AI_LOG.md. Commit: pendiente de completar con el hash real.
+- Verificación: Se verificó que el archivo de la rama developer acababa en #104.
+- Aprendizaje: La reconstrucción debe distinguirse de los prompts históricos reales.
