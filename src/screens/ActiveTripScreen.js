@@ -1,17 +1,22 @@
 
-// AI-assisted: see docs/AI_LOG.md #120, #143, #164
+// AI-assisted: see docs/AI_LOG.md #120, #143, #164, #171, #175
 
-import { useContext, useEffect, useState } from 'react';
+import {
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   View,
   Text,
-  ScrollView,
   ActivityIndicator,
   StyleSheet,
   Pressable,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Location from 'expo-location';
 import {
   doc,
   onSnapshot,
@@ -20,6 +25,8 @@ import {
 } from 'firebase/firestore';
 
 import { auth, db } from '../config/firebase';
+import DriverMap from '../components/DriverMap';
+import { getDrivingRoute } from '../services/routingService';
 import { LanguageContext } from '../context/LanguageContext';
 import { colors, spacing, radius, typography } from '../theme';
 
@@ -38,51 +45,175 @@ const NEXT_STEP = {
   },
 };
 
-const TEXT = {
+const WORDS = {
   es: {
+    trip: 'Recorrido',
     passenger: 'Pasajero',
-    accepted: 'Viaje aceptado',
-    driver_arriving: 'Conductor en camino',
-    in_progress: 'Viaje en curso',
+    pickup: 'Recoger pasajero',
+    destination: 'Destino',
+    ready: 'Listo para iniciar',
+    driving: 'En camino',
+    arrived: 'Has llegado',
     completed: 'Viaje finalizado',
-    startPickup: 'Iniciar recogida',
-    passengerOnboard: 'Pasajero a bordo',
-    finishTrip: 'Finalizar viaje',
-    success: 'Viaje finalizado correctamente.',
-    error: 'No se pudo actualizar el viaje. Intenta nuevamente.',
-    unavailable: 'El viaje cambió de estado. Revisa la información.',
-    completedNotice: 'El viaje se ha guardado como finalizado en Firebase.',
-    nextStage: 'La navegación por el mapa y el resumen del pago se integrarán después.',
+    start: 'Iniciar recorrido',
+    onboard: 'Pasajero a bordo',
+    finish: 'Finalizar viaje',
+    loadingRoute: 'Calculando recorrido...',
+    routeError: 'No fue posible calcular la ruta.',
+    gpsError: 'Se necesita el GPS para iniciar.',
+    retry: 'Reintentar ruta',
+    waiting: 'Preparando recorrido...',
+    distance: 'Distancia',
+    duration: 'Tiempo estimado',
     confirmTitle: 'Finalizar viaje',
-    confirmMessage: '¿Confirmas que el pasajero llegó a su destino?',
+    confirmMessage: '¿Confirmas que llegaste al destino?',
     cancel: 'Cancelar',
     confirm: 'Finalizar',
+    success: 'Viaje finalizado correctamente.',
+    updateError: 'No se pudo actualizar el viaje.',
+    unavailable: 'El viaje cambió de estado.',
   },
   en: {
+    trip: 'Route',
     passenger: 'Passenger',
-    accepted: 'Trip accepted',
-    driver_arriving: 'Driver on the way',
-    in_progress: 'Trip in progress',
+    pickup: 'Passenger pickup',
+    destination: 'Destination',
+    ready: 'Ready to start',
+    driving: 'On the way',
+    arrived: 'You have arrived',
     completed: 'Trip completed',
-    startPickup: 'Start pickup',
-    passengerOnboard: 'Passenger onboard',
-    finishTrip: 'Finish trip',
-    success: 'Trip completed successfully.',
-    error: 'Unable to update the trip. Please try again.',
-    unavailable: 'The trip status has changed. Check its information.',
-    completedNotice: 'The trip was saved as completed in Firebase.',
-    nextStage: 'Map navigation and payment summary will be added next.',
+    start: 'Start route',
+    onboard: 'Passenger onboard',
+    finish: 'Finish trip',
+    loadingRoute: 'Calculating route...',
+    routeError: 'Unable to calculate route.',
+    gpsError: 'GPS is required to start.',
+    retry: 'Retry route',
+    waiting: 'Preparing route...',
+    distance: 'Distance',
+    duration: 'Estimated time',
     confirmTitle: 'Finish trip',
-    confirmMessage: 'Do you confirm the passenger reached the destination?',
+    confirmMessage: 'Do you confirm arrival?',
     cancel: 'Cancel',
     confirm: 'Finish',
+    success: 'Trip completed successfully.',
+    updateError: 'Unable to update the trip.',
+    unavailable: 'The trip status changed.',
   },
 };
 
-export default function ActiveTripScreen({ route }) {
-  const { t, language } = useContext(LanguageContext);
-  const labels = TEXT[language] ?? TEXT.es;
+const toCoordinate = (point) => {
+  const latitude = point?.latitude ?? point?.lat;
+  const longitude = point?.longitude ?? point?.lng;
 
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    Math.abs(latitude) > 90 ||
+    Math.abs(longitude) > 180
+  ) {
+    return null;
+  }
+
+  return { latitude, longitude };
+};
+
+// Distancia aproximada entre dos coordenadas, en metros.
+const distanceMeters = (a, b) => {
+  const radians = Math.PI / 180;
+  const dLat = (b.latitude - a.latitude) * radians;
+  const dLng = (b.longitude - a.longitude) * radians;
+
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(a.latitude * radians) *
+      Math.cos(b.latitude * radians) *
+      Math.sin(dLng / 2) ** 2;
+
+  return 6371000 * 2 * Math.asin(Math.sqrt(Math.min(1, h)));
+};
+
+// Dirección del vehículo de 0 a 360 grados.
+const getHeading = (a, b) => {
+  const radians = Math.PI / 180;
+  const lat1 = a.latitude * radians;
+  const lat2 = b.latitude * radians;
+  const delta = (b.longitude - a.longitude) * radians;
+
+  const y = Math.sin(delta) * Math.cos(lat2);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(delta);
+
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+};
+
+// Prepara la ruta para mover el vehículo sin saltar puntos.
+const buildSegments = (coordinates) => {
+  const segments = [];
+  let total = 0;
+
+  for (let i = 1; i < coordinates.length; i += 1) {
+    const start = coordinates[i - 1];
+    const end = coordinates[i];
+    const length = distanceMeters(start, end);
+
+    if (length < 0.01) continue;
+
+    segments.push({
+      start,
+      end,
+      from: total,
+      to: total + length,
+      length,
+      heading: getHeading(start, end),
+    });
+
+    total += length;
+  }
+
+  return { segments, total };
+};
+
+const pointAtDistance = (route, distance) => {
+  const { segments, total } = route;
+
+  if (!segments.length) return null;
+
+  const traveled = Math.max(0, Math.min(distance, total));
+
+  // Búsqueda binaria del tramo correspondiente.
+  let left = 0;
+  let right = segments.length - 1;
+
+  while (left < right) {
+    const middle = Math.floor((left + right) / 2);
+
+    if (segments[middle].to < traveled) {
+      left = middle + 1;
+    } else {
+      right = middle;
+    }
+  }
+
+  const segment = segments[left];
+  const fraction =
+    (traveled - segment.from) / segment.length;
+
+  return {
+    latitude:
+      segment.start.latitude +
+      (segment.end.latitude - segment.start.latitude) * fraction,
+    longitude:
+      segment.start.longitude +
+      (segment.end.longitude - segment.start.longitude) * fraction,
+    heading: segment.heading,
+  };
+};
+
+export default function ActiveTripScreen({ route }) {
+  const { language } = useContext(LanguageContext);
+  const labels = WORDS[language] ?? WORDS.es;
   const tripId = route.params?.tripId;
 
   const [trip, setTrip] = useState(null);
@@ -90,25 +221,31 @@ export default function ActiveTripScreen({ route }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
 
+  const [location, setLocation] = useState(null);
+  const [routeData, setRouteData] = useState(null);
+  const [routeLoading, setRouteLoading] = useState(false);
+  const [routeError, setRouteError] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
+
+  const [distanceTraveled, setDistanceTraveled] = useState(0);
+  const [moving, setMoving] = useState(false);
+
+  // Escuchar el estado del viaje desde Firestore.
   useEffect(() => {
     if (!tripId || !auth.currentUser) {
-      setLoading(false);
       setError(true);
+      setLoading(false);
       return;
     }
 
-    const unsubscribe = onSnapshot(
+    return onSnapshot(
       doc(db, 'trip', tripId),
       (snapshot) => {
-        const item = snapshot.exists()
-          ? snapshot.data()
-          : null;
+        const data = snapshot.exists() ? snapshot.data() : null;
+        const owned = data?.driverId === auth.currentUser?.uid;
 
-        const belongsToDriver =
-          item?.driverId === auth.currentUser?.uid;
-
-        setTrip(belongsToDriver ? item : null);
-        setError(!belongsToDriver);
+        setTrip(owned ? data : null);
+        setError(!owned);
         setLoading(false);
       },
       (snapshotError) => {
@@ -116,22 +253,217 @@ export default function ActiveTripScreen({ route }) {
           'Active trip:',
           snapshotError.code || snapshotError.message
         );
-
         setError(true);
         setLoading(false);
       }
     );
-
-    return unsubscribe;
   }, [tripId]);
 
-  const updateTripStatus = async () => {
-    const step = NEXT_STEP[trip?.status];
-    const uid = auth.currentUser?.uid;
+  // GPS real: se usa únicamente como punto de partida.
+  useEffect(() => {
+    let mounted = true;
+    let watcher;
 
-    if (!step || !tripId || !uid || busy) {
+    const startGPS = async () => {
+      try {
+        const permission =
+          await Location.getForegroundPermissionsAsync();
+
+        let granted = permission.granted;
+
+        if (!granted) {
+          const requested =
+            await Location.requestForegroundPermissionsAsync();
+
+          granted = requested.granted;
+        }
+
+        if (!granted) return;
+
+        const current =
+          await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.High,
+          });
+
+        if (!mounted) return;
+        setLocation(current.coords);
+
+        const subscription = await Location.watchPositionAsync(
+          {
+            accuracy: Location.Accuracy.High,
+            distanceInterval: 10,
+            timeInterval: 5000,
+          },
+          (position) => {
+            if (mounted) setLocation(position.coords);
+          }
+        );
+
+        if (mounted) watcher = subscription;
+        else subscription.remove();
+      } catch (gpsError) {
+        console.error('Trip GPS:', gpsError.message);
+      }
+    };
+
+    startGPS();
+
+    return () => {
+      mounted = false;
+      watcher?.remove();
+    };
+  }, []);
+
+  const status = trip?.status;
+
+  const phase =
+    status === 'accepted' || status === 'driver_arriving'
+      ? 'pickup'
+      : status === 'in_progress'
+        ? 'destination'
+        : null;
+
+  const gpsReady =
+    Number.isFinite(location?.latitude) &&
+    Number.isFinite(location?.longitude);
+
+  const originLat = trip?.origin?.lat;
+  const originLng = trip?.origin?.lng;
+  const destinationLat = trip?.destination?.lat;
+  const destinationLng = trip?.destination?.lng;
+
+  // Obtiene el recorrido desde el servicio OSRM.
+  useEffect(() => {
+    setRouteData(null);
+    setRouteError('');
+    setRouteLoading(false);
+    setDistanceTraveled(0);
+    setMoving(false);
+
+    if (!trip || !phase) return;
+
+    const pickup = toCoordinate(trip.origin);
+    const destination = toCoordinate(trip.destination);
+    const gps = toCoordinate(location);
+
+    const start = phase === 'pickup' ? gps : pickup;
+    const end = phase === 'pickup' ? pickup : destination;
+
+    if (!start || !end) {
+      setRouteError(phase === 'pickup' ? 'gps' : 'route');
       return;
     }
+
+    const controller = new AbortController();
+
+    const loadRoute = async () => {
+      setRouteLoading(true);
+
+      try {
+        const result = await getDrivingRoute(
+          start,
+          end,
+          controller.signal
+        );
+
+        if (!controller.signal.aborted) {
+          setRouteData(result);
+          setRouteError('');
+
+          // Comienza automáticamente después de iniciar
+          // la recogida o subir al pasajero.
+          if (
+            status === 'driver_arriving' ||
+            status === 'in_progress'
+          ) {
+            setMoving(true);
+          }
+        }
+      } catch (fetchError) {
+        if (!controller.signal.aborted) {
+          console.error('Trip routing:', fetchError.message);
+          setRouteError('route');
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setRouteLoading(false);
+        }
+      }
+    };
+
+    loadRoute();
+
+    return () => controller.abort();
+  }, [
+    tripId,
+    phase,
+    status,
+    originLat,
+    originLng,
+    destinationLat,
+    destinationLng,
+    gpsReady,
+    retryCount,
+  ]);
+
+  const routeCoordinates = routeData?.coordinates ?? [];
+
+  const routeGeometry = useMemo(
+    () => buildSegments(routeCoordinates),
+    [routeCoordinates]
+  );
+
+  const totalDistance = routeGeometry.total;
+
+  // Cada recorrido dura aproximadamente entre 25 y 90
+  // segundos, independientemente de su duración real.
+  const simulationSeconds = Math.max(
+    25,
+    Math.min(90, (routeData?.distanceKm ?? 1) * 8)
+  );
+
+  const distancePerTick =
+    totalDistance / (simulationSeconds * 10);
+
+  useEffect(() => {
+    if (!moving || totalDistance <= 0) return;
+
+    const interval = setInterval(() => {
+      setDistanceTraveled((previous) =>
+        Math.min(previous + distancePerTick, totalDistance)
+      );
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [moving, totalDistance, distancePerTick]);
+
+  const arrived =
+    totalDistance > 0 &&
+    distanceTraveled >= totalDistance;
+
+  useEffect(() => {
+    if (moving && arrived) setMoving(false);
+  }, [moving, arrived]);
+
+  const vehiclePosition = useMemo(
+    () => pointAtDistance(routeGeometry, distanceTraveled),
+    [routeGeometry, distanceTraveled]
+  );
+
+  const journeyStarted =
+    status === 'driver_arriving' ||
+    status === 'in_progress';
+
+  const followVehicle = journeyStarted && !!vehiclePosition;
+
+  const nextStep = NEXT_STEP[status];
+
+  // Guarda el avance del viaje en Firestore.
+  const updateTripStatus = async () => {
+    const step = NEXT_STEP[status];
+    const uid = auth.currentUser?.uid;
+
+    if (!step || !uid || !tripId || busy) return;
 
     setBusy(true);
 
@@ -144,11 +476,11 @@ export default function ActiveTripScreen({ route }) {
           throw new Error('unavailable');
         }
 
-        const currentTrip = snapshot.data();
+        const current = snapshot.data();
 
         if (
-          currentTrip.driverId !== uid ||
-          currentTrip.status !== trip.status
+          current.driverId !== uid ||
+          current.status !== status
         ) {
           throw new Error('unavailable');
         }
@@ -172,38 +504,31 @@ export default function ActiveTripScreen({ route }) {
         'UberCloneDriver',
         updateError.message === 'unavailable'
           ? labels.unavailable
-          : labels.error
+          : labels.updateError
       );
     } finally {
       setBusy(false);
     }
   };
 
-  const handleNextStep = () => {
-    if (trip?.status === 'in_progress') {
-      Alert.alert(
-        labels.confirmTitle,
-        labels.confirmMessage,
-        [
-          { text: labels.cancel, style: 'cancel' },
-          {
-            text: labels.confirm,
-            onPress: updateTripStatus,
-          },
-        ]
-      );
+  const handleNext = () => {
+    if (status !== 'in_progress') {
+      updateTripStatus();
       return;
     }
 
-    updateTripStatus();
+    Alert.alert(
+      labels.confirmTitle,
+      labels.confirmMessage,
+      [
+        { text: labels.cancel, style: 'cancel' },
+        {
+          text: labels.confirm,
+          onPress: updateTripStatus,
+        },
+      ]
+    );
   };
-
-  const renderField = (label, value) => (
-    <View style={styles.field}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value ?? '-'}</Text>
-    </View>
-  );
 
   if (loading) {
     return (
@@ -220,96 +545,156 @@ export default function ActiveTripScreen({ route }) {
       <SafeAreaView style={styles.screen} edges={['bottom']}>
         <View style={styles.center}>
           <Text style={styles.error}>
-            {t('requests.tripLoadError')}
+            {labels.unavailable}
           </Text>
         </View>
       </SafeAreaView>
     );
   }
 
-  const nextStep = NEXT_STEP[trip.status];
+  const stopAddress =
+    phase === 'pickup'
+      ? trip.origin?.address
+      : trip.destination?.address;
 
-  const buttonLabel = {
-    accepted: labels.startPickup,
-    driver_arriving: labels.passengerOnboard,
-    in_progress: labels.finishTrip,
-  }[trip.status];
+  const statusLabel =
+    status === 'completed'
+      ? labels.completed
+      : arrived
+        ? labels.arrived
+        : moving
+          ? labels.driving
+          : labels.ready;
+
+  const actionLabel = {
+    accepted: labels.start,
+    driver_arriving: labels.onboard,
+    in_progress: labels.finish,
+  }[status];
+
+  const actionEnabled =
+    !busy &&
+    !routeLoading &&
+    !!routeData &&
+    (
+      status === 'accepted' ||
+      (
+        (status === 'driver_arriving' ||
+          status === 'in_progress') &&
+        arrived
+      )
+    );
 
   return (
     <SafeAreaView style={styles.screen} edges={['bottom']}>
-      <ScrollView contentContainerStyle={styles.content}>
+      <View style={styles.header}>
         <Text style={styles.title}>
-          {t('requests.activeTrip')}
+          {labels.trip}
         </Text>
 
-        <View style={styles.card}>
-          {renderField(
-            t('requests.status'),
-            labels[trip.status] ?? trip.status
-          )}
+        <Text style={styles.status}>
+          {statusLabel}
+        </Text>
+      </View>
 
-          {renderField(
-            labels.passenger,
-            trip.passengerName
-          )}
+      <View style={styles.mapContainer} collapsable={false}>
+        <DriverMap
+          location={location}
+          pickup={trip.origin}
+          destination={trip.destination}
+          routeCoordinates={routeCoordinates}
+          simulatedLocation={
+            followVehicle ? vehiclePosition : null
+          }
+          vehicleHeading={vehiclePosition?.heading ?? 0}
+          followVehicle={followVehicle}
+          language={language}
+        />
+      </View>
 
-          {renderField(
-            t('requests.origin'),
-            trip.origin?.address
-          )}
+      <View style={styles.bottomPanel}>
+        {status === 'completed' ? (
+          <Text style={styles.completed}>
+            {labels.completed}
+          </Text>
+        ) : (
+          <>
+            <Text style={styles.caption}>
+              {phase === 'pickup'
+                ? labels.pickup
+                : labels.destination}
+            </Text>
 
-          {renderField(
-            t('requests.destination'),
-            trip.destination?.address
-          )}
+            <Text
+              style={styles.address}
+              numberOfLines={2}
+            >
+              {stopAddress ?? '-'}
+            </Text>
 
-          {renderField(
-            t('requests.category'),
-            t(`vehicle.${trip.category}`)
-          )}
+            <Text style={styles.passenger}>
+              {labels.passenger}: {trip.passengerName ?? '-'}
+            </Text>
 
-          {renderField(
-            t('requests.distance'),
-            `${trip.distanceKm ?? '-'} km`
-          )}
+            {routeLoading ? (
+              <View style={styles.infoRow}>
+                <ActivityIndicator color={colors.primary} />
+                <Text style={styles.info}>
+                  {labels.loadingRoute}
+                </Text>
+              </View>
+            ) : routeError ? (
+              <>
+                <Text style={styles.warning}>
+                  {routeError === 'gps'
+                    ? labels.gpsError
+                    : labels.routeError}
+                </Text>
 
-          {renderField(
-            t('requests.duration'),
-            `${trip.durationMin ?? '-'} min`
-          )}
-        </View>
-
-        {nextStep && (
-          <Pressable
-            style={[
-              styles.actionButton,
-              busy && styles.disabledButton,
-            ]}
-            onPress={handleNextStep}
-            disabled={busy}
-          >
-            {busy ? (
-              <ActivityIndicator color="#FFFFFF" />
+                <Pressable
+                  style={styles.retryButton}
+                  onPress={() =>
+                    setRetryCount((previous) => previous + 1)
+                  }
+                >
+                  <Text style={styles.retryText}>
+                    {labels.retry}
+                  </Text>
+                </Pressable>
+              </>
+            ) : routeData ? (
+              <Text style={styles.info}>
+                {labels.distance}: {routeData.distanceKm.toFixed(1)} km
+                {'  ·  '}
+                {labels.duration}: {Math.round(routeData.durationMin)} min
+              </Text>
             ) : (
-              <Text style={styles.actionText}>
-                {buttonLabel}
+              <Text style={styles.info}>
+                {labels.waiting}
               </Text>
             )}
-          </Pressable>
-        )}
 
-        {trip.status === 'completed' && (
-          <View style={styles.card}>
-            <Text style={styles.completed}>
-              {labels.completedNotice}
-            </Text>
-          </View>
+            {nextStep && (
+              <Pressable
+                style={[
+                  styles.actionButton,
+                  !actionEnabled && styles.disabledButton,
+                ]}
+                disabled={!actionEnabled}
+                onPress={handleNext}
+              >
+                {busy ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.actionText}>
+                    {actionLabel}
+                  </Text>
+                )}
+              </Pressable>
+            )}
+          </>
         )}
-
-        <Text style={styles.notice}>
-          {labels.nextStage}
-        </Text>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -319,47 +704,79 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  content: {
-    padding: spacing.lg,
-    gap: spacing.md,
-  },
   center: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+  },
+  header: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    backgroundColor: colors.surface,
+    gap: spacing.xs,
   },
   title: {
     ...typography.title,
     color: colors.text,
   },
-  card: {
-    padding: spacing.lg,
-    borderRadius: radius.lg,
+  status: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  mapContainer: {
+    flex: 1,
+    minHeight: 180,
+  },
+  bottomPanel: {
     backgroundColor: colors.surface,
-    gap: spacing.md,
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
-  field: {
-    gap: spacing.xs,
+  caption: {
+    color: colors.textSecondary,
+    fontSize: 12,
+    fontWeight: '700',
   },
-  label: {
+  address: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  passenger: {
+    color: colors.textSecondary,
+    fontSize: 14,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  info: {
     color: colors.textSecondary,
     fontSize: 13,
   },
-  value: {
-    ...typography.body,
-    color: colors.text,
+  warning: {
+    color: colors.warning,
+    fontSize: 13,
+  },
+  retryButton: {
+    paddingVertical: spacing.sm,
+  },
+  retryText: {
+    color: colors.primary,
+    fontWeight: '700',
   },
   actionButton: {
     backgroundColor: colors.primary,
+    padding: spacing.md,
+    minHeight: 52,
     borderRadius: radius.lg,
-    padding: spacing.lg,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 54,
+    marginTop: spacing.sm,
   },
   disabledButton: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   actionText: {
     color: '#FFFFFF',
@@ -367,13 +784,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   completed: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  notice: {
-    color: colors.warning,
-    fontSize: 14,
+    color: colors.success,
+    textAlign: 'center',
+    fontSize: 17,
+    fontWeight: '700',
+    padding: spacing.md,
   },
   error: {
     color: colors.error,

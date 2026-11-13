@@ -1,5 +1,5 @@
 
-// AI-assisted: see docs/AI_LOG.md #10, #143
+// AI-assisted: see docs/AI_LOG.md #10, #143, #175
 
 import { useContext, useEffect, useRef, useState } from 'react';
 import {
@@ -10,7 +10,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
-  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -26,12 +25,6 @@ import { auth, db } from '../config/firebase';
 import { colors, spacing, radius, typography } from '../theme';
 import { LanguageContext } from '../context/LanguageContext';
 
-const TEST_PICKUP = {
-  lat: 6.33492,
-  lng: -75.55829,
-  address: 'Parque Principal de Bello, Antioquia',
-};
-
 export default function HomeScreen({ navigation }) {
   const { signOut } = useAuth();
   const { t, language } = useContext(LanguageContext);
@@ -40,7 +33,6 @@ export default function HomeScreen({ navigation }) {
   const [accountStatus, setAccountStatus] = useState(null);
   const [category, setCategory] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [showTestPickup, setShowTestPickup] = useState(false);
 
   const lastOpenedTrip = useRef(null);
 
@@ -99,7 +91,6 @@ export default function HomeScreen({ navigation }) {
 
         if (data?.status !== 'approved') {
           setIsAvailable(false);
-          setShowTestPickup(false);
         }
       },
       (error) => {
@@ -124,8 +115,6 @@ export default function HomeScreen({ navigation }) {
     if (!locationError || !isAvailable) return;
 
     setIsAvailable(false);
-    setShowTestPickup(false);
-
     Alert.alert(t('requests.locationError'));
   }, [locationError, isAvailable, t]);
 
@@ -144,28 +133,21 @@ export default function HomeScreen({ navigation }) {
     });
   }, [activeTrip?.id, navigation]);
 
-  const handleDirections = async () => {
-    if (!enabled) return;
+  const handleAcceptTrip = async (tripId) => {
+    const accepted = await acceptTrip(tripId);
 
-    const destination = encodeURIComponent(
-      `${TEST_PICKUP.lat},${TEST_PICKUP.lng}`
-    );
+    if (accepted) {
+      lastOpenedTrip.current = tripId;
 
-    const url =
-      'https://www.google.com/maps/dir/?api=1' +
-      `&destination=${destination}` +
-      '&travelmode=driving&dir_action=navigate';
-
-    try {
-      await Linking.openURL(url);
-    } catch {
-      Alert.alert(t('requests.directionsError'));
+      navigation.navigate('ActiveTrip', {
+        tripId,
+      });
     }
-  };
 
+    return accepted;
+  };
   const handleSignOut = async () => {
     setIsAvailable(false);
-    setShowTestPickup(false);
 
     try {
       await stopSharing();
@@ -206,11 +188,6 @@ export default function HomeScreen({ navigation }) {
           location={
             isApproved && isAvailable
               ? location
-              : null
-          }
-          pickup={
-            showTestPickup && enabled
-              ? TEST_PICKUP
               : null
           }
           language={language}
@@ -274,10 +251,6 @@ export default function HomeScreen({ navigation }) {
                   }
 
                   setIsAvailable(value);
-
-                  if (!value) {
-                    setShowTestPickup(false);
-                  }
                 }}
                 disabled={
                   !isApproved ||
@@ -324,40 +297,6 @@ export default function HomeScreen({ navigation }) {
               </Text>
             )}
 
-            {enabled && !activeTrip && (
-              <Pressable
-                style={styles.secondaryButton}
-                onPress={() =>
-                  setShowTestPickup(!showTestPickup)
-                }
-              >
-                <Text style={styles.secondaryButtonText}>
-                  {showTestPickup
-                    ? t('requests.hidePickup')
-                    : t('requests.showPickup')}
-                </Text>
-              </Pressable>
-            )}
-
-            {enabled &&
-              showTestPickup &&
-              !activeTrip && (
-                <View style={styles.testSection}>
-                  <Text style={styles.testAddress}>
-                    {TEST_PICKUP.address}
-                  </Text>
-
-                  <Pressable
-                    style={styles.primaryButton}
-                    onPress={handleDirections}
-                  >
-                    <Text style={styles.primaryButtonText}>
-                      {t('requests.directions')}
-                    </Text>
-                  </Pressable>
-                </View>
-              )}
-
             {activeTrip && (
               <Pressable
                 style={styles.primaryButton}
@@ -373,7 +312,7 @@ export default function HomeScreen({ navigation }) {
               </Pressable>
             )}
 
-            {!!tripError && !pendingTrip && (
+            {!!tripError && !pendingTrip && !activeTrip && (
               <Text style={styles.error}>
                 {t(`requests.${tripError}`)}
               </Text>
@@ -409,7 +348,7 @@ export default function HomeScreen({ navigation }) {
         now={now}
         busy={busy}
         error={tripError}
-        onAccept={acceptTrip}
+        onAccept={handleAcceptTrip}
         onReject={rejectTrip}
       />
     </View>
@@ -508,17 +447,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: colors.primary,
-    padding: spacing.md,
-    borderRadius: radius.md,
-    alignItems: 'center',
-  },
-  secondaryButtonText: {
-    color: colors.text,
-    fontWeight: '600',
-  },
   primaryButton: {
     backgroundColor: colors.primary,
     padding: spacing.md,
@@ -528,12 +456,6 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: colors.onPrimary,
     fontWeight: '700',
-  },
-  testSection: {
-    gap: spacing.sm,
-  },
-  testAddress: {
-    color: colors.text,
   },
   profileButton: {
     borderWidth: 1,
